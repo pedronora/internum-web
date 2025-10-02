@@ -26,6 +26,7 @@
 
     <main class="container">
       <router-view />
+      <Toasts />
     </main>
   </div>
 </template>
@@ -36,6 +37,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTheme } from '@/composables/useTheme'
 import { useAuthInit } from '@/composables/useAuthInit'
+import Toasts from '@/components/Toasts.vue';
 
 const ROUTE_LOGIN_NAME = 'Login'
 
