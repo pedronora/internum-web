@@ -27,9 +27,9 @@
                             <input :type="showPassword ? 'text' : 'password'" id="pwdInput"
                                 class="form-control form-control-lg" placeholder="Insira sua senha" v-model="password"
                                 :disabled="loading" required autocomplete="current-password" />
-                            <button type="button" class="btn btn-outline-secondary" @click="togglePassword"
-                                :aria-pressed="showPassword.toString()" :disabled="loading"
-                                :title="showPassword ? 'Ocultar senha' : 'Mostrar senha'">
+                            <button type="button" class="btn btn-outline-secondary"
+                                @click="showPassword = !showPassword" :aria-pressed="showPassword.toString()"
+                                :disabled="loading" :title="showPassword ? 'Ocultar senha' : 'Mostrar senha'">
                                 <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'" aria-hidden="true"></i>
                             </button>
                         </div>
@@ -60,7 +60,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '@/stores/auth'
 
 const username = ref('')
 const password = ref('')
@@ -70,10 +70,6 @@ const showPassword = ref(false)
 
 const router = useRouter()
 const auth = useAuthStore()
-
-function togglePassword() {
-    showPassword.value = !showPassword.value
-}
 
 const onSubmit = async () => {
     error.value = null
