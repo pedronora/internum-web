@@ -74,7 +74,7 @@ api.interceptors.response.use(
                 resolve(api(originalRequest));
             } catch (err) {
                 processQueue(err, null);
-                try { await auth.logout(); } catch (e) { /* ignore */ }
+                try { await auth.logout(); } catch (e) { console.error(err) }
                 reject(err);
             } finally {
                 isRefreshing = false;
