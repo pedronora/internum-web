@@ -1,7 +1,11 @@
 <template>
     <div class="container mt-4">
-        <h1 class="mb-4">Usuários</h1>
-
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">Usuários</h1>
+            <router-link :to="{ name: 'UsersCreate' }" class="btn btn-success">
+                <i class="bi bi-plus-lg me-1"></i> Criar Novo
+            </router-link>
+        </div>
         <div
             class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 p-3 border rounded bg-body border-secondary border-opacity-25">
             <div class="mb-3 mb-md-0">
@@ -43,6 +47,7 @@
                             <th scope="col">Setor</th>
                             <th scope="col">Perfil</th>
                             <th scope="col">Criado em</th>
+                            <th scope="col">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,17 +62,24 @@
                             <td>
                                 <span :class="['badge', {
                                     'bg-primary': u.role === 'admin',
-                                    'bg-info': u.role === 'Coord',
+                                    'bg-info': u.role === 'coord',
                                     'bg-success': u.role === 'user'
                                 }]">
                                     {{
                                         u.role === 'admin' ? 'Admin' :
-                                            u.role === 'Coord' ? 'Coordenador' :
+                                            u.role === 'coord' ? 'Coordenador' :
                                                 'Geral'
                                     }}
                                 </span>
                             </td>
                             <td>{{ formatDate(u.created_at) }}</td>
+                            <td class="text-nowrap">
+                                <router-link :to="{ name: 'UsersDetail', params: { id: u.id } }"
+                                    class="btn btn-sm btn-outline-primary me-1">Ver</router-link>
+                                <router-link :to="{ name: 'UsersEdit', params: { id: u.id } }"
+                                    class="btn btn-sm btn-outline-secondary me-1">Editar</router-link>
+                                <button @click="deleteUser(u.id)" class="btn btn-sm btn-outline-danger">Excluir</button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -101,7 +113,8 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import api from "@/services/api";
+import { UsersService } from '@/services/users.services';
+import { success as successToast, error as errorToast, confirm as confirmToast } from '@/composables/useToast';
 
 const users = ref([]);
 const loading = ref(false);
@@ -138,11 +151,9 @@ async function load() {
     const offset = (page.value - 1) * limit.value;
 
     try {
-        const res = await api.get("/api/v1/users/", {
-            params: { offset, limit: limit.value, q: q.value || undefined },
-        });
+        const res = await UsersService.list(offset, limit.value);
 
-        const data = res.data;
+        const data = res.users;
 
         if (Array.isArray(data)) {
             users.value = data;
@@ -167,6 +178,20 @@ async function load() {
             "Erro desconhecido";
     } finally {
         loading.value = false;
+    }
+}
+
+async function deleteUser(id) {
+    const ok = await confirmToast('Deseja excluir/desativar este usuário?', { title: 'Excluir usuário' });
+    if (!ok) return;
+
+    try {
+        await UsersService.deactivate(id);
+        successToast('Usuário excluído/desativado com sucesso.');
+        load();
+    } catch (err) {
+        console.error(err);
+        errorToast(err?.response?.data?.detail || err?.message || 'Erro ao excluir usuário');
     }
 }
 
