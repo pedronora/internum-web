@@ -47,9 +47,34 @@ const routes = [
     },
     {
         path: '/notices',
-        name: 'NoticesList',
-        component: () => import('@/pages/notices/List.vue'),
+        component: () => import('@/pages/RouterLayout.vue'),
         meta: { requiresAuth: true },
+        children: [
+            {
+                path: '',
+                name: 'NoticesListByUser',
+                component: () => import('@/pages/notices/NoticesUser.vue'),
+                meta: { requiresAuth: true },
+            },
+            {
+                path: 'list',
+                name: 'NoticesList',
+                component: () => import('@/pages/notices/List.vue'),
+                meta: { requiresAuth: true, requiresPermission: true },
+            },
+            {
+                path: 'create',
+                name: 'NoticesCreate',
+                component: () => import('@/pages/notices/Create.vue'),
+                meta: { requiresAuth: true, requiresPermission: true },
+            },
+            {
+                path: ':id',
+                name: 'NoticesDetail',
+                component: () => import('@/pages/notices/Detail.vue'),
+                meta: { requiresAuth: true }
+            },
+        ]
     },
 ];
 

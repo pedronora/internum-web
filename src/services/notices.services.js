@@ -13,7 +13,7 @@ export const NoticesService = {
         params.append('offset', offset);
         params.append('limit', limit);
         if (search) params.append('search', search);
-        return api.get(`/api/v1/notices/unreads/me?${params.toString()}`);
+        return api.get(`/api/v1/notices/reads/me?${params.toString()}`);
     },
     markAsRead: (id) => api.post(`/api/v1/notices/${id}/mark-read/me`).then(r => r.data),
     create: (payload) => api.post(`/api/v1/notices/`, payload).then(r => r.data),
