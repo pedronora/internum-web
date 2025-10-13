@@ -63,7 +63,7 @@ export function useTheme() {
         if (typeof window !== 'undefined' && window.matchMedia) {
             mql = window.matchMedia('(prefers-color-scheme: dark)')
             if (mql.addEventListener) mql.addEventListener('change', handlePrefChange)
-            else if (mql.addListener) mql.addListener(handlePrefChange) // fallback antigo
+            else if (mql.addListener) mql.addListener(handlePrefChange)
         }
     })
 
