@@ -20,8 +20,8 @@
                 </label>
             </div>
 
-            <div class="d-flex gap-2 w-50 w-md-auto">
-                <input class="form-control flex-grow-1" v-model="q" @keyup.enter="reload" placeholder="Pesquisar..." />
+            <div class="d-flex gap-2 w-md-auto">
+                <input v-model="q" @keyup.enter="reload" placeholder="Pesquisar..." />
                 <button class="btn btn-outline-primary text-nowrap" @click="reload">
                     <i class="bi bi-search me-1"></i> Buscar
                 </button>
@@ -90,15 +90,14 @@
 
 
 
-            <div class="d-flex justify-content-between align-items-center" v-if="meta.total !== null && totalPages > 1">
-                <span class="text-muted">Página {{ page }} de {{ totalPages }}</span>
+            <div class="d-flex justify-content-between align-items-center" v-if="meta.total && totalPages > 1">
+                <span class="text-muted">Página {{ meta.page }} de {{ totalPages }}</span>
 
-                <div class="btn-group" role="group" aria-label="Controles de Paginação">
-                    <button type="button" class="btn btn-outline-secondary" :disabled="page === 1" @click="prev">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary" :disabled="!meta.has_prev" @click="prev">
                         &laquo; Anterior
                     </button>
-                    <button type="button" class="btn btn-outline-secondary" :disabled="page >= totalPages"
-                        @click="next">
+                    <button type="button" class="btn btn-outline-secondary" :disabled="!meta.has_next" @click="next">
                         Próxima &raquo;
                     </button>
                 </div>
@@ -130,10 +129,7 @@ const meta = ref({
     limit: 10,
 });
 
-const totalPages = computed(() => {
-    if (!meta.value.total) return 1;
-    return Math.max(1, Math.ceil(meta.value.total / meta.value.limit));
-});
+const totalPages = computed(() => meta.value.total_pages || 1);
 
 function formatDate(dt) {
     if (!dt) return "-";
@@ -151,24 +147,20 @@ async function load() {
     const offset = (page.value - 1) * limit.value;
 
     try {
-        const res = await UsersService.list(offset, limit.value);
+        const res = await UsersService.list(offset, limit.value, q.value);
+        const data = res.data;
 
-        const data = res.users;
+        users.value = data.users || [];
 
-        if (Array.isArray(data)) {
-            users.value = data;
-            meta.value = { total: data.length, offset, limit: limit.value };
-        } else if (data && data.users) {
-            users.value = data.users;
-            meta.value = {
-                total: data.meta?.total ?? (data.users.length + offset),
-                offset: data.meta?.offset ?? offset,
-                limit: data.meta?.limit ?? limit.value,
-            };
-        } else {
-            users.value = data?.users ?? [];
-            meta.value = { total: users.value.length, offset, limit: limit.value };
-        }
+        meta.value = {
+            total: data.meta?.total ?? users.value.length,
+            page: data.meta?.page ?? page.value,
+            size: data.meta?.size ?? limit.value,
+            total_pages: data.meta?.total_pages ?? 1,
+            has_next: data.meta?.has_next ?? false,
+            has_prev: data.meta?.has_prev ?? false,
+            offset: data.meta?.offset ?? offset,
+        };
     } catch (err) {
         console.error("Erro carregando usuários", err);
         error.value =
@@ -201,13 +193,13 @@ function reload() {
 }
 
 function next() {
-    if (page.value < totalPages.value) {
+    if (meta.value.has_next) {
         page.value++;
         load();
     }
 }
 function prev() {
-    if (page.value > 1) {
+    if (meta.value.has_prev) {
         page.value--;
         load();
     }
