@@ -15,30 +15,42 @@ const routes = [
     },
     {
         path: '/users',
-        name: 'UsersList',
-        component: () => import('@/pages/users/List.vue'),
-        meta: { requiresAuth: true, requiresPermission: true }
+        component: () => import('@/pages/RouterLayout.vue'),
+        meta: { requiresAuth: true, requiresPermission: true },
+        children: [
+            {
+                path: '',
+                name: 'UsersList',
+                component: () => import('@/pages/users/List.vue'),
+                meta: { requiresAuth: true, requiresPermission: true },
+            },
+            {
+                path: 'create',
+                name: 'UsersCreate',
+                component: () => import('@/pages/users/Create.vue'),
+                meta: { requiresAuth: true, requiresPermission: true }
+            },
+            {
+                path: ':id',
+                name: 'UsersDetail',
+                component: () => import('@/pages/users/Detail.vue'),
+                props: true,
+                meta: { requiresAuth: true, requiresPermission: true }
+            },
+            {
+                path: ':id/edit',
+                name: 'UsersEdit',
+                component: () => import('@/pages/users/Update.vue'),
+                props: true,
+                meta: { requiresAuth: true, requiresPermission: true }
+            }]
     },
     {
-        path: '/users/create',
-        name: 'UsersCreate',
-        component: () => import('@/pages/users/Create.vue'),
-        meta: { requiresAuth: true, requiresPermission: true }
+        path: '/notices',
+        name: 'NoticesList',
+        component: () => import('@/pages/notices/List.vue'),
+        meta: { requiresAuth: true },
     },
-    {
-        path: '/users/:id',
-        name: 'UsersDetail',
-        component: () => import('@/pages/users/Detail.vue'),
-        props: true,
-        meta: { requiresAuth: true, requiresPermission: true }
-    },
-    {
-        path: '/users/:id/edit',
-        name: 'UsersEdit',
-        component: () => import('@/pages/users/Update.vue'),
-        props: true,
-        meta: { requiresAuth: true, requiresPermission: true }
-    }
 ];
 
 const router = createRouter({
