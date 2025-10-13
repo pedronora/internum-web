@@ -55,7 +55,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { UsersService as NoticesService } from "@/services/notices.services";
+import { NoticesService } from "@/services/notices.services";
 import { success as successToast, error as errorToast } from "@/composables/useToast";
 import { useRouter } from "vue-router";
 
