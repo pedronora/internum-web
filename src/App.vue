@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTheme } from '@/composables/useTheme'
@@ -59,8 +59,4 @@ async function onLogout() {
     console.error('Erro no logout', err)
   }
 }
-
-onMounted(() => {
-  if (isAuthenticated) { router.push({ name: ROUTE_LOGIN_NAME }) }
-})
 </script>
