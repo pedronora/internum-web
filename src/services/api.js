@@ -1,98 +1,102 @@
-import axios from "axios";
-import { useAuthStore } from "../stores/auth";
+import axios from 'axios'
+import { useAuthStore } from '../stores/auth'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "/",
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/',
   withCredentials: true,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
-});
+})
 
-let isRefreshing = false;
-let failedQueue = [];
+let isRefreshing = false
+let failedQueue = []
 
 const processQueue = (error, token = null) => {
   failedQueue.forEach((prom) => {
-    if (error) prom.reject(error);
-    else prom.resolve(token);
-  });
-  failedQueue = [];
-};
+    if (error) prom.reject(error)
+    else prom.resolve(token)
+  })
+  failedQueue = []
+}
 
 api.interceptors.request.use(
   (config) => {
-    const auth = useAuthStore();
-    const token = auth.accessToken;
-    if (token && config && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const auth = useAuthStore()
+    const token = auth.accessToken
+    if (token && config?.headers) {
+      config.headers.Authorization = `Bearer ${token}`
     }
-    return config;
+    return config
   },
   (err) => Promise.reject(err),
-);
+)
 
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
-    const auth = useAuthStore();
+    const originalRequest = error.config
+    const auth = useAuthStore()
 
-    if (!error.response) return Promise.reject(error);
+    if (!error.response) return Promise.reject(error)
 
-    const url = originalRequest?.url || "";
+    const url = originalRequest?.url || ''
     const skipRefreshHeader =
-      originalRequest?.headers?.["x-skip-refresh"] ||
-      originalRequest?.headers?.["X-Skip-Refresh"];
+      originalRequest?.headers?.['x-skip-refresh'] ||
+      originalRequest?.headers?.['X-Skip-Refresh']
 
     if (
-      url.includes("/api/v1/auth/token") ||
-      url.includes("/api/v1/auth/refresh_token") ||
+      url.includes('/api/v1/auth/token') ||
+      url.includes('/api/v1/auth/refresh_token') ||
       skipRefreshHeader
     ) {
-      return Promise.reject(error);
+      return Promise.reject(error)
     }
 
-    if (error.response.status !== 401) return Promise.reject(error);
+    if (error.response.status !== 401) return Promise.reject(error)
 
-    if (originalRequest._retry) return Promise.reject(error);
-    originalRequest._retry = true;
+    if (originalRequest._retry) return Promise.reject(error)
+    originalRequest._retry = true
 
     if (isRefreshing) {
-      return new Promise(function (resolve, reject) {
-        failedQueue.push({ resolve, reject });
+      return new Promise((resolve, reject) => {
+        failedQueue.push({ resolve, reject })
       })
         .then((token) => {
-          originalRequest.headers.Authorization = "Bearer " + token;
-          return api(originalRequest);
+          originalRequest.headers.Authorization = `Bearer ${token}`
+          return api(originalRequest)
         })
-        .catch((err) => Promise.reject(err));
+        .catch((err) => Promise.reject(err))
     }
 
-    isRefreshing = true;
+    isRefreshing = true
 
-    return new Promise(async (resolve, reject) => {
-      try {
-        const result = await auth.refreshToken();
-        const newToken = result.access_token || result.accessToken;
-        auth.setToken(newToken);
-        api.defaults.headers.common.Authorization = "Bearer " + newToken;
-        originalRequest.headers.Authorization = "Bearer " + newToken;
-        processQueue(null, newToken);
-        resolve(api(originalRequest));
-      } catch (err) {
-        processQueue(err, null);
+    return auth
+      .refreshToken()
+      .then((result) => {
+        const newToken = result.accessToken
+        auth.setToken(newToken)
+
+        api.defaults.headers.common.Authorization = `Bearer ${newToken}`
+        originalRequest.headers.Authorization = `Bearer ${newToken}`
+
+        processQueue(null, newToken)
+        return api(originalRequest)
+      })
+      .catch(async (err) => {
+        processQueue(err, null)
+        console.error('Erro ao atualizar token:', err)
         try {
-          await auth.logout();
-        } catch (e) {
-          console.error(err);
+          await auth.logout()
+        } catch (logoutError) {
+          console.error('Erro ao fazer logout:', logoutError)
         }
-        reject(err);
-      } finally {
-        isRefreshing = false;
-      }
-    });
+        throw err
+      })
+      .finally(() => {
+        isRefreshing = false
+      })
   },
-);
+)
 
-export default api;
+export default api

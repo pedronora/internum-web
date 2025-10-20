@@ -1,13 +1,13 @@
-import { onMounted } from "vue";
+import { onMounted } from 'vue'
 
 export function useAuthInit(authStore) {
   onMounted(() => {
-    if (authStore && typeof authStore.initFromStorage === "function") {
+    if (authStore && typeof authStore.initFromStorage === 'function') {
       try {
-        authStore.initFromStorage();
+        authStore.initFromStorage()
       } catch (err) {
-        console.error("auth init failed", err);
+        console.error('auth init failed', err)
       }
     }
-  });
+  })
 }

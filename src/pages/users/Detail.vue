@@ -55,7 +55,7 @@
         </dd>
 
         <dt class="col-sm-3">Ativo</dt>
-        <dd class="col-sm-9">{{ user.active ? "Sim" : "Não" }}</dd>
+        <dd class="col-sm-9">{{ user.active ? 'Sim' : 'Não' }}</dd>
 
         <dt class="col-sm-3">Criado em</dt>
         <dd class="col-sm-9">{{ formatDate(user.created_at) }}</dd>
@@ -68,78 +68,82 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { UsersService } from "@/services/users.services";
-import {
-  confirm as confirmToast,
-  error as errorToast,
-  success as successToast,
-} from "@/composables/useToast";
+  import { ref, onMounted } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { UsersService } from '@/services/users.services'
+  import {
+    confirm as confirmToast,
+    error as errorToast,
+    success as successToast,
+  } from '@/composables/useToast'
 
-const route = useRoute();
-const router = useRouter();
-const id = route.params.id;
+  const route = useRoute()
+  const router = useRouter()
+  const id = route.params.id
 
-const loading = ref(false);
-const user = ref(null);
-const error = ref(null);
+  const loading = ref(false)
+  const user = ref(null)
+  const error = ref(null)
 
-function formatDate(dt) {
-  if (!dt) return "-";
-  try {
-    return new Date(dt).toLocaleString();
-  } catch {
-    return dt;
+  function formatDate(dt) {
+    if (!dt) return '-'
+    try {
+      return new Date(dt).toLocaleString()
+    } catch {
+      return dt
+    }
   }
-}
 
-function roleLabel(role) {
-  return role === "admin"
-    ? "Admin"
-    : role === "coord"
-      ? "Coordenador"
-      : "Geral";
-}
-function roleClass(role) {
-  return {
-    "bg-primary": role === "admin",
-    "bg-info": role === "coord",
-    "bg-success": role === "user",
-  };
-}
-
-async function load() {
-  loading.value = true;
-  try {
-    user.value = await UsersService.getById(id);
-  } catch (err) {
-    console.error(err);
-    const msg =
-      err?.response?.data?.detail || err?.message || "Erro ao carregar usuário";
-    errorToast(msg);
-  } finally {
-    loading.value = false;
+  function roleLabel(role) {
+    return role === 'admin'
+      ? 'Admin'
+      : role === 'coord'
+        ? 'Coordenador'
+        : 'Geral'
   }
-}
-
-async function confirmDelete() {
-  const ok = await confirmToast("Deseja excluir/desativar este usuário?", {
-    title: "Excluir usuário",
-  });
-  if (!ok) return;
-
-  try {
-    await UsersService.deactivate(id);
-    successToast("Usuário excluído/desativado com sucesso.");
-    router.push({ name: "UsersList" });
-  } catch (err) {
-    console.error(err);
-    errorToast(
-      err?.response?.data?.detail || err?.message || "Erro ao excluir usuário",
-    );
+  function roleClass(role) {
+    return {
+      'bg-primary': role === 'admin',
+      'bg-info': role === 'coord',
+      'bg-success': role === 'user',
+    }
   }
-}
 
-onMounted(load);
+  async function load() {
+    loading.value = true
+    try {
+      user.value = await UsersService.getById(id)
+    } catch (err) {
+      console.error(err)
+      const msg =
+        err?.response?.data?.detail ||
+        err?.message ||
+        'Erro ao carregar usuário'
+      errorToast(msg)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function confirmDelete() {
+    const ok = await confirmToast('Deseja excluir/desativar este usuário?', {
+      title: 'Excluir usuário',
+    })
+    if (!ok) return
+
+    try {
+      await UsersService.deactivate(id)
+      successToast('Usuário excluído/desativado com sucesso.')
+      router.push({ name: 'UsersList' })
+    } catch (err) {
+      console.error(err)
+      errorToast(
+        err?.response?.data?.detail ||
+          err?.message ||
+          'Erro ao excluir usuário',
+      )
+    }
+  }
+
+  onMounted(load)
 </script>

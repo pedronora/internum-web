@@ -2,7 +2,7 @@
   <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="h3 mb-0">Aviso n. {{ id }}</h1>
-      <button @click="goBack" class="btn btn-outline-secondary">Voltar</button>
+      <button class="btn btn-outline-secondary" @click="goBack">Voltar</button>
     </div>
 
     <div v-if="loading" class="text-center my-5">
@@ -20,7 +20,7 @@
 
         <ul class="list-group list-group-flush my-4">
           <li class="list-group-item">
-            <strong>Autor:</strong> {{ notice.author?.name || "-" }}
+            <strong>Autor:</strong> {{ notice.author?.name || '-' }}
           </li>
           <li class="list-group-item">
             <strong>Criado em:</strong> {{ formatDateTime(notice.created_at) }}
@@ -31,7 +31,7 @@
               class="badge"
               :class="notice.active ? 'bg-success' : 'bg-secondary'"
             >
-              {{ notice.active ? "Active" : "Inactive" }}
+              {{ notice.active ? 'Active' : 'Inactive' }}
             </span>
           </li>
         </ul>
@@ -64,51 +64,51 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { NoticesService } from "@/services/notices.services";
-import { useAuthStore } from "@/stores/auth";
+  import { computed, ref, onMounted } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { NoticesService } from '@/services/notices.services'
+  import { useAuthStore } from '@/stores/auth'
 
-const route = useRoute();
-const router = useRouter();
-const auth = useAuthStore();
-const notice = ref(null);
-const loading = ref(false);
-const error = ref(null);
-const id = route.params.id;
+  const route = useRoute()
+  const router = useRouter()
+  const auth = useAuthStore()
+  const notice = ref(null)
+  const loading = ref(false)
+  const error = ref(null)
+  const id = route.params.id
 
-const isUserAdminOrCoord = computed(() => {
-  const role = auth.user?.role;
-  return role === "admin" || role === "coord";
-});
+  const isUserAdminOrCoord = computed(() => {
+    const role = auth.user?.role
+    return role === 'admin' || role === 'coord'
+  })
 
-onMounted(() => {
-  fetchNotice(id);
-});
+  onMounted(() => {
+    fetchNotice(id)
+  })
 
-async function fetchNotice(id) {
-  loading.value = true;
-  try {
-    const data = await NoticesService.getById(id);
-    notice.value = data;
-  } catch (err) {
-    console.error(err);
-    error.value = err?.response?.data?.detail || "Error loading notice.";
-  } finally {
-    loading.value = false;
+  async function fetchNotice(id) {
+    loading.value = true
+    try {
+      const data = await NoticesService.getById(id)
+      notice.value = data
+    } catch (err) {
+      console.error(err)
+      error.value = err?.response?.data?.detail || 'Error loading notice.'
+    } finally {
+      loading.value = false
+    }
   }
-}
 
-function goBack() {
-  router.go(-1);
-}
-
-function formatDateTime(dt) {
-  if (!dt) return "-";
-  try {
-    return new Date(dt).toLocaleString("pt-BR");
-  } catch {
-    return dt;
+  function goBack() {
+    router.go(-1)
   }
-}
+
+  function formatDateTime(dt) {
+    if (!dt) return '-'
+    try {
+      return new Date(dt).toLocaleString('pt-BR')
+    } catch {
+      return dt
+    }
+  }
 </script>

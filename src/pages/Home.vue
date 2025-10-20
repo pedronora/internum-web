@@ -76,43 +76,43 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+  import { ref, onMounted, onBeforeUnmount } from 'vue'
 
-const now = ref(new Date());
-const time = ref(formatTime(now.value));
-const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "local";
-const lastUpdated = ref(formatFull(now.value));
+  const now = ref(new Date())
+  const time = ref(formatTime(now.value))
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'local'
+  const lastUpdated = ref(formatFull(now.value))
 
-let timer = null;
+  let timer = null
 
-function pad(n) {
-  return String(n).padStart(2, "0");
-}
+  function pad(n) {
+    return String(n).padStart(2, '0')
+  }
 
-function formatTime(d) {
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-}
+  function formatTime(d) {
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+  }
 
-function formatFull(d) {
-  return d.toLocaleString();
-}
+  function formatFull(d) {
+    return d.toLocaleString()
+  }
 
-onMounted(() => {
-  timer = setInterval(() => {
-    now.value = new Date();
-    time.value = formatTime(now.value);
-  }, 1000);
-});
+  onMounted(() => {
+    timer = setInterval(() => {
+      now.value = new Date()
+      time.value = formatTime(now.value)
+    }, 1000)
+  })
 
-onBeforeUnmount(() => {
-  if (timer) clearInterval(timer);
-});
+  onBeforeUnmount(() => {
+    if (timer) clearInterval(timer)
+  })
 
-lastUpdated.value = formatFull(new Date());
+  lastUpdated.value = formatFull(new Date())
 </script>
 
 <style scoped>
-.card-title i {
-  color: #0d6efd;
-}
+  .card-title i {
+    color: #0d6efd;
+  }
 </style>

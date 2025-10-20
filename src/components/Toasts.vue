@@ -14,7 +14,7 @@
     >
       <div :class="['toast-header', headerClass(t.type)]">
         <strong class="me-auto">{{ t.title || titleByType(t.type) }}</strong>
-        <small class="text-muted" v-if="t.meta?.small">{{
+        <small v-if="t.meta?.small" class="text-muted">{{
           t.meta.small
         }}</small>
         <button
@@ -25,14 +25,14 @@
         ></button>
       </div>
       <div class="toast-body">
-        <div v-html="t.message"></div>
+        <div>{{ t.message }}</div>
 
         <div v-if="t.actions?.length" class="mt-2 d-flex gap-2">
           <button
             v-for="(a, idx) in t.actions"
             :key="idx"
-            @click="actionClick(t.id, a)"
             :class="['btn btn-sm', a.class || 'btn-primary']"
+            @click="actionClick(t.id, a)"
           >
             {{ a.label }}
           </button>
@@ -43,46 +43,45 @@
 </template>
 
 <script setup>
-import { reactive, readonly } from "vue";
-import { toastStore, removeToast } from "@/composables/useToast";
+  import { toastStore, removeToast } from '@/composables/useToast'
 
-const toasts = toastStore.toasts;
+  const toasts = toastStore.toasts
 
-function close(id) {
-  removeToast(id);
-}
-
-function actionClick(id, action) {
-  if (action && typeof action.onClick === "function") {
-    action.onClick();
+  function close(id) {
+    removeToast(id)
   }
-  if (!action.stay) removeToast(id);
-}
 
-function headerClass(type) {
-  return type === "success"
-    ? "bg-success text-white"
-    : type === "error"
-      ? "bg-danger text-white"
-      : type === "warning"
-        ? "bg-warning text-dark"
-        : "bg-secondary text-white";
-}
+  function actionClick(id, action) {
+    if (action && typeof action.onClick === 'function') {
+      action.onClick()
+    }
+    if (!action.stay) removeToast(id)
+  }
 
-function titleByType(type) {
-  return type === "success"
-    ? "Sucesso"
-    : type === "error"
-      ? "Erro"
-      : type === "warning"
-        ? "Atenção"
-        : "Info";
-}
+  function headerClass(type) {
+    return type === 'success'
+      ? 'bg-success text-white'
+      : type === 'error'
+        ? 'bg-danger text-white'
+        : type === 'warning'
+          ? 'bg-warning text-dark'
+          : 'bg-secondary text-white'
+  }
+
+  function titleByType(type) {
+    return type === 'success'
+      ? 'Sucesso'
+      : type === 'error'
+        ? 'Erro'
+        : type === 'warning'
+          ? 'Atenção'
+          : 'Info'
+  }
 </script>
 
 <style scoped>
-.toast {
-  min-width: 260px;
-  max-width: 360px;
-}
+  .toast {
+    min-width: 260px;
+    max-width: 360px;
+  }
 </style>

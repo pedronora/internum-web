@@ -5,11 +5,11 @@
       <div class="d-flex gap-2">
         <input
           v-model="searchQuery"
-          @keyup.enter="fetchAll"
           type="text"
           class="form-control"
           placeholder="Pesquisar..."
           style="max-width: 250px"
+          @keyup.enter="fetchAll"
         />
         <button class="btn btn-outline-primary" @click="fetchAll">
           Buscar
@@ -140,78 +140,77 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { NoticesService } from "@/services/notices.services";
-import {
-  success as successToast,
-  error as errorToast,
-  confirm as confirmToast,
-} from "@/composables/useToast";
+  import { ref, onMounted } from 'vue'
+  import { NoticesService } from '@/services/notices.services'
+  import {
+    success as successToast,
+    error as errorToast,
+  } from '@/composables/useToast'
 
-const unreads = ref([]);
-const unreadsMeta = ref({ page: 1, has_next: false, has_prev: false });
+  const unreads = ref([])
+  const unreadsMeta = ref({ page: 1, has_next: false, has_prev: false })
 
-const reads = ref([]);
-const readsMeta = ref({ page: 1, has_next: false, has_prev: false });
+  const reads = ref([])
+  const readsMeta = ref({ page: 1, has_next: false, has_prev: false })
 
-const searchQuery = ref("");
-const loadingIds = ref(new Set());
+  const searchQuery = ref('')
+  const loadingIds = ref(new Set())
 
-const fetchAll = async () => {
-  await Promise.all([fetchUnreads(), fetchReads()]);
-};
-
-const fetchUnreads = async (page = unreadsMeta.value.page) => {
-  try {
-    const res = await NoticesService.listUnreads(
-      (page - 1) * 10,
-      10,
-      searchQuery.value,
-    );
-    unreads.value = res.data.notices;
-    unreadsMeta.value = res.data.meta;
-  } catch (err) {
-    console.error("Erro ao buscar não lidos:", err);
+  const fetchAll = async () => {
+    await Promise.all([fetchUnreads(), fetchReads()])
   }
-};
 
-const fetchReads = async (page = readsMeta.value.page) => {
-  try {
-    const res = await NoticesService.listReads(
-      (page - 1) * 10,
-      10,
-      searchQuery.value,
-    );
-    reads.value = res.data.notices;
-    readsMeta.value = res.data.meta;
-  } catch (err) {
-    console.error("Erro ao buscar lidos:", err);
+  const fetchUnreads = async (page = unreadsMeta.value.page) => {
+    try {
+      const res = await NoticesService.listUnreads(
+        (page - 1) * 10,
+        10,
+        searchQuery.value,
+      )
+      unreads.value = res.data.notices
+      unreadsMeta.value = res.data.meta
+    } catch (err) {
+      console.error('Erro ao buscar não lidos:', err)
+    }
   }
-};
 
-const changePage = (type, newPage) => {
-  if (type === "unreads") fetchUnreads(newPage);
-  else fetchReads(newPage);
-};
-
-const markRead = async (id) => {
-  try {
-    loadingIds.value.add(id);
-    await NoticesService.markAsRead(id);
-    successToast("Aviso marcado como lido com sucesso!");
-    await fetchAll();
-  } catch (err) {
-    console.error("Erro ao marcar como lido:", err);
-    errorToast("Erro ao marcar aviso como lido.");
-  } finally {
-    loadingIds.value.delete(id);
+  const fetchReads = async (page = readsMeta.value.page) => {
+    try {
+      const res = await NoticesService.listReads(
+        (page - 1) * 10,
+        10,
+        searchQuery.value,
+      )
+      reads.value = res.data.notices
+      readsMeta.value = res.data.meta
+    } catch (err) {
+      console.error('Erro ao buscar lidos:', err)
+    }
   }
-};
 
-const formatDate = (date) => {
-  if (!date) return "-";
-  return new Date(date).toLocaleString("pt-BR");
-};
+  const changePage = (type, newPage) => {
+    if (type === 'unreads') fetchUnreads(newPage)
+    else fetchReads(newPage)
+  }
 
-onMounted(fetchAll);
+  const markRead = async (id) => {
+    try {
+      loadingIds.value.add(id)
+      await NoticesService.markAsRead(id)
+      successToast('Aviso marcado como lido com sucesso!')
+      await fetchAll()
+    } catch (err) {
+      console.error('Erro ao marcar como lido:', err)
+      errorToast('Erro ao marcar aviso como lido.')
+    } finally {
+      loadingIds.value.delete(id)
+    }
+  }
+
+  const formatDate = (date) => {
+    if (!date) return '-'
+    return new Date(date).toLocaleString('pt-BR')
+  }
+
+  onMounted(fetchAll)
 </script>

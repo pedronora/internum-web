@@ -12,7 +12,7 @@
 
     <div class="card shadow-sm">
       <div class="card-body">
-        <form @submit.prevent="saveNotice" class="needs-validation" novalidate>
+        <form class="needs-validation" novalidate @submit.prevent="saveNotice">
           <div class="mb-3">
             <label for="title" class="form-label fw-semibold">Título</label>
             <input
@@ -64,56 +64,56 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { NoticesService } from "@/services/notices.services";
-import {
-  success as successToast,
-  error as errorToast,
-} from "@/composables/useToast";
-import { useRouter } from "vue-router";
+  import { ref } from 'vue'
+  import { NoticesService } from '@/services/notices.services'
+  import {
+    success as successToast,
+    error as errorToast,
+  } from '@/composables/useToast'
+  import { useRouter } from 'vue-router'
 
-const router = useRouter();
-const loading = ref(false);
-const error = ref(null);
+  const router = useRouter()
+  const loading = ref(false)
+  const error = ref(null)
 
-const form = ref({
-  title: "",
-  content: "",
-});
+  const form = ref({
+    title: '',
+    content: '',
+  })
 
-async function saveNotice() {
-  if (!form.value.title || !form.value.content) {
-    errorToast("Por favor, preencha todos os campos obrigatórios.");
-    return;
+  async function saveNotice() {
+    if (!form.value.title || !form.value.content) {
+      errorToast('Por favor, preencha todos os campos obrigatórios.')
+      return
+    }
+
+    loading.value = true
+    error.value = null
+
+    try {
+      await NoticesService.create({
+        title: form.value.title,
+        content: form.value.content,
+      })
+
+      successToast('Aviso criado com sucesso!')
+      router.push({ name: 'NoticesList' })
+    } catch (err) {
+      console.error('Erro ao criar aviso:', err)
+      error.value =
+        err?.response?.data?.detail ||
+        err?.response?.data?.message ||
+        err?.message ||
+        'Erro desconhecido'
+      errorToast(error.value)
+    } finally {
+      loading.value = false
+    }
   }
-
-  loading.value = true;
-  error.value = null;
-
-  try {
-    await NoticesService.create({
-      title: form.value.title,
-      content: form.value.content,
-    });
-
-    successToast("Aviso criado com sucesso!");
-    router.push({ name: "NoticesList" });
-  } catch (err) {
-    console.error("Erro ao criar aviso:", err);
-    error.value =
-      err?.response?.data?.detail ||
-      err?.response?.data?.message ||
-      err?.message ||
-      "Erro desconhecido";
-    errorToast(error.value);
-  } finally {
-    loading.value = false;
-  }
-}
 </script>
 
 <style scoped>
-textarea {
-  resize: vertical;
-}
+  textarea {
+    resize: vertical;
+  }
 </style>
