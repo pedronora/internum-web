@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint:check": "prettier --check .",
+    "lint:fix": "prettier --write ."
   },
   "dependencies": {
     "@vuelidate/core": "^2.0.3",
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
+    "prettier": "^3.6.2",
     "vite": "^7.1.7"
   }
 }

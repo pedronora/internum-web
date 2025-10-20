@@ -1,0 +1,11 @@
+{
+  "editor.fontFamily": "'Firacode Nerd Font Mono', 'monospace', monospace",
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
+}

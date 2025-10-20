@@ -2,7 +2,10 @@
   <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="mb-0">Criar Novo Aviso</h1>
-      <router-link :to="{ name: 'NoticesList' }" class="btn btn-outline-secondary">
+      <router-link
+        :to="{ name: 'NoticesList' }"
+        class="btn btn-outline-secondary"
+      >
         <i class="bi bi-arrow-left me-1"></i> Voltar
       </router-link>
     </div>
@@ -35,11 +38,18 @@
           </div>
 
           <div class="mt-4 d-flex justify-content-end gap-2">
-            <router-link :to="{ name: 'NoticesList' }" class="btn btn-outline-secondary">
+            <router-link
+              :to="{ name: 'NoticesList' }"
+              class="btn btn-outline-secondary"
+            >
               Cancelar
             </router-link>
             <button type="submit" class="btn btn-success" :disabled="loading">
-              <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              <span
+                v-if="loading"
+                class="spinner-border spinner-border-sm me-2"
+                role="status"
+              ></span>
               <i v-else class="bi bi-check-circle me-1"></i> Salvar
             </button>
           </div>
@@ -56,7 +66,10 @@
 <script setup>
 import { ref } from "vue";
 import { NoticesService } from "@/services/notices.services";
-import { success as successToast, error as errorToast } from "@/composables/useToast";
+import {
+  success as successToast,
+  error as errorToast,
+} from "@/composables/useToast";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
