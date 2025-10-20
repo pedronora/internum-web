@@ -10,7 +10,7 @@
       </div>
     </div>
 
-    <form v-if="loadedOnce" @submit.prevent="submit" class="card shadow-sm p-3">
+    <form v-if="loadedOnce" class="card shadow-sm p-3" @submit.prevent="submit">
       <div class="row g-3">
         <div class="col-md-4">
           <label class="form-label">Nome</label>
@@ -90,129 +90,131 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { UsersService } from "@/services/users.services";
-import {
-  confirm as confirmToast,
-  error as errorToast,
-  success as successToast,
-} from "@/composables/useToast";
+  import { ref, onMounted } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { UsersService } from '@/services/users.services'
+  import {
+    confirm as confirmToast,
+    error as errorToast,
+    success as successToast,
+  } from '@/composables/useToast'
 
-const route = useRoute();
-const router = useRouter();
-const id = route.params.id;
+  const route = useRoute()
+  const router = useRouter()
+  const id = route.params.id
 
-const loading = ref(false);
-const loadedOnce = ref(false);
-const error = ref(null);
+  const loading = ref(false)
+  const loadedOnce = ref(false)
+  const error = ref(null)
 
-const setorOptions = [
-  { value: "registro", label: "Registro" },
-  { value: "administrativo", label: "Administrativo" },
-  { value: "oficial", label: "Oficial" },
-];
+  const setorOptions = [
+    { value: 'registro', label: 'Registro' },
+    { value: 'administrativo', label: 'Administrativo' },
+    { value: 'oficial', label: 'Oficial' },
+  ]
 
-const subsetorOptions = {
-  registro: [
-    { value: "Analise", label: "Análise" },
-    { value: "Conferencia", label: "Conferência" },
-    { value: "Finalizacao_impressao", label: "Finalização/Impressão" },
-    { value: "Busca_certidao", label: "Busca e Certidão" },
-    { value: "Arquivo", label: "Arquivo" },
-  ],
-  administrativo: [
-    { value: "Atendimento", label: "Atendimento" },
-    { value: "Digitalizacao", label: "Digitalização" },
-    { value: "Apoio", label: "Apoio" },
-  ],
-  oficial: [
-    { value: "Titular", label: "Titular" },
-    { value: "Substituto", label: "Substituto" },
-  ],
-};
-
-const roleOptions = [
-  { value: "admin", label: "Admin" },
-  { value: "coord", label: "Coordenador" },
-  { value: "user", label: "Geral" },
-];
-
-const form = ref({
-  name: "",
-  username: "",
-  email: "",
-  setor: setorOptions[0].value,
-  subsetor: "",
-  role: "user",
-  active: true,
-});
-
-async function load() {
-  loading.value = true;
-  error.value = null;
-  try {
-    const data = await UsersService.getById(id);
-    form.value = {
-      name: data.name ?? "",
-      username: data.username ?? "",
-      password: "",
-      email: data.email ?? "",
-      setor: data.setor ?? setorOptions[0].value,
-      subsetor: data.subsetor ?? "",
-      role: data.role ?? "user",
-      active: true,
-    };
-    loadedOnce.value = true;
-  } catch (err) {
-    console.error(err);
-    error.value =
-      err?.response?.data?.detail ||
-      err?.response?.data?.message ||
-      err.message ||
-      "Erro ao carregar usuário";
-  } finally {
-    loading.value = false;
+  const subsetorOptions = {
+    registro: [
+      { value: 'Analise', label: 'Análise' },
+      { value: 'Conferencia', label: 'Conferência' },
+      { value: 'Finalizacao_impressao', label: 'Finalização/Impressão' },
+      { value: 'Busca_certidao', label: 'Busca e Certidão' },
+      { value: 'Arquivo', label: 'Arquivo' },
+    ],
+    administrativo: [
+      { value: 'Atendimento', label: 'Atendimento' },
+      { value: 'Digitalizacao', label: 'Digitalização' },
+      { value: 'Apoio', label: 'Apoio' },
+    ],
+    oficial: [
+      { value: 'Titular', label: 'Titular' },
+      { value: 'Substituto', label: 'Substituto' },
+    ],
   }
-}
 
-async function submit() {
-  loading.value = true;
-  try {
-    const payload = { ...form.value };
-    await UsersService.update(id, payload);
-    successToast("Dados do usuário atualizados.");
-    router.push({ name: "UsersList" });
-  } catch (err) {
-    console.error(err);
-    errorToast(
-      err?.response?.data?.detail ||
+  const roleOptions = [
+    { value: 'admin', label: 'Admin' },
+    { value: 'coord', label: 'Coordenador' },
+    { value: 'user', label: 'Geral' },
+  ]
+
+  const form = ref({
+    name: '',
+    username: '',
+    email: '',
+    setor: setorOptions[0].value,
+    subsetor: '',
+    role: 'user',
+    active: true,
+  })
+
+  async function load() {
+    loading.value = true
+    error.value = null
+    try {
+      const data = await UsersService.getById(id)
+      form.value = {
+        name: data.name ?? '',
+        username: data.username ?? '',
+        password: '',
+        email: data.email ?? '',
+        setor: data.setor ?? setorOptions[0].value,
+        subsetor: data.subsetor ?? '',
+        role: data.role ?? 'user',
+        active: true,
+      }
+      loadedOnce.value = true
+    } catch (err) {
+      console.error(err)
+      error.value =
+        err?.response?.data?.detail ||
         err?.response?.data?.message ||
         err.message ||
-        "Erro ao salvar usuário",
-    );
-  } finally {
-    loading.value = false;
+        'Erro ao carregar usuário'
+    } finally {
+      loading.value = false
+    }
   }
-}
 
-async function confirmDelete() {
-  const ok = await confirmToast("Deseja excluir/desativar este usuário?", {
-    title: "Excluir usuário",
-  });
-  if (!ok) return;
-
-  try {
-    await UsersService.deactivate(id);
-    successToast("Usuário excluído/desativado com sucesso.");
-    router.push({ name: "UsersList" });
-  } catch (err) {
-    console.error(err);
-    errorToast(
-      err?.response?.data?.detail || err?.message || "Erro ao excluir usuário",
-    );
+  async function submit() {
+    loading.value = true
+    try {
+      const payload = { ...form.value }
+      await UsersService.update(id, payload)
+      successToast('Dados do usuário atualizados.')
+      router.push({ name: 'UsersList' })
+    } catch (err) {
+      console.error(err)
+      errorToast(
+        err?.response?.data?.detail ||
+          err?.response?.data?.message ||
+          err.message ||
+          'Erro ao salvar usuário',
+      )
+    } finally {
+      loading.value = false
+    }
   }
-}
 
-onMounted(load);
+  async function confirmDelete() {
+    const ok = await confirmToast('Deseja excluir/desativar este usuário?', {
+      title: 'Excluir usuário',
+    })
+    if (!ok) return
+
+    try {
+      await UsersService.deactivate(id)
+      successToast('Usuário excluído/desativado com sucesso.')
+      router.push({ name: 'UsersList' })
+    } catch (err) {
+      console.error(err)
+      errorToast(
+        err?.response?.data?.detail ||
+          err?.message ||
+          'Erro ao excluir usuário',
+      )
+    }
+  }
+
+  onMounted(load)
 </script>

@@ -3,7 +3,7 @@
     <div class="container-fluid">
       <a class="navbar-brand" href="/" alt="Home"> Internum </a>
 
-      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <div id="navbarNavDropdown" class="collapse navbar-collapse">
         <ul v-if="isUserAdminOrCoord" class="navbar-nav">
           <li class="nav-link dropdown">
             <a
@@ -87,7 +87,7 @@
         </router-link>
         <div v-else>
           <span class="text-start me-2"
-            >Olá, {{ user?.name || user?.username || "Usuário" }}</span
+            >Olá, {{ user?.name || user?.username || 'Usuário' }}</span
           >
           <button class="btn btn-outline-primary me-2" @click="onLogout">
             Sair
@@ -110,35 +110,35 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useRouter } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
-import { useTheme } from "@/composables/useTheme";
-import { useAuthInit } from "@/composables/useAuthInit";
+  import { computed } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useAuthStore } from '@/stores/auth'
+  import { useTheme } from '@/composables/useTheme'
+  import { useAuthInit } from '@/composables/useAuthInit'
 
-const ROUTE_LOGIN_NAME = "Login";
+  const ROUTE_LOGIN_NAME = 'Login'
 
-const router = useRouter();
-const auth = useAuthStore();
+  const router = useRouter()
+  const auth = useAuthStore()
 
-useAuthInit(auth);
+  useAuthInit(auth)
 
-const { isDark, iconClass, buttonTitle, toggle } = useTheme();
+  const { isDark, iconClass, buttonTitle, toggle } = useTheme()
 
-const isAuthenticated = computed(() => Boolean(auth?.accessToken));
-const user = computed(() => auth?.user ?? null);
+  const isAuthenticated = computed(() => Boolean(auth?.accessToken))
+  const user = computed(() => auth?.user ?? null)
 
-const isUserAdminOrCoord = computed(() => {
-  const role = auth.user?.role;
-  return role === "admin" || role === "coord";
-});
+  const isUserAdminOrCoord = computed(() => {
+    const role = auth.user?.role
+    return role === 'admin' || role === 'coord'
+  })
 
-async function onLogout() {
-  try {
-    await auth.logout();
-    await router.push({ name: ROUTE_LOGIN_NAME });
-  } catch (err) {
-    console.error("Erro no logout", err);
+  async function onLogout() {
+    try {
+      await auth.logout()
+      await router.push({ name: ROUTE_LOGIN_NAME })
+    } catch (err) {
+      console.error('Erro no logout', err)
+    }
   }
-}
 </script>

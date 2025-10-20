@@ -9,6 +9,6 @@
 </template>
 
 <script setup>
-import Toasts from "@/components/Toasts.vue";
-import Nav from "@/components/Nav.vue";
+  import Toasts from '@/components/Toasts.vue'
+  import Nav from '@/components/Nav.vue'
 </script>

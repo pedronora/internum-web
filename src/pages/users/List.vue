@@ -13,8 +13,8 @@
         <label class="d-flex align-items-center gap-2 text-nowrap text-body">
           Mostrar
           <select
-            class="form-select form-select-sm w-auto"
             v-model.number="limit"
+            class="form-select form-select-sm w-auto"
             @change="reload"
           >
             <option :value="5">5</option>
@@ -27,10 +27,10 @@
 
       <div class="d-flex gap-2 w-md-auto">
         <input
-          class="form-control"
           v-model="q"
-          @keyup.enter="reload"
+          class="form-control"
           placeholder="Pesquisar..."
+          @keyup.enter="reload"
         />
         <button class="btn btn-outline-primary text-nowrap" @click="reload">
           <i class="bi bi-search me-1"></i> Buscar
@@ -48,8 +48,8 @@
     <div v-else>
       <div v-if="!error" class="table-responsive shadow-sm rounded mb-4">
         <table
-          class="table table-striped table-hover align-middle mb-0"
           v-if="users.length"
+          class="table table-striped table-hover align-middle mb-0"
         >
           <thead class="table-dark">
             <tr>
@@ -84,11 +84,11 @@
                   ]"
                 >
                   {{
-                    u.role === "admin"
-                      ? "Admin"
-                      : u.role === "coord"
-                        ? "Coordenador"
-                        : "Geral"
+                    u.role === 'admin'
+                      ? 'Admin'
+                      : u.role === 'coord'
+                        ? 'Coordenador'
+                        : 'Geral'
                   }}
                 </span>
               </td>
@@ -105,8 +105,8 @@
                   >Editar</router-link
                 >
                 <button
-                  @click="deleteUser(u.id)"
                   class="btn btn-sm btn-outline-danger"
+                  @click="deleteUser(u.id)"
                 >
                   Excluir
                 </button>
@@ -120,8 +120,8 @@
       </div>
 
       <div
-        class="d-flex justify-content-between align-items-center"
         v-if="meta.total && totalPages > 1"
+        class="d-flex justify-content-between align-items-center"
       >
         <span class="text-muted"
           >Página {{ meta.page }} de {{ totalPages }}</span
@@ -155,109 +155,111 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import { UsersService } from "@/services/users.services";
-import {
-  success as successToast,
-  error as errorToast,
-  confirm as confirmToast,
-} from "@/composables/useToast";
+  import { ref, onMounted, computed } from 'vue'
+  import { UsersService } from '@/services/users.services'
+  import {
+    success as successToast,
+    error as errorToast,
+    confirm as confirmToast,
+  } from '@/composables/useToast'
 
-const users = ref([]);
-const loading = ref(false);
-const error = ref(null);
+  const users = ref([])
+  const loading = ref(false)
+  const error = ref(null)
 
-const page = ref(1);
-const limit = ref(10);
-const q = ref("");
+  const page = ref(1)
+  const limit = ref(10)
+  const q = ref('')
 
-const meta = ref({
-  total: null,
-  offset: 0,
-  limit: 10,
-});
+  const meta = ref({
+    total: null,
+    offset: 0,
+    limit: 10,
+  })
 
-const totalPages = computed(() => meta.value.total_pages || 1);
+  const totalPages = computed(() => meta.value.total_pages || 1)
 
-function formatDate(dt) {
-  if (!dt) return "-";
-  try {
-    return new Date(dt).toLocaleString();
-  } catch {
-    return dt;
+  function formatDate(dt) {
+    if (!dt) return '-'
+    try {
+      return new Date(dt).toLocaleString()
+    } catch {
+      return dt
+    }
   }
-}
 
-async function load() {
-  loading.value = true;
-  error.value = null;
+  async function load() {
+    loading.value = true
+    error.value = null
 
-  const offset = (page.value - 1) * limit.value;
+    const offset = (page.value - 1) * limit.value
 
-  try {
-    const res = await UsersService.list(offset, limit.value, q.value);
-    const data = res.data;
+    try {
+      const res = await UsersService.list(offset, limit.value, q.value)
+      const data = res.data
 
-    users.value = data.users || [];
+      users.value = data.users || []
 
-    meta.value = {
-      total: data.meta?.total ?? users.value.length,
-      page: data.meta?.page ?? page.value,
-      size: data.meta?.size ?? limit.value,
-      total_pages: data.meta?.total_pages ?? 1,
-      has_next: data.meta?.has_next ?? false,
-      has_prev: data.meta?.has_prev ?? false,
-      offset: data.meta?.offset ?? offset,
-    };
-  } catch (err) {
-    console.error("Erro carregando usuários", err);
-    error.value =
-      err?.response?.data?.detail ||
-      err?.response?.data?.message ||
-      err?.message ||
-      "Erro desconhecido";
-  } finally {
-    loading.value = false;
+      meta.value = {
+        total: data.meta?.total ?? users.value.length,
+        page: data.meta?.page ?? page.value,
+        size: data.meta?.size ?? limit.value,
+        total_pages: data.meta?.total_pages ?? 1,
+        has_next: data.meta?.has_next ?? false,
+        has_prev: data.meta?.has_prev ?? false,
+        offset: data.meta?.offset ?? offset,
+      }
+    } catch (err) {
+      console.error('Erro carregando usuários', err)
+      error.value =
+        err?.response?.data?.detail ||
+        err?.response?.data?.message ||
+        err?.message ||
+        'Erro desconhecido'
+    } finally {
+      loading.value = false
+    }
   }
-}
 
-async function deleteUser(id) {
-  const ok = await confirmToast("Deseja excluir/desativar este usuário?", {
-    title: "Excluir usuário",
-  });
-  if (!ok) return;
+  async function deleteUser(id) {
+    const ok = await confirmToast('Deseja excluir/desativar este usuário?', {
+      title: 'Excluir usuário',
+    })
+    if (!ok) return
 
-  try {
-    await UsersService.deactivate(id);
-    successToast("Usuário excluído/desativado com sucesso.");
-    load();
-  } catch (err) {
-    console.error(err);
-    errorToast(
-      err?.response?.data?.detail || err?.message || "Erro ao excluir usuário",
-    );
+    try {
+      await UsersService.deactivate(id)
+      successToast('Usuário excluído/desativado com sucesso.')
+      load()
+    } catch (err) {
+      console.error(err)
+      errorToast(
+        err?.response?.data?.detail ||
+          err?.message ||
+          'Erro ao excluir usuário',
+      )
+    }
   }
-}
 
-function reload() {
-  page.value = 1;
-  load();
-}
-
-function next() {
-  if (meta.value.has_next) {
-    page.value++;
-    load();
+  function reload() {
+    page.value = 1
+    load()
   }
-}
-function prev() {
-  if (meta.value.has_prev) {
-    page.value--;
-    load();
-  }
-}
 
-onMounted(() => {
-  load();
-});
+  function next() {
+    if (meta.value.has_next) {
+      page.value++
+      load()
+    }
+  }
+  function prev() {
+    if (meta.value.has_prev) {
+      page.value--
+      load()
+    }
+  }
+
+  onMounted(() => {
+    load()
+  })
 </script>

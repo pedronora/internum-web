@@ -1,68 +1,68 @@
-import { reactive } from "vue";
+import { reactive } from 'vue'
 
-let nextId = 1;
+let nextId = 1
 
 const toastStore = reactive({
   toasts: [],
-});
+})
 
 function showToast({
-  title = "",
-  message = "",
-  type = "info",
+  title = '',
+  message = '',
+  type = 'info',
   timeout = 5000,
   actions = [],
   meta = {},
 } = {}) {
-  const id = nextId++;
-  const t = { id, title, message, type, actions, meta };
-  toastStore.toasts.push(t);
+  const id = nextId++
+  const t = { id, title, message, type, actions, meta }
+  toastStore.toasts.push(t)
 
   if (timeout && timeout > 0) {
     setTimeout(() => {
-      removeToast(id);
-    }, timeout);
+      removeToast(id)
+    }, timeout)
   }
 
-  return id;
+  return id
 }
 
 function removeToast(id) {
-  const idx = toastStore.toasts.findIndex((x) => x.id === id);
-  if (idx !== -1) toastStore.toasts.splice(idx, 1);
+  const idx = toastStore.toasts.findIndex((x) => x.id === id)
+  if (idx !== -1) toastStore.toasts.splice(idx, 1)
 }
 
 function success(message, opts = {}) {
   return showToast({
     message,
-    type: "success",
+    type: 'success',
     timeout: opts.timeout ?? 4000,
     title: opts.title,
-  });
+  })
 }
 function error(message, opts = {}) {
   return showToast({
     message,
-    type: "error",
+    type: 'error',
     timeout: opts.timeout ?? 7000,
     title: opts.title,
-  });
+  })
 }
 function info(message, opts = {}) {
   return showToast({
     message,
-    type: "info",
+    type: 'info',
     timeout: opts.timeout ?? 5000,
     title: opts.title,
-  });
+  })
 }
 function warning(message, opts = {}) {
   return showToast({
     message,
-    type: "warning",
+    type: 'warning',
     timeout: opts.timeout ?? 6000,
     title: opts.title,
-  });
+  })
 }
 
 /**
@@ -71,48 +71,48 @@ function warning(message, opts = {}) {
  */
 function confirm(message, options = {}) {
   return new Promise((resolve) => {
-    const id = nextId++;
-    const confirmLabel = options.confirmLabel || "Confirmar";
-    const cancelLabel = options.cancelLabel || "Cancelar";
+    const id = nextId++
+    const confirmLabel = options.confirmLabel || 'Confirmar'
+    const cancelLabel = options.cancelLabel || 'Cancelar'
     const t = {
       id,
-      title: options.title || "Confirmação",
+      title: options.title || 'Confirmação',
       message,
-      type: "warning",
+      type: 'warning',
       meta: {},
       actions: [
         {
           label: cancelLabel,
-          class: "btn-outline-secondary",
+          class: 'btn-outline-secondary',
           onClick: () => {
-            removeToast(id);
-            resolve(false);
+            removeToast(id)
+            resolve(false)
           },
         },
         {
           label: confirmLabel,
-          class: "btn-warning",
+          class: 'btn-warning',
           onClick: () => {
-            removeToast(id);
-            resolve(true);
+            removeToast(id)
+            resolve(true)
           },
         },
       ],
-    };
+    }
 
-    toastStore.toasts.push(t);
+    toastStore.toasts.push(t)
 
     if (options.timeout && options.timeout > 0) {
       setTimeout(() => {
         // se tempo acabar, fecha e resolve false
-        const found = toastStore.toasts.find((x) => x.id === id);
+        const found = toastStore.toasts.find((x) => x.id === id)
         if (found) {
-          removeToast(id);
-          resolve(false);
+          removeToast(id)
+          resolve(false)
         }
-      }, options.timeout);
+      }, options.timeout)
     }
-  });
+  })
 }
 
 export {
@@ -124,7 +124,7 @@ export {
   info,
   warning,
   confirm,
-};
+}
 
 export default {
   toastStore,
@@ -135,4 +135,4 @@ export default {
   info,
   warning,
   confirm,
-};
+}
