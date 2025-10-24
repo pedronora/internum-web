@@ -1,17 +1,20 @@
 import api from './api'
 
+const ENDPOINT = '/api/v1/users/'
+
 export const UsersService = {
   list(offset = 0, limit = 10, search = '') {
-    const params = new URLSearchParams()
-    params.append('offset', offset)
-    params.append('limit', limit)
-    if (search) params.append('search', search)
-    return api.get(`/api/v1/users?${params.toString()}`)
+    const params = {
+      offset,
+      limit,
+    }
+    if (search) params.search = search
+    return api.get(ENDPOINT, { params })
   },
-  me: () => api.get('/api/v1/users/me'),
-  getById: (id) => api.get(`/api/v1/users/${id}`).then((r) => r.data),
-  create: (payload) => api.post('/api/v1/users/', payload).then((r) => r.data),
+  me: () => api.get(ENDPOINT + 'me'),
+  getById: (id) => api.get(ENDPOINT + `${id}`).then((r) => r.data),
+  create: (payload) => api.post(ENDPOINT, payload).then((r) => r.data),
   update: (id, payload) =>
-    api.put(`/api/v1/users/${id}`, payload).then((r) => r.data),
-  deactivate: (id) => api.delete(`/api/v1/users/${id}`),
+    api.put(ENDPOINT + `${id}`, payload).then((r) => r.data),
+  deactivate: (id) => api.delete(ENDPOINT + `${id}`),
 }
