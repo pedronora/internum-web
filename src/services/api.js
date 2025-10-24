@@ -48,6 +48,7 @@ api.interceptors.response.use(
     if (
       url.includes('/api/v1/auth/token') ||
       url.includes('/api/v1/auth/refresh_token') ||
+      url.includes('/api/v1/auth/logout') ||
       skipRefreshHeader
     ) {
       return Promise.reject(error)
@@ -71,31 +72,28 @@ api.interceptors.response.use(
 
     isRefreshing = true
 
-    return auth
-      .refreshToken()
-      .then((result) => {
-        const newToken = result.accessToken
-        auth.setToken(newToken)
+    try {
+      const result = await auth.refreshToken()
+      const newToken = result.access_token
 
-        api.defaults.headers.common.Authorization = `Bearer ${newToken}`
-        originalRequest.headers.Authorization = `Bearer ${newToken}`
+      api.defaults.headers.common.Authorization = `Bearer ${newToken}`
+      originalRequest.headers.Authorization = `Bearer ${newToken}`
 
-        processQueue(null, newToken)
-        return api(originalRequest)
-      })
-      .catch(async (err) => {
-        processQueue(err, null)
-        console.error('Erro ao atualizar token:', err)
-        try {
-          await auth.logout()
-        } catch (logoutError) {
-          console.error('Erro ao fazer logout:', logoutError)
-        }
-        throw err
-      })
-      .finally(() => {
-        isRefreshing = false
-      })
+      processQueue(null, newToken)
+      return api(originalRequest)
+    } catch (err) {
+      processQueue(err, null)
+      console.error('Erro ao atualizar token:', err)
+
+      try {
+        await auth.logout()
+      } catch (logoutError) {
+        console.error('Erro ao fazer logout:', logoutError)
+      }
+      throw err
+    } finally {
+      isRefreshing = false
+    }
   },
 )
 
