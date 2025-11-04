@@ -76,23 +76,16 @@
     error as errorToast,
     success as successToast,
   } from '@/composables/useToast'
+  import { useDate } from '@/composables/useDate'
 
   const route = useRoute()
   const router = useRouter()
+  const { formatDate } = useDate()
   const id = route.params.id
 
   const loading = ref(false)
   const user = ref(null)
   const error = ref(null)
-
-  function formatDate(dt) {
-    if (!dt) return '-'
-    try {
-      return new Date(dt).toLocaleString()
-    } catch {
-      return dt
-    }
-  }
 
   function roleLabel(role) {
     return role === 'admin'

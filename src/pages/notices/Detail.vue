@@ -23,7 +23,7 @@
             <strong>Autor:</strong> {{ notice.author?.name || '-' }}
           </li>
           <li class="list-group-item">
-            <strong>Criado em:</strong> {{ formatDateTime(notice.created_at) }}
+            <strong>Criado em:</strong> {{ formatDate(notice.created_at) }}
           </li>
           <li v-if="isUserAdminOrCoord" class="list-group-item">
             <strong>Status: </strong>
@@ -50,7 +50,7 @@
               <tbody>
                 <tr v-for="(read, idx) in notice.reads" :key="idx">
                   <td>{{ read.user?.name }}</td>
-                  <td>{{ formatDateTime(read.read_at) }}</td>
+                  <td>{{ formatDate(read.read_at) }}</td>
                 </tr>
               </tbody>
             </table>
@@ -68,10 +68,12 @@
   import { useRoute, useRouter } from 'vue-router'
   import { NoticesService } from '@/services/notices.services'
   import { useAuthStore } from '@/stores/auth'
+  import { useDate } from '@/composables/useDate'
 
   const route = useRoute()
   const router = useRouter()
   const auth = useAuthStore()
+  const { formatDate } = useDate()
   const notice = ref(null)
   const loading = ref(false)
   const error = ref(null)
@@ -101,14 +103,5 @@
 
   function goBack() {
     router.go(-1)
-  }
-
-  function formatDateTime(dt) {
-    if (!dt) return '-'
-    try {
-      return new Date(dt).toLocaleString('pt-BR')
-    } catch {
-      return dt
-    }
   }
 </script>

@@ -53,7 +53,7 @@
       <div v-if="!error" class="table-responsive shadow-sm rounded mb-4">
         <table
           v-if="books.length"
-          class="table table-striped table-hover align-middle"
+          class="table table-striped table-hover align-middle mb-0"
         >
           <thead class="table-dark align-middle">
             <tr>

@@ -147,10 +147,12 @@
     success as successToast,
     error as errorToast,
   } from '@/composables/useToast'
+  import { useDate } from '@/composables/useDate'
   import * as yup from 'yup'
 
   const route = useRoute()
   const router = useRouter()
+  const { formatDate } = useDate()
 
   const book = ref(null)
   const loading = ref(false)
@@ -175,18 +177,6 @@
     quantity: yup.number().min(0, 'Quantidade inválida').required(),
     available_quantity: yup.number().min(0, 'Quantidade inválida').required(),
   })
-
-  function formatDate(dateStr) {
-    if (!dateStr) return '—'
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
 
   onMounted(async () => {
     const id = route.params.id

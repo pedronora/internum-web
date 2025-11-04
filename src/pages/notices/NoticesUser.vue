@@ -146,6 +146,9 @@
     success as successToast,
     error as errorToast,
   } from '@/composables/useToast'
+  import { useDate } from '@/composables/useDate'
+
+  const { formatDate } = useDate()
 
   const unreads = ref([])
   const unreadsMeta = ref({ page: 1, has_next: false, has_prev: false })
@@ -205,11 +208,6 @@
     } finally {
       loadingIds.value.delete(id)
     }
-  }
-
-  const formatDate = (date) => {
-    if (!date) return '-'
-    return new Date(date).toLocaleString('pt-BR')
   }
 
   onMounted(fetchAll)
