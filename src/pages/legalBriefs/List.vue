@@ -193,7 +193,9 @@
     confirm as confirmToast,
     error as errorToast,
   } from '@/composables/useToast'
+  import { useDate } from '@/composables/useDate'
 
+  const { formatDate } = useDate()
   const authStore = useAuthStore()
   authStore.initFromStorage()
 
@@ -237,15 +239,6 @@
       loadData()
     } catch (err) {
       errorToast('Erro ao cancelar ementa. ' + err)
-    }
-  }
-
-  const formatDate = (dt) => {
-    if (!dt) return '-'
-    try {
-      return new Date(dt + 'Z').toLocaleString()
-    } catch {
-      return dt
     }
   }
 

@@ -143,6 +143,9 @@
     error as errorToast,
     confirm as confirmToast,
   } from '@/composables/useToast'
+  import { useDate } from '@/composables/useDate'
+
+  const { formatDate } = useDate()
 
   const notices = ref([])
   const loading = ref(false)
@@ -159,15 +162,6 @@
   })
 
   const totalPages = computed(() => meta.value.total_pages || 1)
-
-  function formatDate(dt) {
-    if (!dt) return '-'
-    try {
-      return new Date(dt).toLocaleString()
-    } catch {
-      return dt
-    }
-  }
 
   async function load() {
     loading.value = true

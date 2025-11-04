@@ -134,25 +134,15 @@
   import { useRoute, useRouter } from 'vue-router'
   import { BooksService } from '@/services/books.services.js'
   import { error as errorToast } from '@/composables/useToast'
+  import { useDate } from '@/composables/useDate'
 
   const route = useRoute()
   const router = useRouter()
+  const { formatDate } = useDate()
 
   const book = ref(null)
   const loading = ref(false)
   const error = ref(null)
-
-  function formatDate(dateStr) {
-    if (!dateStr) return '—'
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
 
   onMounted(async () => {
     const id = route.params.id
@@ -173,12 +163,3 @@
     }
   })
 </script>
-
-<!-- <style scoped>
-  .form-control {
-    background-color: #f8f9fa;
-    border-radius: 0.375rem;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #dee2e6;
-  }
-</style> -->
