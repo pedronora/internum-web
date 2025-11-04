@@ -39,6 +39,37 @@ const routes = [
     ],
   },
   {
+    path: '/library',
+    component: () => import('@/pages/RouterLayout.vue'),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: 'books',
+        name: 'BooksList',
+        component: () => import('@/pages/library/books/List.vue'),
+        meta: { requiresAuth: true, requiresPermission: true },
+      },
+      {
+        path: 'books/create',
+        name: 'BooksCreate',
+        component: () => import('@/pages/library/books/Create.vue'),
+        meta: { requiresAuth: true, requiresPermission: true },
+      },
+      {
+        path: '/books/:id/detail',
+        name: 'BookDetail',
+        component: () => import('@/pages/library/books/Detail.vue'),
+        meta: { requiresAuth: true, requiresPermission: true },
+      },
+      {
+        path: '/books/:id/edit',
+        name: 'BookEdit',
+        component: () => import('@/pages/library/books/Edit.vue'),
+        meta: { requiresAuth: true, requiresPermission: true },
+      },
+    ],
+  },
+  {
     path: '/notices',
     component: () => import('@/pages/RouterLayout.vue'),
     meta: { requiresAuth: true },
