@@ -36,6 +36,14 @@
               </li>
             </ul>
           </li>
+          <li class="nav-link">
+            <router-link
+              class="nav-link"
+              aria-current="page"
+              :to="{ name: 'LegalBriefsList' }"
+              >Ementas</router-link
+            >
+          </li>
           <li class="nav-link dropdown">
             <a
               class="nav-link dropdown-toggle"
@@ -72,6 +80,14 @@
               aria-current="page"
               :to="{ name: 'NoticesListByUser' }"
               >Avisos</router-link
+            >
+          </li>
+          <li class="nav-item">
+            <router-link
+              class="nav-link"
+              aria-current="page"
+              :to="{ name: 'LegalBriefsList' }"
+              >Ementas</router-link
             >
           </li>
         </ul>
