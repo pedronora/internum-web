@@ -3,9 +3,21 @@
     <div class="container-fluid">
       <a class="navbar-brand" href="/" alt="Home"> Internum </a>
 
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNavDropdown"
+        aria-controls="navbarNavDropdown"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
       <div id="navbarNavDropdown" class="collapse navbar-collapse">
-        <ul v-if="isUserAdminOrCoord" class="navbar-nav">
-          <li class="nav-link dropdown">
+        <ul v-if="isUserAdminOrCoord" class="navbar-nav me-auto">
+          <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
               href="#"
@@ -36,7 +48,7 @@
               </li>
             </ul>
           </li>
-          <li class="nav-link">
+          <li class="nav-item">
             <router-link
               class="nav-link"
               aria-current="page"
@@ -44,7 +56,54 @@
               >Ementas</router-link
             >
           </li>
-          <li class="nav-link dropdown">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              >Biblioteca</a
+            >
+            <ul class="dropdown-menu">
+              <li>
+                <router-link
+                  class="dropdown-item"
+                  aria-current="page"
+                  :to="{ name: 'BooksReqList' }"
+                  >Acervo</router-link
+                >
+              </li>
+              <li>
+                <router-link
+                  class="dropdown-item"
+                  aria-current="page"
+                  :to="{ name: 'MyLoansList' }"
+                  >Meus empréstimos</router-link
+                >
+              </li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              <li>
+                <router-link
+                  class="dropdown-item"
+                  aria-current="page"
+                  :to="{ name: 'BooksList' }"
+                  >Gerenciar Livros</router-link
+                >
+              </li>
+              <li>
+                <router-link
+                  class="dropdown-item"
+                  aria-current="page"
+                  :to="{ name: 'AdminLoansList' }"
+                  >Gerenciar Empréstimos</router-link
+                >
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
               href="#"
@@ -73,7 +132,7 @@
             </ul>
           </li>
         </ul>
-        <ul v-if="!isUserAdminOrCoord & isAuthenticated" class="navbar-nav">
+        <ul v-else-if="isAuthenticated" class="navbar-nav me-auto">
           <li class="nav-item">
             <router-link
               class="nav-link"
@@ -90,10 +149,39 @@
               >Ementas</router-link
             >
           </li>
+
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              >Biblioteca</a
+            >
+            <ul class="dropdown-menu">
+              <li>
+                <router-link
+                  class="dropdown-item"
+                  aria-current="page"
+                  :to="{ name: 'BooksReqList' }"
+                  >Acervo</router-link
+                >
+              </li>
+              <li>
+                <router-link
+                  class="dropdown-item"
+                  aria-current="page"
+                  :to="{ name: 'MyLoansList' }"
+                  >Meus empréstimos</router-link
+                >
+              </li>
+            </ul>
+          </li>
         </ul>
       </div>
 
-      <div class="d-flex me-2">
+      <div class="d-none d-lg-flex align-items-center">
         <router-link
           v-if="!isAuthenticated"
           to="/login"
@@ -101,7 +189,7 @@
         >
           Login
         </router-link>
-        <div v-else>
+        <div v-else class="d-flex align-items-center">
           <span class="text-start me-2"
             >Olá, {{ user?.name || user?.username || 'Usuário' }}</span
           >

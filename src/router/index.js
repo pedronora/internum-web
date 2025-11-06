@@ -67,6 +67,24 @@ const routes = [
         component: () => import('@/pages/library/books/Edit.vue'),
         meta: { requiresAuth: true, requiresPermission: true },
       },
+      {
+        path: 'books/list',
+        name: 'BooksReqList',
+        component: () => import('@/pages/library/books/requestList.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'loans/list/my',
+        name: 'MyLoansList',
+        component: () => import('@/pages/library/loans/MyLoansList.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'loans/list/admin',
+        name: 'AdminLoansList',
+        component: () => import('@/pages/library/loans/AdminLoansList.vue'),
+        meta: { requiresAuth: true, requiresPermission: true },
+      },
     ],
   },
   {
@@ -138,15 +156,22 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  linkActiveClass: 'active',
+  linkExactActiveClass: 'active',
   scrollBehavior() {
     return { top: 0 }
   },
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore()
-  if (!auth.accessToken) auth.initFromStorage()
+
+  if (!auth.accessToken) {
+    try {
+      await auth.initFromStorage()
+    } catch (e) {
+      console.warn('Falha ao inicializar sessão:', e)
+    }
+  }
 
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
     return next({ name: 'Login', query: { next: to.fullPath } })
@@ -154,10 +179,11 @@ router.beforeEach((to, from, next) => {
 
   if (
     to.meta.requiresPermission &&
-    !['coord', 'admin'].includes(auth.user.role)
+    (!auth.user || !['coord', 'admin'].includes(auth.user.role))
   ) {
     return next({ name: 'Home' })
   }
+
   next()
 })
 

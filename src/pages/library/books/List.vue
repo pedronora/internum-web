@@ -58,8 +58,7 @@
           <thead class="table-dark align-middle">
             <tr>
               <th scope="col">ID</th>
-              <th scope="col">Título</th>
-              <th scope="col">Autor</th>
+              <th scope="col">Título/Autor</th>
               <th scope="col">Editora</th>
               <th scope="col">Ano</th>
               <th scope="col">ISBN</th>
@@ -71,8 +70,11 @@
           <tbody>
             <tr v-for="b in books" :key="b.id">
               <td>{{ b.id }}</td>
-              <td>{{ b.title }}</td>
-              <td>{{ b.author }}</td>
+              <td>
+                <strong>{{ b.title }}</strong>
+                <br />
+                <span class="small text-muted">{{ b.author }}</span>
+              </td>
               <td>{{ b.publisher || '-' }}</td>
               <td>{{ b.year }}</td>
               <td>{{ b.isbn }}</td>

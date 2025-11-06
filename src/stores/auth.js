@@ -12,7 +12,6 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     setToken(token) {
       this.accessToken = token
-      localStorage.setItem('access_token', token)
     },
     setUser(user) {
       this.user = user
@@ -25,6 +24,7 @@ export const useAuthStore = defineStore('auth', {
 
       const res = await api.post('/api/v1/auth/token', params, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        withCredentials: true,
       })
       const data = res.data
       this.setToken(data.access_token)
@@ -50,15 +50,19 @@ export const useAuthStore = defineStore('auth', {
     async logout() {
       this.accessToken = null
       this.user = null
-      localStorage.removeItem('access_token')
       localStorage.removeItem('user')
       await api.post('/api/v1/auth/logout')
     },
-    initFromStorage() {
-      const token = localStorage.getItem('access_token')
-      const user = localStorage.getItem('user')
-      if (token) this.accessToken = token
-      if (user) this.user = JSON.parse(user)
+    async initFromStorage() {
+      try {
+        const data = await this.refreshToken()
+        this.accessToken = data.access_token
+        const user = localStorage.getItem('user')
+        if (user) this.user = JSON.parse(user)
+      } catch {
+        this.accessToken = null
+        this.user = null
+      }
     },
   },
 })
