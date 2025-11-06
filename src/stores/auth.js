@@ -5,6 +5,7 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     accessToken: null,
     user: null,
+    isInitialized: false,
   }),
   getters: {
     isAuthenticated: (state) => !!state.accessToken,
@@ -43,22 +44,30 @@ export const useAuthStore = defineStore('auth', {
     async refreshToken() {
       const res = await api.post('/api/v1/auth/refresh_token', null, {
         headers: { 'x-skip-refresh': '1' },
+        withCredentials: true,
       })
       this.setToken(res.data.access_token)
       return res.data
     },
     async logout() {
+      await api.post('/api/v1/auth/logout', null, { withCredentials: true })
       this.accessToken = null
       this.user = null
       localStorage.removeItem('user')
-      await api.post('/api/v1/auth/logout')
     },
     async initFromStorage() {
+      if (this.initialized) {
+        console.log('⚠️ initFromStorage() já executado')
+        return
+      }
+      this.initialized = true
+
+      const savedUser = localStorage.getItem('user')
+      if (savedUser) this.user = JSON.parse(savedUser)
+
       try {
         const data = await this.refreshToken()
         this.accessToken = data.access_token
-        const user = localStorage.getItem('user')
-        if (user) this.user = JSON.parse(user)
       } catch {
         this.accessToken = null
         this.user = null

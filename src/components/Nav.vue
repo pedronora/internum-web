@@ -1,7 +1,9 @@
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/" alt="Home"> Internum </a>
+      <router-link class="navbar-brand" :to="{ name: 'Home' }" alt="Home">
+        Internum
+      </router-link>
 
       <button
         class="navbar-toggler"
@@ -218,14 +220,11 @@
   import { useRouter } from 'vue-router'
   import { useAuthStore } from '@/stores/auth'
   import { useTheme } from '@/composables/useTheme'
-  import { useAuthInit } from '@/composables/useAuthInit'
 
   const ROUTE_LOGIN_NAME = 'Login'
 
   const router = useRouter()
   const auth = useAuthStore()
-
-  useAuthInit(auth)
 
   const { isDark, iconClass, buttonTitle, toggle } = useTheme()
 

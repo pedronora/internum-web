@@ -162,18 +162,10 @@ const router = createRouter({
   },
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
   const auth = useAuthStore()
 
-  if (!auth.accessToken) {
-    try {
-      await auth.initFromStorage()
-    } catch (e) {
-      console.warn('Falha ao inicializar sessão:', e)
-    }
-  }
-
-  if (to.meta.requiresAuth && !auth.isAuthenticated) {
+  if (to.meta.requiresAuth && !auth.accessToken) {
     return next({ name: 'Login', query: { next: to.fullPath } })
   }
 
