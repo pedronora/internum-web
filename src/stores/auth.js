@@ -9,6 +9,17 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     isAuthenticated: (state) => !!state.accessToken,
+    formattedName: (state) => {
+      const fullName = state.user?.name
+      if (fullName) {
+        const parts = fullName.split(' ')
+        if (parts.length === 1) {
+          return parts[0]
+        }
+        return `${parts[0]} ${parts[parts.length - 1]}`
+      }
+      return state.user?.username || 'Usuário'
+    },
   },
   actions: {
     setToken(token) {
