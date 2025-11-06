@@ -32,16 +32,16 @@
         </label>
       </div>
 
-      <div class="input-group w-auto">
+      <div class="d-flex gap-2 w-md-auto">
         <input
+          id="search"
           v-model="search"
-          type="text"
-          class="form-control form-control-sm"
+          class="form-control"
           placeholder="Buscar..."
           @keyup.enter="reload"
         />
-        <button class="btn btn-outline-secondary btn-sm" @click="reload">
-          <i class="bi bi-search"></i>
+        <button class="btn btn-outline-primary text-nowrap" @click="reload">
+          <i class="bi bi-search me-1"></i> Buscar
         </button>
       </div>
     </div>

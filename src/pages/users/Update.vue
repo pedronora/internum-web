@@ -115,15 +115,15 @@
 
   const subsetorOptions = {
     registro: [
-      { value: 'Analise', label: 'Análise' },
-      { value: 'Conferencia', label: 'Conferência' },
-      { value: 'Finalizacao_impressao', label: 'Finalização/Impressão' },
-      { value: 'Busca_certidao', label: 'Busca e Certidão' },
+      { value: 'Análise', label: 'Análise' },
+      { value: 'Conferência', label: 'Conferência' },
+      { value: 'Finalização/Impressão', label: 'Finalização/Impressão' },
+      { value: 'Busca e Certidão', label: 'Busca e Certidão' },
       { value: 'Arquivo', label: 'Arquivo' },
     ],
     administrativo: [
       { value: 'Atendimento', label: 'Atendimento' },
-      { value: 'Digitalizacao', label: 'Digitalização' },
+      { value: 'Digitalização', label: 'Digitalização' },
       { value: 'Apoio', label: 'Apoio' },
     ],
     oficial: [
