@@ -27,23 +27,17 @@
         </select>
       </div>
 
-      <div class="d-flex align-items-center gap-2">
-        <label for="searchFilter" class="form-label fw-semibold mb-0"
-          >Buscar:</label
-        >
-        <div class="input-group input-group-sm">
-          <input
-            id="searchFilter"
-            v-model="searchFilter"
-            type="text"
-            class="form-control"
-            placeholder="Título, Autor, Usuário"
-            @keyup.enter="reload"
-          />
-          <button class="btn btn-outline-secondary" @click="reload">
-            <i class="bi bi-search"></i>
-          </button>
-        </div>
+      <div class="d-flex gap-2 w-md-auto">
+        <input
+          id="searchFilter"
+          v-model="searchFilter"
+          class="form-control"
+          placeholder="Título, Autor, Usuário"
+          @keyup.enter="reload"
+        />
+        <button class="btn btn-outline-primary text-nowrap" @click="reload">
+          <i class="bi bi-search me-1"></i> Buscar
+        </button>
       </div>
     </div>
 
@@ -78,7 +72,7 @@
                 <span class="small text-muted">{{ l.book?.author }}</span>
               </td>
               <td>
-                {{ l.user?.name }}
+                {{ formattedName(l.user?.name) }}
                 <br />
                 <span class="small text-muted">{{ l.user?.email }}</span>
               </td>
@@ -176,7 +170,6 @@
 
 <script setup>
   import { ref, computed, onMounted } from 'vue'
-  // Presumindo que você tem um arquivo para serviços de Toast e Data
   import { LoansService } from '@/services/loans.services'
   import {
     success as successToast,
@@ -192,7 +185,7 @@
   const loadingAction = ref(false)
   const error = ref(null)
   const statusFilter = ref('')
-  const searchFilter = ref('') // Novo filtro de busca
+  const searchFilter = ref('')
 
   const page = ref(1)
   const limit = ref(10)
@@ -200,7 +193,14 @@
 
   const totalPages = computed(() => meta.value.total_pages || 1)
 
-  // Funções de Status (Reaproveitadas do componente original)
+  const formattedName = (fullName) => {
+    const parts = fullName.split(' ')
+    if (parts.length === 1) {
+      return parts[0]
+    }
+    return `${parts[0]} ${parts[parts.length - 1]}`
+  }
+
   function statusBadge(status) {
     switch (status) {
       case 'requested':
@@ -233,7 +233,6 @@
     )
   }
 
-  // Lógica de carregamento (Usando LoansService.list)
   async function load() {
     loading.value = true
     error.value = null
@@ -241,11 +240,10 @@
     const offset = (page.value - 1) * limit.value
 
     try {
-      // ATENÇÃO: Usando LoansService.list() para listar todos
       const data = await LoansService.list(
         offset,
         limit.value,
-        searchFilter.value, // Passando o novo filtro de busca
+        searchFilter.value,
         statusFilter.value,
       )
       loans.value = data.loans || []
@@ -265,8 +263,6 @@
     }
   }
 
-  // --- Funções Administrativas de Ação ---
-
   async function approveRequest(id) {
     const ok = await confirmToast('Confirmar aprovação deste empréstimo?', {
       title: 'Aprovar Solicitação',
@@ -276,7 +272,7 @@
 
     loadingAction.value = true
     try {
-      await LoansService.approve(id) // Chamada para o novo endpoint 'approve'
+      await LoansService.approve(id)
       successToast('Empréstimo aprovado e livro emprestado!')
       load()
     } catch (err) {
@@ -301,7 +297,7 @@
 
     loadingAction.value = true
     try {
-      await LoansService.reject(id) // Chamada para o novo endpoint 'reject'
+      await LoansService.reject(id)
       successToast('Solicitação rejeitada com sucesso.')
       load()
     } catch (err) {
@@ -333,7 +329,6 @@
       loadingAction.value = false
     }
   }
-  // ----------------------------------------
 
   function reload() {
     page.value = 1
