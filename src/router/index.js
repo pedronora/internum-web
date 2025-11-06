@@ -119,6 +119,23 @@ const routes = [
     ],
   },
   {
+    path: '/profile',
+    component: () => import('@/pages/RouterLayout.vue'),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        name: 'UserProfile',
+        component: () => import('@/pages/profile/UserProfile.vue'),
+      },
+      {
+        path: 'change-password',
+        name: 'UserChangePassword',
+        component: () => import('@/pages/profile/UserChangePassword.vue'),
+      },
+    ],
+  },
+  {
     path: '/users',
     component: () => import('@/pages/RouterLayout.vue'),
     meta: { requiresAuth: true, requiresPermission: true },
