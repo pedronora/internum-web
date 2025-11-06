@@ -17,4 +17,11 @@ export const UsersService = {
   update: (id, payload) =>
     api.put(ENDPOINT + `${id}`, payload).then((r) => r.data),
   deactivate: (id) => api.delete(ENDPOINT + `${id}`),
+  changePassword: (id, oldPassword, newPassword) =>
+    api
+      .post(ENDPOINT + `${id}/change-password`, {
+        old_password: oldPassword,
+        new_password: newPassword,
+      })
+      .then((r) => r.data),
 }
