@@ -21,8 +21,8 @@
           <label class="form-label">Senha atual</label>
           <div class="input-group">
             <input
-              :type="showOldPassword ? 'text' : 'password'"
               v-model="form.oldPassword"
+              :type="showOldPassword ? 'text' : 'password'"
               required
               class="form-control"
               :class="{ 'is-invalid': errors.oldPassword }"
@@ -51,8 +51,8 @@
           <label class="form-label">Nova senha</label>
           <div class="input-group">
             <input
-              :type="showNewPassword ? 'text' : 'password'"
               v-model="form.newPassword"
+              :type="showNewPassword ? 'text' : 'password'"
               required
               class="form-control"
               :class="{ 'is-invalid': errors.newPassword }"
@@ -81,8 +81,8 @@
           <label class="form-label">Confirmar nova senha</label>
           <div class="input-group">
             <input
-              :type="showConfirmPassword ? 'text' : 'password'"
               v-model="form.confirmPassword"
+              :type="showConfirmPassword ? 'text' : 'password'"
               required
               class="form-control"
               :class="{ 'is-invalid': errors.confirmPassword }"

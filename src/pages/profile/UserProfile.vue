@@ -50,6 +50,16 @@
         </div>
 
         <div class="col-md-4">
+          <label class="form-label">Data de Nascimento</label>
+          <input
+            v-model="form.birthday"
+            type="date"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="col-md-4">
           <label class="form-label">Setor</label>
           <select
             v-model="form.setor"
@@ -120,19 +130,21 @@
   } from '@/composables/useToast'
   import * as yup from 'yup'
 
-  // ======= Estados =======
+  function formatDateForInput(dateString) {
+    if (!dateString) return ''
+    return dateString.split('T')[0]
+  }
+
   const auth = useAuthStore()
   const loading = ref(false)
   const loadedOnce = ref(false)
   const error = ref(null)
   const errors = ref({})
 
-  // ======= Permissão =======
   const canEditRestrictedFields = computed(() =>
     ['admin', 'coord'].includes(auth.user?.role),
   )
 
-  // ======= Opções estáticas =======
   const setorOptions = [
     { value: 'registro', label: 'Registro' },
     { value: 'administrativo', label: 'Administrativo' },
@@ -164,19 +176,18 @@
     { value: 'user', label: 'Geral' },
   ]
 
-  // ======= Formulário =======
   const form = ref({
     id: '',
     name: '',
     username: '',
     email: '',
+    birthday: '',
     setor: setorOptions[0].value,
     subsetor: '',
     role: 'user',
     active: true,
   })
 
-  // ======= Validação Yup =======
   const schema = yup.object({
     name: yup.string().required('O nome é obrigatório'),
     email: yup
@@ -185,7 +196,6 @@
       .required('O e-mail é obrigatório'),
   })
 
-  // ======= Carregar dados =======
   async function load() {
     loading.value = true
     error.value = null
@@ -196,6 +206,7 @@
         name: data.name ?? '',
         username: data.username ?? '',
         email: data.email ?? '',
+        birthday: formatDateForInput(data.birthday),
         setor: data.setor ?? setorOptions[0].value,
         subsetor: data.subsetor ?? '',
         role: data.role ?? 'user',
@@ -213,7 +224,6 @@
     }
   }
 
-  // ======= Atualizar =======
   async function submit() {
     loading.value = true
     errors.value = {}
@@ -221,14 +231,22 @@
     try {
       await schema.validate(form.value, { abortEarly: false })
 
-      let payload = { ...form.value }
-
-      if (!canEditRestrictedFields.value) {
-        const restricted = ['role', 'setor', 'subsetor', 'active']
-        restricted.forEach((field) => delete payload[field])
+      let payload = {
+        name: form.value.name.trim(),
+        email: form.value.email.trim(),
+        birthday: form.value.birthday,
       }
 
-      await UsersService.update(form.value.id, payload)
+      if (canEditRestrictedFields.value) {
+        payload.setor = form.value.setor
+        payload.subsetor = form.value.subsetor
+        payload.role = form.value.role
+        payload.active = form.value.active
+      }
+
+      const updated_user = await UsersService.update(form.value.id, payload)
+
+      auth.setUser(updated_user)
       successToast('Perfil atualizado com sucesso!')
     } catch (err) {
       if (err.name === 'ValidationError') {

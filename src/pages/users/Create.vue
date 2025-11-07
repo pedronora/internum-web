@@ -25,8 +25,17 @@
             class="form-control"
           />
         </div>
+        <div class="col-md-4">
+          <label class="form-label">Data de Nascimento</label>
+          <input
+            v-model="form.birthday"
+            type="date"
+            required
+            class="form-control"
+          />
+        </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label class="form-label">Senha</label>
           <div class="input-group">
             <input
@@ -34,7 +43,7 @@
               :type="showPassword1 ? 'text' : 'password'"
               required
               class="form-control"
-              autocomplete="current-password"
+              autocomplete="new-password"
             />
             <button
               type="button"
@@ -49,13 +58,13 @@
               ></i>
             </button>
           </div>
-          <small class="text-muted"
-            >A senha requer 8-64 caracteres, com maiúscula, minúscula, número e
-            caractere especial.</small
-          >
+          <small class="text-muted">
+            A senha requer 8–64 caracteres, com maiúscula, minúscula, número e
+            caractere especial.
+          </small>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label class="form-label">Confirmação de senha</label>
           <div class="input-group">
             <input
@@ -63,7 +72,7 @@
               :type="showPassword2 ? 'text' : 'password'"
               required
               class="form-control"
-              autocomplete="current-password"
+              autocomplete="new-password"
             />
             <button
               type="button"
@@ -83,6 +92,7 @@
         <div class="col-md-4">
           <label class="form-label">Setor</label>
           <select v-model="form.setor" class="form-select" required>
+            <option disabled value="">Selecione...</option>
             <option v-for="s in setorOptions" :key="s.value" :value="s.value">
               {{ s.label }}
             </option>
@@ -91,9 +101,10 @@
 
         <div class="col-md-4">
           <label class="form-label">Subsetor</label>
-          <select v-model="form.subsetor" class="form-select">
+          <select v-model="form.subsetor" class="form-select" required>
+            <option disabled value="">Selecione...</option>
             <option
-              v-for="option in subsetorOptions[form.setor]"
+              v-for="option in subsetorOptions[form.setor] || []"
               :key="option.value"
               :value="option.value"
             >
@@ -105,6 +116,7 @@
         <div class="col-md-4">
           <label class="form-label">Perfil</label>
           <select v-model="form.role" class="form-select" required>
+            <option disabled value="">Selecione...</option>
             <option v-for="r in roleOptions" :key="r.value" :value="r.value">
               {{ r.label }}
             </option>
@@ -112,9 +124,9 @@
         </div>
 
         <div class="col-12 d-flex gap-2 justify-content-end">
-          <router-link to="/users" class="btn btn-outline-secondary"
-            >Cancelar</router-link
-          >
+          <router-link to="/users" class="btn btn-outline-secondary">
+            Cancelar
+          </router-link>
           <button class="btn btn-primary" :disabled="loading">
             <span
               v-if="loading"
@@ -155,26 +167,26 @@
 
   const subsetorOptions = {
     registro: [
-      { value: 'analise', label: 'Análise' },
-      { value: 'conferencia', label: 'Conferência' },
-      { value: 'finalizacao_impressao', label: 'Finalização/Impressão' },
-      { value: 'busca_certidao', label: 'Busca e Certidão' },
-      { value: 'arquivo', label: 'Arquivo' },
+      { value: 'Análise', label: 'Análise' },
+      { value: 'Conferência', label: 'Conferência' },
+      { value: 'Finalização/Impressão', label: 'Finalização/Impressão' },
+      { value: 'Busca e Certidão', label: 'Busca e Certidão' },
+      { value: 'Arquivo', label: 'Arquivo' },
     ],
     administrativo: [
-      { value: 'atendimento', label: 'Atendimento' },
-      { value: 'digitalizacao', label: 'Digitalização' },
-      { value: 'apoio', label: 'Apoio' },
+      { value: 'Atendimento', label: 'Atendimento' },
+      { value: 'Digitalização', label: 'Digitalização' },
+      { value: 'Apoio', label: 'Apoio' },
     ],
     oficial: [
-      { value: 'titular', label: 'Titular' },
-      { value: 'substituto', label: 'Substituto' },
+      { value: 'Titular', label: 'Titular' },
+      { value: 'Substituto', label: 'Substituto' },
     ],
   }
 
   const roleOptions = [
-    { value: 'admin', label: 'Admin' },
-    { value: 'Coord', label: 'Coordenador' },
+    { value: 'admin', label: 'Administrador' },
+    { value: 'coord', label: 'Coordenador' },
     { value: 'user', label: 'Geral' },
   ]
 
@@ -195,8 +207,13 @@
 
     email: yup
       .string()
-      .email('O email deve ser um email válido')
+      .email('O email deve ser válido')
       .required('O email é obrigatório'),
+
+    birthday: yup
+      .date()
+      .required('A data de nascimento é obrigatória')
+      .max(new Date(), 'A data de nascimento não pode ser futura'),
 
     password: yup
       .string()
@@ -205,7 +222,7 @@
       .max(64, 'A senha deve ter no máximo 64 caracteres')
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/,
-        'A senha requer 8-64 caracteres, com maiúscula, minúscula, número e caractere especial',
+        'A senha requer 8–64 caracteres, com maiúscula, minúscula, número e caractere especial',
       ),
 
     password_confirm: yup
@@ -215,11 +232,7 @@
 
     setor: yup.string().required('O setor é obrigatório'),
 
-    subsetor: yup.string().when('setor', {
-      is: (setor) => setor && setor.length > 0,
-      then: (schema) => schema.required('O subsetor é obrigatório'),
-      otherwise: (schema) => schema.notRequired(),
-    }),
+    subsetor: yup.string().required('O subsetor é obrigatório'),
 
     role: yup.string().required('O perfil é obrigatório'),
   })
@@ -227,9 +240,10 @@
   const form = ref({
     name: '',
     username: '',
+    email: '',
+    birthday: '',
     password: '',
     password_confirm: '',
-    email: '',
     setor: '',
     subsetor: '',
     role: 'user',
@@ -242,18 +256,17 @@
     try {
       await validationSchema.validate(form.value, { abortEarly: false })
     } catch (validationError) {
-      if (validationError.inner && validationError.inner.length) {
+      if (validationError.inner?.length) {
         validationError.inner.forEach((e) => errorToast(e.message))
         return
       }
-      error(validationError.message)
+      error.value = validationError.message
       return
     }
 
     loading.value = true
     try {
-      const payload = { ...form.value }
-      await UsersService.create(payload)
+      await UsersService.create({ ...form.value })
       successToast('Usuário criado com sucesso.')
       router.push({ name: 'UsersList' })
     } catch (err) {
