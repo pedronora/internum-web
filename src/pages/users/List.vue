@@ -157,11 +157,14 @@
 <script setup>
   import { ref, onMounted, computed } from 'vue'
   import { UsersService } from '@/services/users.services'
+  import { useDate } from '@/composables/useDate'
   import {
     success as successToast,
     error as errorToast,
     confirm as confirmToast,
   } from '@/composables/useToast'
+
+  const { formatDate } = useDate()
 
   const users = ref([])
   const loading = ref(false)
@@ -178,15 +181,6 @@
   })
 
   const totalPages = computed(() => meta.value.total_pages || 1)
-
-  function formatDate(dt) {
-    if (!dt) return '-'
-    try {
-      return new Date(dt).toLocaleString()
-    } catch {
-      return dt
-    }
-  }
 
   async function load() {
     loading.value = true

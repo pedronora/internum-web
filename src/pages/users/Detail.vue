@@ -39,6 +39,8 @@
         <dt class="col-sm-3">Email</dt>
         <dd class="col-sm-9">{{ user.email }}</dd>
 
+        <dt class="col-sm-3">Data de Aniversário</dt>
+        <dd class="col-sm-9">{{ formatDate(user.birthday, true) }}</dd>
         <dt class="col-sm-3">Setor</dt>
         <dd class="col-sm-9">
           <span class="badge bg-secondary">{{ user.setor }}</span>
@@ -76,11 +78,12 @@
     error as errorToast,
     success as successToast,
   } from '@/composables/useToast'
+  // O useDate já está importado e pronto para formatar a data
   import { useDate } from '@/composables/useDate'
 
   const route = useRoute()
   const router = useRouter()
-  const { formatDate } = useDate()
+  const { formatDate } = useDate() // A função já está disponível
   const id = route.params.id
 
   const loading = ref(false)
@@ -105,6 +108,7 @@
   async function load() {
     loading.value = true
     try {
+      // O user.value já conterá 'birthday' vindo da API
       user.value = await UsersService.getById(id)
     } catch (err) {
       console.error(err)

@@ -1,5 +1,13 @@
-function formatDate(dateStr) {
+function formatDate(dateStr, dateOnly = false) {
   if (!dateStr) return '—'
+  if (dateOnly) {
+    const datePart = dateStr.split('T')[0]
+    const parts = datePart.split('-')
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`
+    }
+    return datePart
+  }
 
   const isoDateStr = dateStr.trim().replace(' ', 'T') + 'Z'
   const date = new Date(isoDateStr)

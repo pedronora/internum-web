@@ -59,15 +59,15 @@
                 <br />
                 <span class="small text-muted">{{ l.book?.author }}</span>
               </td>
-              <td>{{ formatDate(l.created_at) }}</td>
+              <td>{{ formatDate(l.created_at, true) }}</td>
 
               <!-- Data dinâmica -->
               <td>
                 <template v-if="l.status === 'returned'">
-                  {{ formatDate(l.returned_at) }}
+                  {{ formatDate(l.returned_at, true) }}
                 </template>
                 <template v-else-if="l.status === 'borrowed'">
-                  {{ formatDate(l.due_date) }}
+                  {{ formatDate(l.due_date, true) }}
                 </template>
                 <template v-else> - </template>
               </td>
