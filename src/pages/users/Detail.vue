@@ -78,12 +78,11 @@
     error as errorToast,
     success as successToast,
   } from '@/composables/useToast'
-  // O useDate já está importado e pronto para formatar a data
   import { useDate } from '@/composables/useDate'
 
   const route = useRoute()
   const router = useRouter()
-  const { formatDate } = useDate() // A função já está disponível
+  const { formatDate } = useDate()
   const id = route.params.id
 
   const loading = ref(false)

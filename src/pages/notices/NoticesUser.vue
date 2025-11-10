@@ -147,8 +147,11 @@
     error as errorToast,
   } from '@/composables/useToast'
   import { useDate } from '@/composables/useDate'
+  import { useNoticeStore } from '@/stores/notices.js'
 
   const { formatDate } = useDate()
+
+  const noticeStore = useNoticeStore()
 
   const unreads = ref([])
   const unreadsMeta = ref({ page: 1, has_next: false, has_prev: false })
@@ -172,6 +175,7 @@
       )
       unreads.value = res.data.notices
       unreadsMeta.value = res.data.meta
+      noticeStore.setUnreadCount(unreadsMeta.value.total)
     } catch (err) {
       console.error('Erro ao buscar não lidos:', err)
     }
