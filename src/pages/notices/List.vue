@@ -7,7 +7,6 @@
       </router-link>
     </div>
 
-    <!-- Filtros e busca -->
     <div
       class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 p-3 border rounded bg-body border-secondary border-opacity-25"
     >
@@ -40,7 +39,6 @@
       </div>
     </div>
 
-    <!-- Estado de carregamento -->
     <div v-if="loading" class="alert alert-info text-center" role="alert">
       <div class="spinner-border spinner-border-sm me-2" role="status">
         <span class="visually-hidden">Carregando...</span>
@@ -48,7 +46,6 @@
       Carregando...
     </div>
 
-    <!-- Tabela -->
     <div v-else>
       <div v-if="!error" class="table-responsive shadow-sm rounded mb-4">
         <table
@@ -98,7 +95,6 @@
         </div>
       </div>
 
-      <!-- Paginação -->
       <div
         v-if="meta.total && totalPages > 1"
         class="d-flex justify-content-between align-items-center"
@@ -128,7 +124,6 @@
       </div>
     </div>
 
-    <!-- Erro -->
     <div v-if="error" class="alert alert-danger mt-4" role="alert">
       <strong>Erro:</strong> {{ error }}
     </div>
@@ -144,7 +139,9 @@
     confirm as confirmToast,
   } from '@/composables/useToast'
   import { useDate } from '@/composables/useDate'
+  import { useNoticeStore } from '@/stores/notices.js'
 
+  const noticeStore = useNoticeStore()
   const { formatDate } = useDate()
 
   const notices = ref([])
@@ -174,6 +171,8 @@
       const data = res.data
 
       notices.value = data.notices || []
+
+      noticeStore.setUnreadCount(data.meta.total)
 
       meta.value = {
         total: data.meta?.total ?? notices.value.length,
