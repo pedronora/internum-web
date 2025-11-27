@@ -100,28 +100,10 @@
             </ul>
           </li>
 
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
+          <li class="nav-item">
+            <router-link class="nav-link" :to="{ name: 'UsersList' }">
               Usuários
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <router-link class="dropdown-item" :to="{ name: 'UsersList' }"
-                  >Listar</router-link
-                >
-              </li>
-              <li>
-                <router-link class="dropdown-item" :to="{ name: 'UsersCreate' }"
-                  >Criar</router-link
-                >
-              </li>
-            </ul>
+            </router-link>
           </li>
         </ul>
 
