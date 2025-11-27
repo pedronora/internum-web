@@ -22,7 +22,7 @@
 
           <div class="form-outline mb-4">
             <input
-              id="emailInput"
+              id="userInput"
               v-model.trim="username"
               type="text"
               class="form-control form-control-lg"
@@ -31,7 +31,7 @@
               required
               autocomplete="username"
             />
-            <label class="form-label" for="emailInput">Usuário</label>
+            <label class="form-label" for="userInput">Usuário</label>
           </div>
 
           <div class="form-outline mb-3">

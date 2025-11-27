@@ -107,7 +107,6 @@
   async function load() {
     loading.value = true
     try {
-      // O user.value já conterá 'birthday' vindo da API
       user.value = await UsersService.getById(id)
     } catch (err) {
       console.error(err)

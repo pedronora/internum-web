@@ -128,7 +128,8 @@
         class="d-flex justify-content-between align-items-center"
       >
         <span class="text-muted"
-          >Página {{ meta.page }} de {{ totalPages }}</span
+          >Página {{ meta.page }} de {{ totalPages }} (Total:
+          {{ totalLoans }})</span
         >
 
         <div class="btn-group" role="group">
@@ -182,6 +183,7 @@
   const meta = ref({ total: 0 })
 
   const totalPages = computed(() => meta.value.total_pages || 1)
+  const totalLoans = computed(() => meta.value.total)
 
   function statusBadge(status) {
     switch (status) {
