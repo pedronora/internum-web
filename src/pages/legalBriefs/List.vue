@@ -60,7 +60,13 @@
         <div class="d-flex justify-content-between align-items-start mb-2">
           <h5 class="mb-1">{{ brief.id }}. {{ brief.title }}</h5>
           <small class="text-body-secondary text-decoration-none">
-            {{ formatDate(brief.updated_at || brief.created_at) }}
+            {{
+              formatDate(
+                brief.revisions?.length > 0
+                  ? brief.updated_at
+                  : brief.created_at,
+              )
+            }}
           </small>
         </div>
 
@@ -94,9 +100,9 @@
               <h6 class="mb-0 text-body-secondary fw-semibold">
                 {{ rev.title }}
               </h6>
-              <small class="text-secondary">{{
-                formatDate(rev.created_at)
-              }}</small>
+              <small class="text-secondary">
+                {{ formatDate(rev.created_at) }}
+              </small>
             </div>
             <p class="small text-body-secondary fst-italic mb-1">
               {{ rev.content }}
@@ -132,8 +138,10 @@
         </div>
 
         <!-- Status -->
-        <div v-if="brief.canceled" class="mt-2">
-          <span class="badge bg-secondary">CANCELADA</span>
+        <div v-if="brief.canceled_at" class="mb-2">
+          <span class="badge bg-danger">
+            Cancelada em {{ formatDate(brief.canceled_at) }}
+          </span>
         </div>
       </div>
     </div>

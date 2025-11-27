@@ -139,9 +139,7 @@
     confirm as confirmToast,
   } from '@/composables/useToast'
   import { useDate } from '@/composables/useDate'
-  import { useNoticeStore } from '@/stores/notices.js'
 
-  const noticeStore = useNoticeStore()
   const { formatDate } = useDate()
 
   const notices = ref([])
@@ -171,8 +169,6 @@
       const data = res.data
 
       notices.value = data.notices || []
-
-      noticeStore.setUnreadCount(data.meta.total)
 
       meta.value = {
         total: data.meta?.total ?? notices.value.length,

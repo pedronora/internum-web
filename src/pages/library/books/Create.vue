@@ -40,7 +40,7 @@
         </div>
 
         <div class="col-md-3">
-          <label class="form-label">Ano de publicação (Year)</label>
+          <label class="form-label">Ano de publicação</label>
           <input
             v-model.number="form.year"
             type="number"

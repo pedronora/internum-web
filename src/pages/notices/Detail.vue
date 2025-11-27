@@ -49,8 +49,8 @@
               </thead>
               <tbody>
                 <tr v-for="(read, idx) in notice.reads" :key="idx">
-                  <td>{{ read.user?.name }}</td>
-                  <td>{{ formatDate(read.read_at) }}</td>
+                  <td>{{ read.created_by?.name }}</td>
+                  <td>{{ formatDate(read.created_at) }}</td>
                 </tr>
               </tbody>
             </table>
