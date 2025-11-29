@@ -63,25 +63,29 @@
             <label class="form-label mt-2" for="pwdInput">Senha</label>
           </div>
 
-          <div
-            class="d-flex align-items-center justify-content-center text-lg-start mt-4 pt-2"
-          >
+          <div class="d-flex justify-content-between align-items-center mt-3">
             <button
               type="submit"
-              class="btn btn-primary btn-lg"
+              class="btn btn-primary btn-lg px-5"
               :disabled="loading"
-              style="padding-left: 2.5rem; padding-right: 2.5rem"
             >
               <span v-if="!loading">Entrar</span>
               <span v-else>
                 <span
                   class="spinner-border spinner-border-sm"
                   role="status"
-                  aria-hidden="true"
                 ></span>
                 &nbsp;Entrando...
               </span>
             </button>
+
+            <router-link
+              :to="{ name: 'forgot-password' }"
+              class="text-decoration-none small text-muted ms-3"
+            >
+              <i class="bi bi-key me-1"></i>
+              Esqueci minha senha
+            </router-link>
           </div>
 
           <div v-if="error" class="mt-3">
