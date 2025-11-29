@@ -143,7 +143,6 @@
   } from '@/composables/useToast'
   import * as yup from 'yup'
 
-  // ======= Estados =======
   const auth = useAuthStore()
   const router = useRouter()
   const loading = ref(false)
@@ -151,19 +150,16 @@
   const error = ref(null)
   const errors = ref({})
 
-  // ======= Formulário =======
   const form = ref({
     oldPassword: '',
     newPassword: '',
     confirmPassword: '',
   })
 
-  // ======= Mostrar/ocultar senha =======
   const showOldPassword = ref(false)
   const showNewPassword = ref(false)
   const showConfirmPassword = ref(false)
 
-  // ======= Validação com Yup =======
   const schema = yup.object({
     oldPassword: yup.string().required('A senha atual é obrigatória'),
     newPassword: yup
@@ -184,7 +180,6 @@
       .required('Confirmação da senha é obrigatória'),
   })
 
-  // ======= Funções =======
   function goBack() {
     router.back()
   }

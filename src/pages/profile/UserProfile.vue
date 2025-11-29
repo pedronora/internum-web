@@ -200,7 +200,7 @@
     loading.value = true
     error.value = null
     try {
-      const { data } = await UsersService.me()
+      const data = await UsersService.me()
       form.value = {
         id: data.id,
         name: data.name ?? '',
