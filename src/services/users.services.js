@@ -11,7 +11,7 @@ export const UsersService = {
     if (search) params.search = search
     return api.get(ENDPOINT, { params })
   },
-  me: () => api.get(ENDPOINT + 'me'),
+  me: () => api.get(ENDPOINT + 'me').then((r) => r.data),
   getById: (id) => api.get(ENDPOINT + `${id}`).then((r) => r.data),
   create: (payload) => api.post(ENDPOINT, payload).then((r) => r.data),
   update: (id, payload) =>

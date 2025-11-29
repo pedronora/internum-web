@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
-import api from '../services/api'
+// import api from '../services/api'
+import { AuthService } from '@/services/auth.services'
+import { UsersService } from '@/services/users.services'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -30,15 +32,8 @@ export const useAuthStore = defineStore('auth', {
       localStorage.setItem('user', JSON.stringify(user))
     },
     async login({ username, password }) {
-      const params = new URLSearchParams()
-      params.append('username', username)
-      params.append('password', password)
-
-      const res = await api.post('/api/v1/auth/token', params, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        withCredentials: true,
-      })
-      const data = res.data
+      const payload = { username, password }
+      const data = await AuthService.login(payload)
       this.setToken(data.access_token)
 
       await this.fetchProfile()
@@ -46,22 +41,19 @@ export const useAuthStore = defineStore('auth', {
     },
     async fetchProfile() {
       try {
-        const res = await api.get('/api/v1/users/me')
-        this.setUser(res.data)
+        const data = await UsersService.me()
+        this.setUser(data)
       } catch (err) {
         console.error('Erro ao buscar o perfil do usuário:', err)
       }
     },
     async refreshToken() {
-      const res = await api.post('/api/v1/auth/refresh_token', null, {
-        headers: { 'x-skip-refresh': '1' },
-        withCredentials: true,
-      })
-      this.setToken(res.data.access_token)
-      return res.data
+      const data = await AuthService.refreshToken()
+      this.setToken(data.access_token)
+      return data
     },
     async logout() {
-      await api.post('/api/v1/auth/logout', null, { withCredentials: true })
+      await AuthService.logout()
       this.accessToken = null
       this.user = null
       localStorage.removeItem('user')
