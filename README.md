@@ -1,5 +1,141 @@
-# Vue 3 + Vite
+# **Internum Web**
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+![status](https://img.shields.io/badge/status-active-brightgreen)
+![vue](https://img.shields.io/badge/Vue-3.x-42b883?logo=vuedotjs&logoColor=white)
+![vite](https://img.shields.io/badge/Vite-latest-646cff?logo=vite&logoColor=white)
+![node](https://img.shields.io/badge/Node-20+-339933?logo=node.js&logoColor=white)
+![license](https://img.shields.io/badge/license-MIT-blue)
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+Aplicação frontend construída com **Vue 3** e **Vite** para o projeto Internum.
+
+---
+
+## 🚀 Tecnologias
+
+- Vue 3
+- Vite
+- Vue Router
+- Vuelidate
+- Yup
+- ESLint + Prettier
+
+---
+
+## ▶️ Como rodar
+
+```bash
+npm install
+npm run dev
+```
+
+## Acesse em:
+
+```bash
+http://localhost:5173
+```
+
+## 📦 Build para produção
+
+```bash
+npm run build
+npm run preview
+```
+
+## 📁 Estrutura do Projeto
+
+```bash
+.
+├── eslint.config.js
+├── index.html
+├── package.json
+├── package-lock.json
+├── public
+│   ├── apple-touch-icon.png
+│   ├── favicon-96x96.png
+│   ├── favicon.ico
+│   ├── favicon.svg
+│   ├── site.webmanifest
+│   ├── web-app-manifest-192x192.png
+│   └── web-app-manifest-512x512.png
+├── README.md
+├── src
+│   ├── App.vue
+│   ├── assets
+│   │   ├── main.css
+│   │   └── vue.svg
+│   ├── components
+│   │   ├── Footer.vue
+│   │   ├── Nav.vue
+│   │   └── Toasts.vue
+│   ├── composables
+│   │   ├── useDate.js
+│   │   ├── useTheme.js
+│   │   └── useToast.js
+│   ├── main.js
+│   ├── pages
+│   │   ├── auth
+│   │   │   ├── ForgotPassword.vue
+│   │   │   ├── Login.vue
+│   │   │   └── ResetPassword.vue
+│   │   ├── Home.vue
+│   │   ├── legalBriefs
+│   │   │   ├── Create.vue
+│   │   │   ├── List.vue
+│   │   │   └── Update.vue
+│   │   ├── library
+│   │   │   ├── books
+│   │   │   │   ├── Create.vue
+│   │   │   │   ├── Detail.vue
+│   │   │   │   ├── Edit.vue
+│   │   │   │   ├── List.vue
+│   │   │   │   └── requestList.vue
+│   │   │   └── loans
+│   │   │       ├── AdminLoansList.vue
+│   │   │       └── MyLoansList.vue
+│   │   ├── NotFound.vue
+│   │   ├── notices
+│   │   │   ├── Create.vue
+│   │   │   ├── Detail.vue
+│   │   │   ├── List.vue
+│   │   │   └── NoticesUser.vue
+│   │   ├── profile
+│   │   │   ├── UserChangePassword.vue
+│   │   │   └── UserProfile.vue
+│   │   ├── RouterLayout.vue
+│   │   └── users
+│   │       ├── Create.vue
+│   │       ├── Detail.vue
+│   │       ├── List.vue
+│   │       └── Update.vue
+│   ├── router
+│   │   └── index.js
+│   ├── services
+│   │   ├── api.js
+│   │   ├── auth.services.js
+│   │   ├── books.services.js
+│   │   ├── home.services.js
+│   │   ├── legalBriefs.services.js
+│   │   ├── loans.services.js
+│   │   ├── notices.services.js
+│   │   └── users.services.js
+│   └── stores
+│       ├── auth.js
+│       └── notices.js
+└── vite.config.js
+
+18 directories, 60 files
+```
+
+## 🧹 Lint
+
+```bash
+npm run lint:eslint:check
+npm run lint:prettier:check
+```
+
+## 👤 Autor
+
+**Pedro Nora**
+
+[![GitHub](https://img.shields.io/badge/GitHub-pedronora-181717?logo=github)](https://github.com/pedronora)  
+[![Email](https://img.shields.io/badge/Email-pedro@nora.vc-blue?logo=gmail&logoColor=white)](mailto:pedro@nora.vc)
