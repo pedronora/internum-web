@@ -3,7 +3,7 @@
     <div class="container-fluid">
       <router-link class="navbar-brand" :to="{ name: 'Home' }" alt="Home">
         <img
-          src="/public/favicon-96x96.png"
+          src="/favicon-96x96.png"
           alt="Logo"
           width="30"
           height="30"

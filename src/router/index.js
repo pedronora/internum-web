@@ -103,7 +103,7 @@ const routes = [
         path: 'books/list',
         name: 'BooksReqList',
         component: () => import('@/pages/library/books/requestList.vue'),
-        meta: { requiresAuth: true, title: 'Acerco - ' },
+        meta: { requiresAuth: true, title: 'Acervo - ' },
       },
       {
         path: 'loans/list/my',

@@ -60,7 +60,6 @@ export const useAuthStore = defineStore('auth', {
     },
     async initFromStorage() {
       if (this.initialized) {
-        console.log('⚠️ initFromStorage() já executado')
         return
       }
       this.initialized = true
