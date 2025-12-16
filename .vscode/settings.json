@@ -1,9 +1,11 @@
 {
   "editor.fontFamily": "'Firacode Nerd Font Mono', 'MesloLGS NF', 'monospace', monospace",
-  "[*]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
-  "files.autoSave": "onFocusChange"
+  "files.autoSave": "onFocusChange",
+  "search.exclude": {
+    "node_modules": true,
+    "dist": true,
+    "submodules": true
+  }
 }

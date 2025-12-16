@@ -210,7 +210,7 @@
       <div class="d-none d-lg-flex align-items-center gap-3">
         <router-link
           v-if="!isAuthenticated"
-          to="/login"
+          :to="{ name: 'Login' }"
           class="btn btn-outline-primary"
         >
           Login

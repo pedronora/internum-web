@@ -6,18 +6,20 @@ const routes = [
     path: '/auth/login',
     name: 'Login',
     component: () => import('@/pages/auth/Login.vue'),
-    meta: { title: 'Login - ' },
+    meta: { title: 'Login - ', isPublicRoute: true },
   },
   {
     path: '/auth/forgot-password',
     name: 'forgot-password',
     component: () => import('@/pages/auth/ForgotPassword.vue'),
+    meta: { title: 'Esqueci a senha - ', isPublicRoute: true },
   },
 
   {
     path: '/auth/reset-password',
     name: 'reset-password',
     component: () => import('@/pages/auth/ResetPassword.vue'),
+    meta: { title: 'Resetar a senha - ', isPublicRoute: true },
   },
   {
     path: '/',
@@ -233,7 +235,8 @@ const routes = [
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: import('@/pages/NotFound.vue'),
+    component: () => import('@/pages/NotFound.vue'),
+    meta: { title: 'Oops! Esta página não existe - ', isPublicRoute: true },
   },
 ]
 
@@ -246,10 +249,30 @@ const router = createRouter({
   },
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore()
 
+  if (!auth.isInitialized) {
+    await auth.initFromStorage()
+  }
+
   document.title = (to.meta.title || '') + 'Internum - 1º RI de Cascavel/PR'
+
+  const isPublicRoute = to.meta.isPublicRoute === true
+
+  if (!auth.accessToken && !isPublicRoute) {
+    try {
+      await auth.refreshToken()
+
+      if (auth.accessToken && !auth.user) {
+        await auth.fetchProfile()
+      }
+    } catch (error) {
+      console.error('Falha ao restaurar a sessão.', error)
+      auth.accessToken = null
+      auth.user = null
+    }
+  }
 
   if (to.meta.requiresAuth && !auth.accessToken) {
     return next({ name: 'Login', query: { next: to.fullPath } })
