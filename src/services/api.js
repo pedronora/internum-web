@@ -1,5 +1,5 @@
-import axios from 'axios'
 import { useAuthStore } from '../stores/auth'
+import axios from 'axios'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/',
@@ -24,6 +24,7 @@ api.interceptors.request.use(
   (config) => {
     const auth = useAuthStore()
     const token = auth.accessToken
+
     if (token && config?.headers) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -45,12 +46,7 @@ api.interceptors.response.use(
       originalRequest?.headers?.['x-skip-refresh'] ||
       originalRequest?.headers?.['X-Skip-Refresh']
 
-    if (
-      url.includes('/api/v1/auth/token') ||
-      url.includes('/api/v1/auth/refresh_token') ||
-      url.includes('/api/v1/auth/logout') ||
-      skipRefreshHeader
-    ) {
+    if (url.includes('/api/v1/auth/') || skipRefreshHeader) {
       return Promise.reject(error)
     }
 

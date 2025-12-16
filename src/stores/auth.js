@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-// import api from '../services/api'
 import { AuthService } from '@/services/auth.services'
 import { UsersService } from '@/services/users.services'
 
@@ -59,21 +58,21 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('user')
     },
     async initFromStorage() {
-      if (this.initialized) {
+      if (this.isInitialized) {
         return
       }
-      this.initialized = true
+      this.isInitialized = true
 
       const savedUser = localStorage.getItem('user')
       if (savedUser) this.user = JSON.parse(savedUser)
 
-      try {
-        const data = await this.refreshToken()
-        this.accessToken = data.access_token
-      } catch {
-        this.accessToken = null
-        this.user = null
-      }
+      // try {
+      //   const data = await this.refreshToken()
+      //   this.accessToken = data.access_token
+      // } catch {
+      //   this.accessToken = null
+      //   this.user = null
+      // }
     },
   },
 })

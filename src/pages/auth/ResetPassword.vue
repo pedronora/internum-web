@@ -146,3 +146,10 @@
     }
   }
 </script>
+
+<style scoped>
+  .btn-outline-secondary {
+    border: 1px solid var(--bs-border-color);
+    border-left: 0;
+  }
+</style>
