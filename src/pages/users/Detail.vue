@@ -36,11 +36,25 @@
         <dt class="col-sm-3">Username</dt>
         <dd class="col-sm-9">{{ user.username }}</dd>
 
+        <dt class="col-sm-3">CPF</dt>
+        <dd class="col-sm-9">{{ formatarCPF(user.cpf || '') }}</dd>
+
         <dt class="col-sm-3">Email</dt>
         <dd class="col-sm-9">{{ user.email }}</dd>
 
         <dt class="col-sm-3">Data de Aniversário</dt>
         <dd class="col-sm-9">{{ formatDate(user.birthday, true) }}</dd>
+
+        <dt class="col-sm-3">Data de Admissão</dt>
+        <dd class="col-sm-9">{{ formatDate(user.hiring_date, true) }}</dd>
+
+        <template v-if="!user.active && user.termination_date">
+          <dt class="col-sm-3">Data de Rescisão</dt>
+          <dd class="col-sm-9">
+            {{ formatDate(user.termination_date, true) }}
+          </dd>
+        </template>
+
         <dt class="col-sm-3">Setor</dt>
         <dd class="col-sm-9">
           <span class="badge bg-secondary">{{ user.setor }}</span>
@@ -79,10 +93,12 @@
     success as successToast,
   } from '@/composables/useToast'
   import { useDate } from '@/composables/useDate'
+  import { useCPF } from '@/composables/useCPF'
 
   const route = useRoute()
   const router = useRouter()
   const { formatDate } = useDate()
+  const { formatarCPF } = useCPF()
   const id = route.params.id
 
   const loading = ref(false)

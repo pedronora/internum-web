@@ -17,6 +17,23 @@
         </div>
 
         <div class="col-md-4">
+          <label class="form-label" for="cpf">CPF</label>
+          <input
+            id="cpf"
+            v-model="cpfDisplay"
+            type="text"
+            required
+            maxlength="14"
+            class="form-control"
+            placeholder="000.000.000-00"
+            @blur="validarCampoCPF"
+          />
+          <div v-if="cpfError" class="text-danger small mt-1">
+            {{ cpfError }}
+          </div>
+        </div>
+
+        <div class="col-md-4">
           <label class="form-label">Email</label>
           <input
             v-model="form.email"
@@ -36,6 +53,16 @@
         </div>
 
         <div class="col-md-4">
+          <label class="form-label">Data de Admissão</label>
+          <input
+            v-model="form.hiring_date"
+            type="date"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="col-md-6">
           <label class="form-label">Senha</label>
           <div class="input-group">
             <input
@@ -64,7 +91,7 @@
           </small>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-6">
           <label class="form-label">Confirmação de senha</label>
           <div class="input-group">
             <input
@@ -150,6 +177,7 @@
     success as successToast,
     error as errorToast,
   } from '@/composables/useToast'
+  import { useCPF } from '@/composables/useCPF'
   import * as yup from 'yup'
 
   const router = useRouter()
@@ -158,6 +186,7 @@
   const error = ref(null)
   const showPassword1 = ref(false)
   const showPassword2 = ref(false)
+  const { cpf, cpfError, cpfDisplay, validarCampoCPF, setCPF } = useCPF()
 
   const setorOptions = [
     { value: 'registro', label: 'Registro' },
@@ -190,6 +219,12 @@
     { value: 'user', label: 'Geral' },
   ]
 
+  function getTodayForInput() {
+    const date = new Date()
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
+    return date.toISOString().split('T')[0]
+  }
+
   const validationSchema = yup.object({
     name: yup
       .string()
@@ -214,6 +249,8 @@
       .date()
       .required('A data de nascimento é obrigatória')
       .max(new Date(), 'A data de nascimento não pode ser futura'),
+
+    hiring_date: yup.date().required('A data de admissão é obrigatória'),
 
     password: yup
       .string()
@@ -242,6 +279,7 @@
     username: '',
     email: '',
     birthday: '',
+    hiring_date: getTodayForInput(),
     password: '',
     password_confirm: '',
     setor: '',
@@ -264,10 +302,29 @@
       return
     }
 
+    if (!validarCampoCPF()) {
+      errorToast(cpfError.value)
+      return
+    }
+
     loading.value = true
     try {
-      await UsersService.create({ ...form.value })
+      const payload = {
+        name: form.value.name,
+        username: form.value.username,
+        cpf: cpf.value,
+        email: form.value.email,
+        birthday: form.value.birthday,
+        hiring_date: form.value.hiring_date,
+        setor: form.value.setor,
+        subsetor: form.value.subsetor,
+        role: form.value.role,
+        active: form.value.active,
+        password: form.value.password,
+      }
+      await UsersService.create(payload)
       successToast('Usuário criado com sucesso.')
+      setCPF('')
       router.push({ name: 'UsersList' })
     } catch (err) {
       console.error(err)
