@@ -291,7 +291,9 @@
       form.value.email = userData.email
       form.value.birthday = formatDateForInput(userData.birthday)
       form.value.hiring_date = formatDateForInput(userData.hiring_date)
-      form.value.termination_date = formatDateForInput(userData.termination_date)
+      form.value.termination_date = formatDateForInput(
+        userData.termination_date,
+      )
       form.value.setor = userData.setor
       form.value.subsetor = userData.subsetor
       form.value.role = userData.role

@@ -50,7 +50,9 @@
 
         <template v-if="!user.active && user.termination_date">
           <dt class="col-sm-3">Data de Rescisão</dt>
-          <dd class="col-sm-9">{{ formatDate(user.termination_date, true) }}</dd>
+          <dd class="col-sm-9">
+            {{ formatDate(user.termination_date, true) }}
+          </dd>
         </template>
 
         <dt class="col-sm-3">Setor</dt>

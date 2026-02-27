@@ -95,9 +95,12 @@ describe('UsersService', () => {
     const result = await UsersService.changePassword(8, 'oldPwd', 'newPwd')
 
     expect(result).toEqual(responseData)
-    expect(mockApi.post).toHaveBeenCalledWith('/api/v1/users/8/change-password', {
-      old_password: 'oldPwd',
-      new_password: 'newPwd',
-    })
+    expect(mockApi.post).toHaveBeenCalledWith(
+      '/api/v1/users/8/change-password',
+      {
+        old_password: 'oldPwd',
+        new_password: 'newPwd',
+      },
+    )
   })
 })
