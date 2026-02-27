@@ -36,6 +36,11 @@
         </div>
 
         <div class="col-md-4">
+          <label class="form-label">CPF</label>
+          <input :value="formatarCPF(form.cpf)" class="form-control" disabled />
+        </div>
+
+        <div class="col-md-4">
           <label class="form-label">Email</label>
           <input
             v-model="form.email"
@@ -56,6 +61,16 @@
             type="date"
             required
             class="form-control"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Data de Admissão</label>
+          <input
+            v-model="form.hiring_date"
+            type="date"
+            class="form-control"
+            disabled
           />
         </div>
 
@@ -128,6 +143,7 @@
     success as successToast,
     error as errorToast,
   } from '@/composables/useToast'
+  import { useCPF } from '@/composables/useCPF'
   import * as yup from 'yup'
 
   function formatDateForInput(dateString) {
@@ -140,6 +156,7 @@
   const loadedOnce = ref(false)
   const error = ref(null)
   const errors = ref({})
+  const { formatarCPF } = useCPF()
 
   const canEditRestrictedFields = computed(() =>
     ['admin', 'coord'].includes(auth.user?.role),
@@ -180,8 +197,10 @@
     id: '',
     name: '',
     username: '',
+    cpf: '',
     email: '',
     birthday: '',
+    hiring_date: '',
     setor: setorOptions[0].value,
     subsetor: '',
     role: 'user',
@@ -205,8 +224,10 @@
         id: data.id,
         name: data.name ?? '',
         username: data.username ?? '',
+        cpf: data.cpf ?? '',
         email: data.email ?? '',
         birthday: formatDateForInput(data.birthday),
+        hiring_date: formatDateForInput(data.hiring_date),
         setor: data.setor ?? setorOptions[0].value,
         subsetor: data.subsetor ?? '',
         role: data.role ?? 'user',

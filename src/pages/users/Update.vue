@@ -23,6 +23,23 @@
         </div>
 
         <div class="col-md-4">
+          <label class="form-label" for="cpf">CPF</label>
+          <input
+            id="cpf"
+            v-model="cpfDisplay"
+            type="text"
+            required
+            maxlength="14"
+            class="form-control"
+            placeholder="000.000.000-00"
+            @blur="validarCampoCPF"
+          />
+          <div v-if="cpfError" class="text-danger small mt-1">
+            {{ cpfError }}
+          </div>
+        </div>
+
+        <div class="col-md-4">
           <label class="form-label">Email</label>
           <input
             v-model="form.email"
@@ -35,6 +52,16 @@
           <label class="form-label">Data de Nascimento</label>
           <input
             v-model="form.birthday"
+            type="date"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Data de Admissão</label>
+          <input
+            v-model="form.hiring_date"
             type="date"
             required
             class="form-control"
@@ -88,6 +115,16 @@
           </div>
         </div>
 
+        <div v-if="!form.active" class="col-md-4">
+          <label class="form-label">Data de Rescisão</label>
+          <input
+            v-model="form.termination_date"
+            type="date"
+            required
+            class="form-control"
+          />
+        </div>
+
         <div class="col-12 d-flex gap-2 justify-content-end">
           <router-link
             :to="{ name: 'UsersList' }"
@@ -112,7 +149,7 @@
 
 <script setup>
   // Importações de Vue e Vue Router
-  import { ref, onMounted } from 'vue'
+  import { ref, onMounted, watch } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
 
   // Importações de Serviços e utilitários
@@ -121,6 +158,7 @@
     success as successToast,
     error as errorToast,
   } from '@/composables/useToast'
+  import { useCPF } from '@/composables/useCPF'
   import * as yup from 'yup'
 
   const router = useRouter()
@@ -131,6 +169,7 @@
   const loadingData = ref(true) // Carregamento inicial dos dados
   const loadingSubmit = ref(false) // Carregamento do envio do formulário
   const error = ref(null)
+  const { cpf, cpfError, cpfDisplay, validarCampoCPF, setCPF } = useCPF()
 
   // Opções dos selects (idem ao Create.vue)
   const setorOptions = [
@@ -164,6 +203,12 @@
     { value: 'user', label: 'Geral' },
   ]
 
+  function getTodayForInput() {
+    const date = new Date()
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
+    return date.toISOString().split('T')[0]
+  }
+
   // Schema de validação SEM os campos de senha
   const validationSchema = yup.object({
     name: yup
@@ -190,6 +235,22 @@
       .required('A data de nascimento é obrigatória')
       .max(new Date(), 'A data de nascimento não pode ser futura'),
 
+    hiring_date: yup.date().required('A data de admissão é obrigatória'),
+    termination_date: yup
+      .date()
+      .transform((value, originalValue) =>
+        originalValue === '' ? null : value,
+      )
+      .nullable()
+      .when('active', {
+        is: false,
+        then: (schema) =>
+          schema.required(
+            'A data de rescisão é obrigatória para contratos inativos',
+          ),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+
     setor: yup.string().required('O setor é obrigatório'),
     subsetor: yup.string().required('O subsetor é obrigatório'),
     role: yup.string().required('O perfil é obrigatório'),
@@ -202,6 +263,8 @@
     username: '',
     email: '',
     birthday: '',
+    hiring_date: '',
+    termination_date: '',
     setor: '',
     subsetor: '',
     role: '',
@@ -227,10 +290,13 @@
       form.value.username = userData.username
       form.value.email = userData.email
       form.value.birthday = formatDateForInput(userData.birthday)
+      form.value.hiring_date = formatDateForInput(userData.hiring_date)
+      form.value.termination_date = formatDateForInput(userData.termination_date)
       form.value.setor = userData.setor
       form.value.subsetor = userData.subsetor
       form.value.role = userData.role
       form.value.active = userData.active
+      setCPF(userData.cpf)
     } catch (err) {
       console.error(err)
       error.value = 'Erro ao carregar os dados do usuário. Tente novamente.'
@@ -262,10 +328,33 @@
       return
     }
 
+    if (!validarCampoCPF()) {
+      errorToast(cpfError.value)
+      return
+    }
+
     loadingSubmit.value = true
     try {
-      // Chama o serviço de UPDATE passando o ID e o formulário
-      await UsersService.update(userId, { ...form.value })
+      const payload = {
+        name: form.value.name,
+        username: form.value.username,
+        cpf: cpf.value,
+        email: form.value.email,
+        birthday: form.value.birthday,
+        hiring_date: form.value.hiring_date,
+        setor: form.value.setor,
+        subsetor: form.value.subsetor,
+        role: form.value.role,
+        active: form.value.active,
+      }
+
+      if (form.value.active) {
+        payload.termination_date = null
+      } else if (form.value.termination_date) {
+        payload.termination_date = form.value.termination_date
+      }
+
+      await UsersService.update(userId, payload)
       successToast('Usuário atualizado com sucesso.')
       router.push({ name: 'UsersList' }) // Redireciona para a lista
     } catch (err) {
@@ -280,6 +369,18 @@
       loadingSubmit.value = false
     }
   }
+
+  watch(
+    () => form.value.active,
+    (isActive) => {
+      if (!isActive && !form.value.termination_date) {
+        form.value.termination_date = getTodayForInput()
+      }
+      if (isActive) {
+        form.value.termination_date = ''
+      }
+    },
+  )
 </script>
 
 <style scoped></style>
