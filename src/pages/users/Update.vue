@@ -159,6 +159,7 @@
     error as errorToast,
   } from '@/composables/useToast'
   import { useCPF } from '@/composables/useCPF'
+  import { useDate } from '@/composables/useDate'
   import * as yup from 'yup'
 
   const router = useRouter()
@@ -170,6 +171,7 @@
   const loadingSubmit = ref(false) // Carregamento do envio do formulário
   const error = ref(null)
   const { cpf, cpfError, cpfDisplay, validarCampoCPF, setCPF } = useCPF()
+  const { toInputDate } = useDate()
 
   // Opções dos selects (idem ao Create.vue)
   const setorOptions = [
@@ -204,9 +206,7 @@
   ]
 
   function getTodayForInput() {
-    const date = new Date()
-    date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
-    return date.toISOString().split('T')[0]
+    return toInputDate(new Date())
   }
 
   // Schema de validação SEM os campos de senha
@@ -271,12 +271,6 @@
     active: true,
   })
 
-  // Função para formatar data (API 2023-10-01T00:00:00 -> HTML 2023-10-01)
-  function formatDateForInput(dateString) {
-    if (!dateString) return ''
-    return dateString.split('T')[0]
-  }
-
   // Carrega os dados do usuário ao montar o componente
   onMounted(async () => {
     loadingData.value = true
@@ -289,11 +283,9 @@
       form.value.name = userData.name
       form.value.username = userData.username
       form.value.email = userData.email
-      form.value.birthday = formatDateForInput(userData.birthday)
-      form.value.hiring_date = formatDateForInput(userData.hiring_date)
-      form.value.termination_date = formatDateForInput(
-        userData.termination_date,
-      )
+      form.value.birthday = toInputDate(userData.birthday)
+      form.value.hiring_date = toInputDate(userData.hiring_date)
+      form.value.termination_date = toInputDate(userData.termination_date)
       form.value.setor = userData.setor
       form.value.subsetor = userData.subsetor
       form.value.role = userData.role
