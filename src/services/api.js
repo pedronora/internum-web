@@ -1,8 +1,13 @@
 import { useAuthStore } from '../stores/auth'
 import axios from 'axios'
 
+const runtimeBaseUrl =
+  typeof window !== 'undefined' && window.__ENV__?.VITE_API_BASE_URL
+    ? window.__ENV__.VITE_API_BASE_URL
+    : null
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/',
+  baseURL: runtimeBaseUrl || import.meta.env.VITE_API_BASE_URL || '/',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
