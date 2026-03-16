@@ -12,8 +12,8 @@
 
           <div class="input-group">
             <input
-              :type="showPassword ? 'text' : 'password'"
               v-model="password"
+              :type="showPassword ? 'text' : 'password'"
               class="form-control"
               :class="{ 'is-invalid': errors.password }"
               required
@@ -39,8 +39,8 @@
 
           <div class="input-group">
             <input
-              :type="showConfirmPassword ? 'text' : 'password'"
               v-model="confirmPassword"
+              :type="showConfirmPassword ? 'text' : 'password'"
               class="form-control"
               :class="{ 'is-invalid': errors.confirmPassword }"
               required
