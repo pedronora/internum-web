@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "docker:build": "docker build --build-arg APP_VERSION=$npm_package_version -t internum-web:$npm_package_version -t internum-web:latest .",
+    "docker:build": "docker build --build-arg APP_VERSION=$npm_package_version -t internum-web:latest .",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint:prettier:check": "prettier --check .",
