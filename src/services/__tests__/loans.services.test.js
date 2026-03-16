@@ -34,7 +34,9 @@ describe('LoansService', () => {
     const result = await LoansService.approve(1)
 
     expect(result).toEqual(responseData)
-    expect(mockApi.patch).toHaveBeenCalledWith('/api/v1/library/loans/1/approve')
+    expect(mockApi.patch).toHaveBeenCalledWith(
+      '/api/v1/library/loans/1/approve',
+    )
   })
 
   it('reject patches loan to reject', async () => {
@@ -73,7 +75,14 @@ describe('LoansService', () => {
     await LoansService.list(5, 20, 'search', 'approved', 'created_at', 'asc')
 
     expect(mockApi.get).toHaveBeenCalledWith('/api/v1/library/loans', {
-      params: { offset: 5, limit: 20, search: 'search', status: 'approved', sort_by: 'created_at', sort_order: 'asc' },
+      params: {
+        offset: 5,
+        limit: 20,
+        search: 'search',
+        status: 'approved',
+        sort_by: 'created_at',
+        sort_order: 'asc',
+      },
     })
   })
 
@@ -83,7 +92,13 @@ describe('LoansService', () => {
     await LoansService.listMy(0, 10, 'pending', 'updated_at', 'desc')
 
     expect(mockApi.get).toHaveBeenCalledWith('/api/v1/library/loans/my', {
-      params: { offset: 0, limit: 10, status: 'pending', sort_by: 'updated_at', sort_order: 'desc' },
+      params: {
+        offset: 0,
+        limit: 10,
+        status: 'pending',
+        sort_by: 'updated_at',
+        sort_order: 'desc',
+      },
     })
   })
 })

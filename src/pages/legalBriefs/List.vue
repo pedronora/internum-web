@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="mb-0">Ementas</h1>
       <router-link
-        v-if="authStore.user?.role === 'admin'"
+        v-if="authStore.isAdminOrCoord"
         :to="{ name: 'LegalBriefsCreate' }"
         class="btn btn-success"
       >
@@ -119,7 +119,7 @@
 
         <!-- Botões Admin -->
         <div
-          v-if="authStore.user?.role === 'admin' && !brief.canceled"
+          v-if="authStore.isAdminOrCoord && !brief.canceled"
           class="d-flex justify-content-end gap-2 mt-3"
         >
           <router-link

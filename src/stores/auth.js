@@ -10,6 +10,11 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     isAuthenticated: (state) => !!state.accessToken,
+    isAdmin: (state) => state.user?.role === 'admin',
+    isAdminOrCoord: (state) => {
+      const allowedRoles = ['admin', 'coord']
+      return allowedRoles.includes(state.user?.role)
+    },
     formattedName: (state) => {
       const fullName = state.user?.name
       if (fullName) {
