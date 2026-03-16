@@ -25,7 +25,7 @@
       </button>
 
       <div id="navbarNavDropdown" class="collapse navbar-collapse">
-        <ul v-if="isUserAdminOrCoord" class="navbar-nav me-auto">
+        <ul v-if="authStore.isAdminOrCoord" class="navbar-nav me-auto">
           <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
@@ -168,7 +168,7 @@
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              Olá, {{ formattedName }}
+              Olá, {{ authStore?.formattedName }}
             </a>
             <ul class="dropdown-menu" aria-labelledby="userMenuMobile">
               <li>
@@ -225,7 +225,7 @@
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            Olá, {{ formattedName }}
+            Olá, {{ authStore?.formattedName }}
           </a>
           <ul
             class="dropdown-menu dropdown-menu-end"
@@ -261,11 +261,11 @@
         >
           <i class="bi bi-envelope"></i>
           <span
-            v-if="unreadNotices > 0"
+            v-if="noticeStore.unreadCount > 0"
             class="position-absolute badge rounded-pill bg-danger"
             style="font-size: 0.65rem; top: 0.1rem; right: -0.6rem"
           >
-            {{ unreadNotices }}
+            {{ noticeStore.unreadCount }}
           </span>
         </router-link>
 
@@ -292,21 +292,15 @@
   import { useTheme } from '@/composables/useTheme'
 
   const router = useRouter()
-  const auth = useAuthStore()
+  const authStore = useAuthStore()
   const noticeStore = useNoticeStore()
   const { isDark, iconClass, buttonTitle, toggle } = useTheme()
 
-  const isAuthenticated = computed(() => Boolean(auth?.accessToken))
-  const formattedName = computed(() => auth?.formattedName)
-  const isUserAdminOrCoord = computed(() => {
-    const role = auth.user?.role
-    return role === 'admin' || role === 'coord'
-  })
-  const unreadNotices = computed(() => noticeStore.unreadCount)
+  const isAuthenticated = computed(() => Boolean(authStore?.accessToken))
 
   async function onLogout() {
     try {
-      await auth.logout()
+      await authStore.logout()
       await router.push({ name: 'Login' })
     } catch (err) {
       console.error('Erro no logout', err)
