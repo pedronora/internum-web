@@ -43,16 +43,10 @@ npm run preview
 
 ## 🐳 Docker (TrueNAS)
 
-Build da imagem (usando a versão do `package.json`):
+Build da imagem (usando a versão do `package.json`, tag: `internum-web:latest`):
 
 ```bash
 npm run docker:build
-```
-
-Build manual com versão explícita:
-
-```bash
-APP_VERSION=1.2.3 npm run docker:build:version
 ```
 
 Rodar local para validação:
@@ -60,7 +54,6 @@ Rodar local para validação:
 ```bash
 docker run --rm -p 8080:80 \
   -e VITE_API_BASE_URL="https://api.seu-dominio.com" \
-  -e APP_VERSION="1.2.3" \
   internum-web:latest
 ```
 
@@ -70,8 +63,7 @@ No TrueNAS (Apps):
 2. Crie o app usando essa imagem e exponha a porta `80` do container.
 3. Configure as variáveis de ambiente:
    - `VITE_API_BASE_URL`: URL da API backend.
-   - `APP_VERSION`: versão da release (ex.: `1.2.3`).
-4. Ao alterar essas variáveis, basta reiniciar o app (não precisa rebuild da imagem).
+4. Ao alterar essa variável, basta reiniciar o app (não precisa rebuild da imagem).
 
 ## 📁 Estrutura do Projeto
 
