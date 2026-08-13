@@ -5,6 +5,13 @@ Todas as mudanças relevantes desta imagem serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o versionamento segue o padrão [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.1.1] - 2026-08-13
+
+### Fixed
+
+- Link "Voltar ao login" na página de esqueci a senha agora usa a rota nomeada `Login`
+  (`/auth/login`), em vez do caminho hardcoded `/login` que caía na página 404.
+
 ## [1.1.0] - 2026-08-13
 
 ### Added
