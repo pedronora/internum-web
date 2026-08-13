@@ -44,29 +44,45 @@ npm run build
 npm run preview
 ```
 
-## 🐳 Docker (TrueNAS)
+## 🐳 Docker e GitHub Container Registry (GHCR)
 
-Build da imagem (usando a versão do `package.json`, tag: `internum-web:latest`):
+Build local da imagem (tag `ghcr.io/pedronora/internum-web:local`):
 
 ```bash
 npm run docker:build
 ```
 
-Rodar local para validação:
+A imagem de produção fica em **GHCR**: `ghcr.io/pedronora/internum-web`.
+
+- Tag de release: `:1.0.0` (imutável, usa-se em produção)
+- Tag de desenvolvimento: `:latest` e `:sha-<commit>`
+- O CI (`docker-publish.yaml`) publica `latest` nos merges para `main` e `X.Y.Z` quando uma tag `vX.Y.Z` é criada.
+
+Pull e execução local:
 
 ```bash
+docker pull ghcr.io/pedronora/internum-web:1.0.0
 docker run --rm -p 8080:80 \
   -e VITE_API_BASE_URL="https://api.seu-dominio.com" \
-  internum-web:latest
+  ghcr.io/pedronora/internum-web:1.0.0
 ```
 
 No TrueNAS (Apps):
 
-1. Publique a imagem em um registry (`ghcr.io`, `docker hub`, etc.).
+1. Use a imagem `ghcr.io/pedronora/internum-web:1.0.0` (pull direto, sem `docker save/load`).
 2. Crie o app usando essa imagem e exponha a porta `80` do container.
 3. Configure as variáveis de ambiente:
    - `VITE_API_BASE_URL`: URL da API backend.
 4. Ao alterar essa variável, basta reiniciar o app (não precisa rebuild da imagem).
+
+## 🏷️ Criar uma release
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+O CI publica a imagem com o rótulo da versão no GHCR.
 
 ## 📁 Estrutura do Projeto
 

@@ -1,13 +1,13 @@
 {
   "name": "internum-web",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "docker:build": "docker build -t internum-web:latest .",
+    "docker:build": "docker build -t ghcr.io/pedronora/internum-web:local .",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint:prettier:check": "prettier --check .",
