@@ -31,7 +31,7 @@
     </form>
 
     <div class="mt-3">
-      <router-link to="/login">Voltar ao login</router-link>
+      <router-link :to="{ name: 'Login' }">Voltar ao login</router-link>
     </div>
   </div>
 </template>
