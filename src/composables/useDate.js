@@ -39,6 +39,10 @@ function formatDate(dateStr, dateOnly = false) {
   })
 }
 
+function formatDateTime(dateStr) {
+  return formatDate(dateStr, false)
+}
+
 function toInputDate(dateValue) {
   if (!dateValue) return ''
 
@@ -61,6 +65,7 @@ function toInputDate(dateValue) {
 export function useDate() {
   return {
     formatDate,
+    formatDateTime,
     toInputDate,
   }
 }

@@ -107,10 +107,107 @@
             </ul>
           </li>
 
-          <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'UsersList' }">
-              Usuários
-            </router-link>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              RH
+            </a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-submenu">
+                <a
+                  class="dropdown-item dropdown-toggle"
+                  href="#"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                >
+                  Usuários
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <router-link
+                      class="dropdown-item"
+                      :to="{ name: 'UsersList' }"
+                    >
+                      Listar Usuários
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link
+                      class="dropdown-item"
+                      :to="{ name: 'UsersCreate' }"
+                    >
+                      Cadastrar Usuário
+                    </router-link>
+                  </li>
+                </ul>
+              </li>
+              <li class="dropdown-submenu">
+                <a
+                  class="dropdown-item dropdown-toggle"
+                  href="#"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                >
+                  Férias
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <router-link
+                      class="dropdown-item"
+                      :to="{ name: 'VacationMyVacation' }"
+                    >
+                      Minhas Férias
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link
+                      class="dropdown-item"
+                      :to="{ name: 'VacationRequestsCreate' }"
+                    >
+                      Nova Solicitação
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link
+                      class="dropdown-item"
+                      :to="{ name: 'VacationRequestsList' }"
+                    >
+                      Minhas Solicitações
+                    </router-link>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <router-link
+                      class="dropdown-item"
+                      :to="{ name: 'VacationAdminRequestsList' }"
+                    >
+                      Gerir Solicitações
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link
+                      class="dropdown-item"
+                      :to="{ name: 'VacationAdminGrantsList' }"
+                    >
+                      Gerir Concessões
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link
+                      class="dropdown-item"
+                      :to="{ name: 'VacationAdminAlerts' }"
+                    >
+                      Alertas de Férias
+                    </router-link>
+                  </li>
+                </ul>
+              </li>
+            </ul>
           </li>
         </ul>
 
@@ -147,6 +244,43 @@
                 <router-link class="dropdown-item" :to="{ name: 'MyLoansList' }"
                   >Meus empréstimos</router-link
                 >
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Férias
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <router-link
+                  class="dropdown-item"
+                  :to="{ name: 'VacationMyVacation' }"
+                >
+                  Minhas Férias
+                </router-link>
+              </li>
+              <li>
+                <router-link
+                  class="dropdown-item"
+                  :to="{ name: 'VacationRequestsCreate' }"
+                >
+                  Nova Solicitação
+                </router-link>
+              </li>
+              <li>
+                <router-link
+                  class="dropdown-item"
+                  :to="{ name: 'VacationRequestsList' }"
+                >
+                  Minhas Solicitações
+                </router-link>
               </li>
             </ul>
           </li>

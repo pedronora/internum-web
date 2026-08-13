@@ -233,6 +233,90 @@ const routes = [
     ],
   },
   {
+    path: '/vacation',
+    component: () => import('@/pages/RouterLayout.vue'),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        name: 'VacationMyVacation',
+        component: () => import('@/pages/vacation/MyVacation.vue'),
+        meta: { requiresAuth: true, title: 'Minhas Férias - ' },
+      },
+      {
+        path: 'requests',
+        name: 'VacationRequestsList',
+        component: () => import('@/pages/vacation/MyRequestsList.vue'),
+        meta: { requiresAuth: true, title: 'Minhas Solicitações - ' },
+      },
+      {
+        path: 'requests/create',
+        name: 'VacationRequestsCreate',
+        component: () => import('@/pages/vacation/RequestForm.vue'),
+        meta: { requiresAuth: true, title: 'Nova Solicitação - ' },
+      },
+      {
+        path: 'requests/:id',
+        name: 'VacationRequestDetail',
+        component: () => import('@/pages/vacation/RequestDetail.vue'),
+        props: true,
+        meta: { requiresAuth: true, title: 'Solicitação - ' },
+      },
+      {
+        path: 'admin/requests',
+        name: 'VacationAdminRequestsList',
+        component: () => import('@/pages/vacation/AdminRequestsList.vue'),
+        meta: {
+          requiresAuth: true,
+          requiresPermission: true,
+          title: 'Gerir Solicitações - ',
+        },
+      },
+      {
+        path: 'admin/requests/:id',
+        name: 'VacationAdminRequestDetail',
+        component: () => import('@/pages/vacation/AdminRequestDetail.vue'),
+        props: true,
+        meta: {
+          requiresAuth: true,
+          requiresPermission: true,
+          title: 'Solicitação - ',
+        },
+      },
+      {
+        path: 'admin/grants',
+        name: 'VacationAdminGrantsList',
+        component: () => import('@/pages/vacation/AdminGrantsList.vue'),
+        meta: {
+          requiresAuth: true,
+          requiresPermission: true,
+          title: 'Gerir Concessões - ',
+        },
+      },
+      {
+        path: 'admin/users/:userId/accrual',
+        name: 'VacationAdminAccrualList',
+        component: () => import('@/pages/vacation/AdminAccrualList.vue'),
+        props: true,
+        meta: {
+          requiresAuth: true,
+          requiresPermission: true,
+          title: 'Períodos do Usuário - ',
+        },
+      },
+      {
+        path: 'admin/alerts',
+        name: 'VacationAdminAlerts',
+        component: () => import('@/pages/vacation/AdminAlerts.vue'),
+        meta: {
+          requiresAuth: true,
+          requiresPermission: true,
+          title: 'Alertas de Férias - ',
+        },
+      },
+    ],
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/pages/NotFound.vue'),
