@@ -133,6 +133,13 @@
               class="d-flex gap-2 flex-wrap mb-3"
             >
               <button
+                v-if="rhActions(period).includes('register')"
+                class="btn btn-sm btn-outline-success"
+                @click="openGrantModal(period, 'normal')"
+              >
+                <i class="bi bi-calendar-check me-1"></i> Marcar férias
+              </button>
+              <button
                 v-if="rhActions(period).includes('sell')"
                 class="btn btn-sm btn-outline-warning"
                 @click="openSellModal(period)"
@@ -248,25 +255,12 @@
       </div>
     </div>
 
-    <!-- Modal Gozo retroativo / Pagamento em dobro -->
+    <!-- Modal Marcar férias / Gozo retroativo / Pagamento em dobro -->
     <div class="modal fade" id="grantModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div
-            class="modal-header"
-            :class="
-              grantModalType === 'double_payment'
-                ? 'bg-danger text-white'
-                : 'bg-primary text-white'
-            "
-          >
-            <h5 class="modal-title">
-              {{
-                grantModalType === 'double_payment'
-                  ? 'Pagamento em dobro'
-                  : 'Gozo retroativo'
-              }}
-            </h5>
+          <div class="modal-header" :class="grantModalInfo.headerClass">
+            <h5 class="modal-title">{{ grantModalInfo.title }}</h5>
             <button
               type="button"
               class="btn-close btn-close-white"
@@ -324,11 +318,7 @@
               <button
                 type="submit"
                 class="btn"
-                :class="
-                  grantModalType === 'double_payment'
-                    ? 'btn-danger'
-                    : 'btn-primary'
-                "
+                :class="grantModalInfo.submitClass"
                 :disabled="submitting"
               >
                 <span
@@ -392,9 +382,32 @@
   const grantModalType = ref('retroactive')
   const grantForm = ref({ start_date: '', end_date: '', notes: '' })
 
+  const grantModalInfo = computed(() => {
+    if (grantModalType.value === 'double_payment') {
+      return {
+        title: 'Pagamento em dobro',
+        headerClass: 'bg-danger text-white',
+        submitClass: 'btn-danger',
+      }
+    }
+    if (grantModalType.value === 'normal') {
+      return {
+        title: 'Marcar férias',
+        headerClass: 'bg-success text-white',
+        submitClass: 'btn-success',
+      }
+    }
+    return {
+      title: 'Gozo retroativo',
+      headerClass: 'bg-primary text-white',
+      submitClass: 'btn-primary',
+    }
+  })
+
   function rhActions(period) {
     const actions = []
     if (period.status === 'concessive' && period.available_days > 0) {
+      actions.push('register')
       actions.push('sell')
     }
     if (period.status === 'expired') {
