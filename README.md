@@ -15,6 +15,9 @@ Aplicação frontend construída com **Vue 3** e **Vite** para o projeto Internu
 - Vue 3
 - Vite
 - Vue Router
+- Pinia
+- Axios
+- Bootstrap + Bootstrap Icons
 - Vuelidate
 - Yup
 - ESLint + Prettier
@@ -92,9 +95,11 @@ No TrueNAS (Apps):
 │   │   ├── Nav.vue
 │   │   └── Toasts.vue
 │   ├── composables
+│   │   ├── useCPF.js
 │   │   ├── useDate.js
 │   │   ├── useTheme.js
-│   │   └── useToast.js
+│   │   ├── useToast.js
+│   │   └── useVacation.js
 │   ├── main.js
 │   ├── pages
 │   │   ├── auth
@@ -126,11 +131,21 @@ No TrueNAS (Apps):
 │   │   │   ├── UserChangePassword.vue
 │   │   │   └── UserProfile.vue
 │   │   ├── RouterLayout.vue
-│   │   └── users
-│   │       ├── Create.vue
-│   │       ├── Detail.vue
-│   │       ├── List.vue
-│   │       └── Update.vue
+│   │   ├── users
+│   │   │   ├── Create.vue
+│   │   │   ├── Detail.vue
+│   │   │   ├── List.vue
+│   │   │   └── Update.vue
+│   │   └── vacation
+│   │       ├── AdminAccrualList.vue
+│   │       ├── AdminAlerts.vue
+│   │       ├── AdminGrantsList.vue
+│   │       ├── AdminRequestDetail.vue
+│   │       ├── AdminRequestsList.vue
+│   │       ├── MyRequestsList.vue
+│   │       ├── MyVacation.vue
+│   │       ├── RequestDetail.vue
+│   │       └── RequestForm.vue
 │   ├── router
 │   │   └── index.js
 │   ├── services
@@ -141,13 +156,16 @@ No TrueNAS (Apps):
 │   │   ├── legalBriefs.services.js
 │   │   ├── loans.services.js
 │   │   ├── notices.services.js
-│   │   └── users.services.js
+│   │   ├── users.services.js
+│   │   ├── vacation.services.js
+│   │   └── __tests__
+│   │       └── vacation.services.test.js
 │   └── stores
 │       ├── auth.js
 │       └── notices.js
 └── vite.config.js
 
-18 directories, 60 files
+28 directories, 96 files
 ```
 
 ## 🧹 Lint
