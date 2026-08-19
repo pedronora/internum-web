@@ -27,7 +27,7 @@
               id="title"
               v-model.trim="form.title"
               type="text"
-              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+              class="input-base"
               placeholder="Digite o título do aviso"
               required
             />
@@ -42,7 +42,7 @@
             <textarea
               id="content"
               v-model.trim="form.content"
-              class="w-full resize-y rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+              class="input-base resize-y"
               rows="5"
               placeholder="Digite o conteúdo do aviso"
               required

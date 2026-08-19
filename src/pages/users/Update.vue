@@ -28,11 +28,7 @@
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             >Nome</label
           >
-          <input
-            v-model="form.name"
-            required
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
-          />
+          <input v-model="form.name" required class="input-base" />
         </div>
 
         <div>
@@ -40,11 +36,7 @@
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             >Username</label
           >
-          <input
-            v-model="form.username"
-            required
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
-          />
+          <input v-model="form.username" required class="input-base" />
         </div>
 
         <div>
@@ -59,7 +51,7 @@
             type="text"
             required
             maxlength="14"
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            class="input-base"
             placeholder="000.000.000-00"
             @blur="validarCampoCPF"
           />
@@ -80,7 +72,7 @@
             v-model="form.email"
             type="email"
             required
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            class="input-base"
           />
         </div>
         <div>
@@ -92,7 +84,7 @@
             v-model="form.birthday"
             type="date"
             required
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            class="input-base"
           />
         </div>
 
@@ -105,7 +97,7 @@
             v-model="form.hiring_date"
             type="date"
             required
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            class="input-base"
           />
         </div>
 
@@ -114,11 +106,7 @@
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             >Setor</label
           >
-          <select
-            v-model="form.setor"
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
-            required
-          >
+          <select v-model="form.setor" class="input-base" required>
             <option disabled value="">Selecione...</option>
             <option v-for="s in setorOptions" :key="s.value" :value="s.value">
               {{ s.label }}
@@ -131,11 +119,7 @@
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             >Subsetor</label
           >
-          <select
-            v-model="form.subsetor"
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
-            required
-          >
+          <select v-model="form.subsetor" class="input-base" required>
             <option disabled value="">Selecione...</option>
             <option
               v-for="option in subsetorOptions[form.setor] || []"
@@ -152,11 +136,7 @@
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             >Perfil</label
           >
-          <select
-            v-model="form.role"
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
-            required
-          >
+          <select v-model="form.role" class="input-base" required>
             <option disabled value="">Selecione...</option>
             <option v-for="r in roleOptions" :key="r.value" :value="r.value">
               {{ r.label }}
@@ -201,7 +181,7 @@
             v-model="form.termination_date"
             type="date"
             required
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            class="input-base"
           />
         </div>
       </div>

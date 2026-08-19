@@ -31,7 +31,7 @@
           <input
             v-model="form.name"
             required
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            class="input-base"
             :class="{
               'border-red-500 focus:border-red-500 focus:ring-red-500/40':
                 errors.name,
@@ -50,12 +50,7 @@
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             >Username</label
           >
-          <input
-            v-model="form.username"
-            required
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
-            disabled
-          />
+          <input v-model="form.username" required class="input-base" disabled />
         </div>
 
         <div>
@@ -63,11 +58,7 @@
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             >CPF</label
           >
-          <input
-            :value="formatarCPF(form.cpf)"
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
-            disabled
-          />
+          <input :value="formatarCPF(form.cpf)" class="input-base" disabled />
         </div>
 
         <div>
@@ -79,7 +70,7 @@
             v-model="form.email"
             type="email"
             required
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            class="input-base"
             :class="{
               'border-red-500 focus:border-red-500 focus:ring-red-500/40':
                 errors.email,
@@ -102,7 +93,7 @@
             v-model="form.birthday"
             type="date"
             required
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            class="input-base"
           />
         </div>
 
@@ -114,7 +105,7 @@
           <input
             v-model="form.hiring_date"
             type="date"
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            class="input-base"
             disabled
           />
         </div>
@@ -126,7 +117,7 @@
           >
           <select
             v-model="form.setor"
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            class="input-base"
             :disabled="!canEditRestrictedFields"
           >
             <option v-for="s in setorOptions" :key="s.value" :value="s.value">
@@ -142,7 +133,7 @@
           >
           <select
             v-model="form.subsetor"
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            class="input-base"
             :disabled="!canEditRestrictedFields"
           >
             <option
@@ -162,7 +153,7 @@
           >
           <select
             v-model="form.role"
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            class="input-base"
             :disabled="!canEditRestrictedFields"
           >
             <option v-for="r in roleOptions" :key="r.value" :value="r.value">
