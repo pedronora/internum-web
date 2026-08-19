@@ -4,11 +4,11 @@
       class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
     >
       <h1 class="text-2xl font-bold">Meus Avisos</h1>
-      <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+      <div class="flex w-full items-center gap-2 sm:w-auto">
         <input
           v-model="searchQuery"
           type="text"
-          class="input-base max-w-[250px]"
+          class="input-base min-w-0 flex-1 sm:max-w-[250px]"
           placeholder="Pesquisar..."
           @keyup.enter="fetchAll"
         />
