@@ -5,6 +5,27 @@ Todas as mudanças relevantes desta imagem serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o versionamento segue o padrão [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.2.0] - 2026-08-19
+
+### Changed
+
+- Migração completa de Bootstrap/Bootstrap Icons para **Tailwind CSS v4**
+  (Vite plugin + tokens no `@theme` + classes do design system em `main.css`),
+  removendo o CDN externo e o preflight de terceiros.
+- **Nav reescrito** (`Nav.vue`): menus data-driven, drawer deslizante no mobile
+  (Teleport + scroll lock), barra desktop com hover/click fixa, navegação por
+  teclado (setas e Esc) e acessibilidade ARIA.
+- Inputs e selects consolidados nas classes `input-base`/`select-base`
+  (fim de ~48 strings inline duplicadas e dos `.input-base` scoped nas páginas
+  de auth).
+
+### Fixed
+
+- Estado `disabled` de inputs/selects no modo escuro agora usa tons escuros
+  (`dark:disabled:bg-slate-800`), em vez de manter fundo claro.
+- Prop `ariaHidden` do `Icon` passa a aceitar `Boolean`/`String` (elimina
+  warnings de prop inválida).
+
 ## [1.1.1] - 2026-08-13
 
 ### Fixed
