@@ -1,17 +1,17 @@
 <template>
-  <div class="container m-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="mb-0">Gerir Concessões de Férias</h1>
+  <div class="m-4">
+    <div class="mb-4 flex items-center justify-between">
+      <h1 class="text-2xl font-bold">Gerir Concessões de Férias</h1>
     </div>
 
     <!-- Filtros -->
     <div
-      class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 p-3 border rounded bg-body border-secondary border-opacity-25"
+      class="mb-4 flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 md:flex-row md:items-center md:justify-between dark:border-slate-700 dark:bg-slate-800"
     >
-      <div class="d-flex gap-2 flex-wrap">
+      <div class="flex flex-wrap gap-2">
         <select
           v-model="statusFilter"
-          class="form-select form-select-sm w-auto"
+          class="select-base w-auto rounded-md py-1 text-xs"
           @change="reload"
         >
           <option value="">Todos os status</option>
@@ -22,7 +22,7 @@
 
         <select
           v-model="sectorFilter"
-          class="form-select form-select-sm w-auto"
+          class="select-base w-auto rounded-md py-1 text-xs"
           @change="reload"
         >
           <option value="">Todos os setores</option>
@@ -34,7 +34,7 @@
         <select
           v-if="sectorFilter"
           v-model="subsetorFilter"
-          class="form-select form-select-sm w-auto"
+          class="select-base w-auto rounded-md py-1 text-xs"
           @change="reload"
         >
           <option value="">Todos os subsetores</option>
@@ -44,58 +44,63 @@
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="alert alert-info text-center" role="alert">
-      <div class="spinner-border spinner-border-sm me-2" role="status">
-        <span class="visually-hidden">Carregando...</span>
-      </div>
+    <div v-if="loading" class="row-loading">
+      <BaseSpinner class="h-5 w-5" />
       Carregando...
     </div>
 
     <!-- Tabela -->
     <div v-else>
-      <div v-if="!error" class="table-responsive shadow-sm rounded mb-4">
-        <table
-          v-if="pagedGrants.length"
-          class="table table-striped table-hover align-middle mb-0"
-        >
-          <thead class="table-dark align-middle">
+      <div v-if="!error" class="table-wrap mb-4">
+        <table v-if="pagedGrants.length" class="w-full text-sm">
+          <thead
+            class="bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+          >
             <tr>
-              <th scope="col">Usuário</th>
-              <th scope="col">Início</th>
-              <th scope="col">Fim</th>
-              <th scope="col">Dias</th>
-              <th scope="col">Tipo</th>
-              <th scope="col">Status</th>
-              <th scope="col">Ações</th>
+              <th scope="col" class="th">Usuário</th>
+              <th scope="col" class="th">Início</th>
+              <th scope="col" class="th">Fim</th>
+              <th scope="col" class="th">Dias</th>
+              <th scope="col" class="th">Tipo</th>
+              <th scope="col" class="th">Status</th>
+              <th scope="col" class="th">Ações</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="g in pagedGrants" :key="g.id">
-              <td>{{ g.user_name || `Usuário #${g.user_id}` }}</td>
-              <td>{{ formatDate(g.start_date, true) }}</td>
-              <td>{{ formatDate(g.end_date, true) }}</td>
-              <td>{{ g.days_count }}</td>
-              <td>
-                <span class="badge bg-secondary">{{
+            <tr
+              v-for="g in pagedGrants"
+              :key="g.id"
+              class="border-t border-slate-200 transition hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800/60"
+            >
+              <td class="td">{{ g.user_name || `Usuário #${g.user_id}` }}</td>
+              <td class="td whitespace-nowrap">
+                {{ formatDate(g.start_date, true) }}
+              </td>
+              <td class="td whitespace-nowrap">
+                {{ formatDate(g.end_date, true) }}
+              </td>
+              <td class="td">{{ g.days_count }}</td>
+              <td class="td">
+                <BaseBadge color="slate">{{
                   grantTypeLabel(g.grant_type)
-                }}</span>
+                }}</BaseBadge>
               </td>
-              <td>
-                <span :class="grantStatus(g.status).badge">
+              <td class="td">
+                <BaseBadge :color="grantColor(g.status)">
                   {{ grantStatus(g.status).label }}
-                </span>
+                </BaseBadge>
               </td>
-              <td class="text-nowrap">
+              <td class="td whitespace-nowrap">
                 <button
                   v-if="canConfirm(g.status)"
-                  class="btn btn-sm btn-outline-success me-1"
+                  class="btn-outline-success btn-sm mr-1"
                   @click="openConfirmModal(g)"
                 >
                   Confirmar fruição
                 </button>
                 <button
                   v-if="canConfirm(g.status)"
-                  class="btn btn-sm btn-outline-danger"
+                  class="btn-outline-danger btn-sm"
                   @click="denyFruition(g)"
                 >
                   Não fruiu
@@ -105,104 +110,71 @@
           </tbody>
         </table>
 
-        <div v-else class="alert alert-warning text-center m-2" role="alert">
+        <div v-else class="warning-alert m-2">
           Nenhuma concessão encontrada.
         </div>
       </div>
 
       <!-- Paginação -->
-      <div
-        v-if="totalPages > 1"
-        class="d-flex justify-content-between align-items-center"
-      >
-        <span class="text-muted">Página {{ page }} de {{ totalPages }}</span>
-        <div class="btn-group" role="group">
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            :disabled="!hasPrev"
-            @click="prev"
-          >
-            &laquo; Anterior
-          </button>
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            :disabled="!hasNext"
-            @click="next"
-          >
-            Próxima &raquo;
-          </button>
-        </div>
-      </div>
+      <BasePagination :meta="paginationMeta" @prev="prev" @next="next" />
     </div>
 
     <!-- Erro -->
-    <div v-if="error" class="alert alert-danger mt-4" role="alert">
+    <div v-if="error" class="error-alert mt-4">
       <strong>Erro:</strong> {{ error }}
     </div>
 
     <!-- Modal Confirmar fruição -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header bg-success text-white">
-            <h5 class="modal-title">Confirmar fruição</h5>
-            <button
-              type="button"
-              class="btn-close btn-close-white"
-              aria-label="Close"
-              @click="closeConfirmModal"
-            ></button>
-          </div>
-          <form @submit.prevent="doConfirm">
-            <div class="modal-body">
-              <p class="mb-2">
-                Confirmar a fruição de
-                <strong>{{ confirmTarget?.days_count }}</strong> dia(s) para
-                {{
-                  confirmTarget?.user_name ||
-                  `Usuário #${confirmTarget?.user_id}`
-                }}?
-              </p>
-              <div class="mb-3">
-                <label class="form-label">Observações (opcional)</label>
-                <textarea
-                  class="form-control"
-                  v-model="confirmForm.notes"
-                  rows="3"
-                ></textarea>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                @click="closeConfirmModal"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                class="btn btn-success"
-                :disabled="submitting"
-              >
-                <span
-                  v-if="submitting"
-                  class="spinner-border spinner-border-sm me-1"
-                ></span>
-                Confirmar
-              </button>
-            </div>
-          </form>
+    <BaseModal
+      :open="confirmOpen"
+      title="Confirmar fruição"
+      tone="success"
+      @close="confirmOpen = false"
+    >
+      <form id="confirm-form" @submit.prevent="doConfirm">
+        <p class="mb-3 text-sm text-slate-600 dark:text-slate-300">
+          Confirmar a fruição de
+          <strong>{{ confirmTarget?.days_count }}</strong> dia(s) para
+          {{
+            confirmTarget?.user_name || `Usuário #${confirmTarget?.user_id}`
+          }}?
+        </p>
+        <div>
+          <label class="label-base" for="confirm-notes"
+            >Observações (opcional)</label
+          >
+          <textarea
+            id="confirm-notes"
+            v-model="confirmForm.notes"
+            class="input-base"
+            rows="3"
+          ></textarea>
         </div>
-      </div>
-    </div>
+      </form>
+      <template #footer>
+        <button
+          type="button"
+          class="btn-outline-secondary"
+          @click="confirmOpen = false"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          form="confirm-form"
+          class="btn-success"
+          :disabled="submitting"
+        >
+          <BaseSpinner v-if="submitting" class="h-4 w-4" />
+          Confirmar
+        </button>
+      </template>
+    </BaseModal>
   </div>
 </template>
 
 <script setup>
-  import { ref, onMounted, computed, inject } from 'vue'
+  import { ref, onMounted, computed } from 'vue'
   import { useDate } from '@/composables/useDate'
   import {
     success as successToast,
@@ -211,11 +183,22 @@
   } from '@/composables/useToast'
   import { GRANT_STATUS, useVacation } from '@/composables/useVacation'
   import { VacationService } from '@/services/vacation.services'
-
-  const bootstrap = inject('bootstrap')
+  import BaseSpinner from '@/components/BaseSpinner.vue'
+  import BaseBadge from '@/components/BaseBadge.vue'
+  import BasePagination from '@/components/BasePagination.vue'
+  import BaseModal from '@/components/BaseModal.vue'
 
   const { formatDate } = useDate()
   const { grantStatus, grantTypeLabel } = useVacation()
+
+  const GRANT_COLORS = {
+    granted: 'info',
+    in_progress: 'warning',
+    fruited: 'success',
+    cancelled: 'dark',
+    paid_double: 'danger',
+  }
+  const grantColor = (s) => GRANT_COLORS[s] || 'slate'
 
   const setores = [
     { value: 'registro', label: 'Registro' },
@@ -247,6 +230,7 @@
   const sectorFilter = ref('')
   const subsetorFilter = ref('')
 
+  const confirmOpen = ref(false)
   const confirmTarget = ref(null)
   const confirmForm = ref({ notes: '' })
   const submitting = ref(false)
@@ -256,6 +240,13 @@
   )
   const hasNext = computed(() => page.value < totalPages.value)
   const hasPrev = computed(() => page.value > 1)
+
+  const paginationMeta = computed(() => ({
+    page: page.value,
+    total_pages: totalPages.value,
+    has_prev: hasPrev.value,
+    has_next: hasNext.value,
+  }))
 
   const pagedGrants = computed(() => {
     const start = (page.value - 1) * limit.value
@@ -293,11 +284,7 @@
   function openConfirmModal(grant) {
     confirmTarget.value = grant
     confirmForm.value.notes = ''
-    new bootstrap.Modal(document.getElementById('confirmModal')).show()
-  }
-
-  function closeConfirmModal() {
-    bootstrap.Modal.getInstance(document.getElementById('confirmModal'))?.hide()
+    confirmOpen.value = true
   }
 
   async function doConfirm() {
@@ -309,7 +296,7 @@
         notes: confirmForm.value.notes || null,
       })
       successToast('Fruição confirmada.')
-      closeConfirmModal()
+      confirmOpen.value = false
       await load()
     } catch (err) {
       errorToast(

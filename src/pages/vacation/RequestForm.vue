@@ -1,48 +1,49 @@
 <template>
-  <div class="container m-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="mb-0">Nova Solicitação de Férias</h1>
+  <div class="m-4">
+    <div
+      class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <h1 class="text-2xl font-bold">Nova Solicitação de Férias</h1>
       <router-link
         :to="{ name: 'VacationRequestsList' }"
-        class="btn btn-outline-secondary"
+        class="btn-outline-secondary"
       >
-        <i class="bi bi-arrow-left me-1"></i> Voltar
+        <Icon name="arrow-left" class="h-4 w-4" aria-hidden="true" /> Voltar
       </router-link>
     </div>
 
-    <div v-if="loading" class="alert alert-info text-center" role="alert">
-      <div class="spinner-border spinner-border-sm me-2" role="status">
-        <span class="visually-hidden">Carregando...</span>
-      </div>
+    <div v-if="loading" class="row-loading">
+      <BaseSpinner class="h-5 w-5" />
       Carregando...
     </div>
 
-    <div v-else-if="error" class="alert alert-danger" role="alert">
+    <div v-else-if="error" class="error-alert">
       <strong>Erro:</strong> {{ error }}
     </div>
 
-    <div
-      v-else-if="!periodOptions.length"
-      class="alert alert-warning"
-      role="alert"
-    >
+    <div v-else-if="!periodOptions.length" class="warning-alert">
       Não há períodos concessivos com saldo disponível para solicitar férias.
     </div>
 
-    <form v-else @submit.prevent="submitForm" novalidate>
+    <form v-else novalidate @submit.prevent="submitForm">
       <!-- Período aquisitivo -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">Período aquisitivo</h5>
+      <div
+        class="mb-4 rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
+      >
+        <div
+          class="rounded-t-lg border-b border-slate-200 px-4 py-3 dark:border-slate-700"
+        >
+          <h5 class="font-semibold">Período aquisitivo</h5>
         </div>
-        <div class="card-body">
-          <label class="form-label" for="targetPeriod">
-            Período de referência <span class="text-danger">*</span>
+        <div class="p-4">
+          <label class="label-base" for="targetPeriod">
+            Período de referência
+            <span class="text-red-600 dark:text-red-400">*</span>
           </label>
           <select
             id="targetPeriod"
             v-model="targetPeriodId"
-            class="form-select"
+            class="select-base w-full"
             required
           >
             <option :value="null" disabled>Selecione o período...</option>
@@ -54,79 +55,94 @@
               {{ p.available_days }} dias disponíveis
             </option>
           </select>
-          <div class="form-text">
+          <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
             Os dias solicitados são descontados do saldo desse período.
-          </div>
+          </p>
         </div>
       </div>
 
       <!-- Períodos de gozo -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">Períodos de gozo (máx. 3)</h5>
+      <div
+        class="mb-4 rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
+      >
+        <div
+          class="rounded-t-lg border-b border-slate-200 px-4 py-3 dark:border-slate-700"
+        >
+          <h5 class="font-semibold">Períodos de gozo (máx. 3)</h5>
         </div>
-        <div class="card-body">
+        <div class="p-4">
           <div
             v-for="(period, index) in periods"
             :key="period.id"
-            class="mb-3 p-3 border rounded bg-body-tertiary"
+            class="mb-3 rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/50"
           >
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="mb-0">Período {{ index + 1 }}</h6>
+            <div class="mb-2 flex items-center justify-between">
+              <h6 class="font-semibold">Período {{ index + 1 }}</h6>
               <button
                 type="button"
-                class="btn btn-sm btn-outline-danger"
-                @click="removePeriod(index)"
+                class="btn-outline-danger btn-sm"
                 :disabled="periods.length <= 1"
                 aria-label="Remover período"
+                @click="removePeriod(index)"
               >
-                <i class="bi bi-trash"></i>
+                <Icon name="trash" class="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label"
-                  >Início <span class="text-danger">*</span></label
+            <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <div>
+                <label class="label-base"
+                  >Início
+                  <span class="text-red-600 dark:text-red-400">*</span></label
                 >
                 <input
-                  type="date"
-                  class="form-control"
                   v-model="period.start_date"
+                  type="date"
+                  class="input-base"
                   required
                 />
               </div>
-              <div class="col-md-6">
-                <label class="form-label"
-                  >Fim <span class="text-danger">*</span></label
+              <div>
+                <label class="label-base"
+                  >Fim
+                  <span class="text-red-600 dark:text-red-400">*</span></label
                 >
                 <input
-                  type="date"
-                  class="form-control"
                   v-model="period.end_date"
+                  type="date"
+                  class="input-base"
                   required
                 />
               </div>
             </div>
-            <div v-if="periodDetail(index)" class="mt-2 small text-muted">
-              <span class="badge bg-primary">{{
-                periodDetail(index).period_type === 'main'
-                  ? 'Principal'
-                  : 'Complementar'
-              }}</span>
+            <div
+              v-if="periodDetail(index)"
+              class="mt-2 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400"
+            >
+              <BaseBadge color="primary">
+                {{
+                  periodDetail(index).period_type === 'main'
+                    ? 'Principal'
+                    : 'Complementar'
+                }}
+              </BaseBadge>
               {{ periodDetail(index).calendar_days }} dias corridos
             </div>
           </div>
 
-          <div class="d-flex align-items-center gap-2">
+          <div class="flex items-center gap-2">
             <button
               type="button"
-              class="btn btn-outline-primary btn-sm"
-              @click="addPeriod"
+              class="btn-outline-primary btn-sm"
               :disabled="periods.length >= 3"
+              @click="addPeriod"
             >
-              <i class="bi bi-plus-lg me-1"></i> Adicionar Período
+              <Icon name="plus-lg" class="h-4 w-4" aria-hidden="true" />
+              Adicionar Período
             </button>
-            <span v-if="periods.length >= 3" class="text-muted small">
+            <span
+              v-if="periods.length >= 3"
+              class="text-xs text-slate-500 dark:text-slate-400"
+            >
               Máximo de 3 períodos
             </span>
           </div>
@@ -136,69 +152,80 @@
       <!-- Preview / Validação CLT -->
       <div
         v-if="preview"
-        class="card shadow-sm mb-4"
-        :class="preview.valid ? 'border-success' : 'border-danger'"
+        class="mb-4 rounded-lg border bg-white shadow-sm dark:bg-slate-800"
+        :class="
+          preview.valid
+            ? 'border-green-500 dark:border-green-700'
+            : 'border-red-500 dark:border-red-700'
+        "
       >
         <div
-          class="card-header"
+          class="flex items-center gap-2 rounded-t-lg px-4 py-3"
           :class="
-            preview.valid ? 'bg-success text-white' : 'bg-danger text-white'
+            preview.valid ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
           "
         >
-          <i
-            :class="preview.valid ? 'bi bi-check-circle' : 'bi bi-x-circle'"
-            class="me-1"
-          ></i>
+          <Icon
+            :name="preview.valid ? 'check-circle' : 'x-circle'"
+            class="h-5 w-5"
+            aria-hidden="true"
+          />
           {{ preview.valid ? 'Solicitação válida' : 'Erros de validação' }}
         </div>
-        <div class="card-body">
+        <div class="p-4">
           <div v-if="preview.errors.length" class="mb-3">
-            <ul class="mb-0">
-              <li v-for="(e, i) in preview.errors" :key="i" class="text-danger">
+            <ul class="mb-0 list-disc space-y-1 pl-5">
+              <li
+                v-for="(e, i) in preview.errors"
+                :key="i"
+                class="text-sm text-red-600 dark:text-red-400"
+              >
                 {{ e }}
               </li>
             </ul>
           </div>
           <div v-if="preview.warnings.length" class="mb-3">
-            <ul class="mb-0">
+            <ul class="mb-0 list-disc space-y-1 pl-5">
               <li
                 v-for="(w, i) in preview.warnings"
                 :key="i"
-                class="text-warning"
+                class="text-sm text-amber-600 dark:text-amber-400"
               >
                 {{ w }}
               </li>
             </ul>
           </div>
-          <div class="row text-center">
-            <div class="col-6">
-              <div class="fw-bold fs-5">{{ preview.total_days }}</div>
-              <div class="text-muted small">Dias corridos</div>
+          <div class="grid grid-cols-2 gap-4 text-center">
+            <div>
+              <div class="text-lg font-bold">{{ preview.total_days }}</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400">
+                Dias corridos
+              </div>
             </div>
-            <div class="col-6">
-              <div class="fw-bold fs-5">{{ periodCount }}</div>
-              <div class="text-muted small">Períodos</div>
+            <div>
+              <div class="text-lg font-bold">{{ periodCount }}</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400">
+                Períodos
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Ações -->
-      <div class="d-flex gap-2">
+      <div class="flex flex-wrap gap-2">
         <button
           type="submit"
           :disabled="!preview?.valid || submitting"
-          class="btn btn-success"
+          class="btn-success"
         >
-          <span
-            v-if="submitting"
-            class="spinner-border spinner-border-sm me-1"
-          ></span>
-          <i class="bi bi-send me-1"></i> Enviar para Aprovação
+          <BaseSpinner v-if="submitting" class="h-4 w-4" />
+          <Icon v-else name="send" class="h-4 w-4" aria-hidden="true" />
+          Enviar para Aprovação
         </button>
         <router-link
           :to="{ name: 'VacationRequestsList' }"
-          class="btn btn-outline-secondary"
+          class="btn-outline-secondary"
         >
           Cancelar
         </router-link>
@@ -217,6 +244,9 @@
   } from '@/composables/useToast'
   import { useVacation } from '@/composables/useVacation'
   import { VacationService } from '@/services/vacation.services'
+  import Icon from '@/components/Icon.vue'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
+  import BaseBadge from '@/components/BaseBadge.vue'
 
   const { formatDate } = useDate()
 
