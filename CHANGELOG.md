@@ -5,6 +5,17 @@ Todas as mudanças relevantes desta imagem serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o versionamento segue o padrão [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.2.1] - 2026-08-19
+
+### Fixed
+
+- Botão `Login` no desktop (deslogado) agora fica alinhado à direita, em vez de
+  colado à logo (a barra com `justify-between` perdia o menu e sobrava um único
+  filho à esquerda).
+- Busca em "Meus Avisos": os botões "Buscar"/atualizar ficam sempre ao lado do
+  campo de busca (inclusive em telas reduzidas, onde o input passa a ocupar a
+  largura disponível).
+
 ## [1.2.0] - 2026-08-19
 
 ### Changed
