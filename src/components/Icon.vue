@@ -20,7 +20,7 @@
     name: { type: String, required: true },
     class: { type: String, default: '' },
     ariaLabel: { type: String, default: '' },
-    ariaHidden: { type: Boolean, default: false },
+    ariaHidden: { type: [Boolean, String], default: false },
   })
 
   const paths = computed(() => ICONS[props.name] || [])
