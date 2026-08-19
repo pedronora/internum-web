@@ -187,7 +187,7 @@
           </li>
         </ul>
 
-        <div class="flex items-center gap-2">
+        <div class="ml-auto flex items-center gap-2">
           <router-link
             v-if="!isAuthenticated"
             class="btn-primary"
