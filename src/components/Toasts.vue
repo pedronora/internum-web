@@ -99,15 +99,15 @@
   }
 
   const ACTION_CLASSES = {
-    'btn-outline-secondary':
+    secondary:
       'inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700',
-    'btn-warning':
+    warning:
       'inline-flex items-center rounded-lg bg-amber-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-600',
-    'btn-primary':
+    primary:
       'inline-flex items-center rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700',
   }
 
-  function actionClass(bootstrapClass) {
-    return ACTION_CLASSES[bootstrapClass] || ACTION_CLASSES['btn-primary']
+  function actionClass(actionKey) {
+    return ACTION_CLASSES[actionKey] || ACTION_CLASSES['primary']
   }
 </script>

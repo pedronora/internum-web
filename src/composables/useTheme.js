@@ -7,10 +7,8 @@ export function useTheme() {
 
   const applyTheme = (theme) => {
     if (typeof document !== 'undefined' && document.documentElement) {
-      // Marca o tema para o Tailwind (classe .dark) e, durante a transição,
-      // mantém o data-bs-theme para as páginas Bootstrap ainda não migradas.
+      // Marca o tema para o Tailwind (classe .dark no <html>).
       document.documentElement.classList.toggle('dark', theme === 'dark')
-      document.documentElement.setAttribute('data-bs-theme', theme)
     }
   }
 
@@ -79,10 +77,6 @@ export function useTheme() {
     }
   }
 
-  const footerBgClass = computed(() =>
-    isDark.value ? 'bg-dark bg-gradient' : 'bg-light bg-gradient',
-  )
-
   onMounted(() => {
     loadInitialTheme()
     if (typeof window !== 'undefined' && window.matchMedia) {
@@ -109,7 +103,6 @@ export function useTheme() {
     isDark,
     icon,
     buttonTitle,
-    footerBgClass,
     toggle,
   }
 }

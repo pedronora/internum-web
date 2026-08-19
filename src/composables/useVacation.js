@@ -2,27 +2,27 @@ import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 
 export const REQUEST_STATUS = {
-  draft: { label: 'Rascunho', badge: 'badge bg-secondary' },
-  submitted: { label: 'Enviado', badge: 'badge bg-info' },
-  under_review: { label: 'Em Análise', badge: 'badge bg-warning text-dark' },
-  approved: { label: 'Aprovado', badge: 'badge bg-success' },
-  rejected: { label: 'Rejeitado', badge: 'badge bg-danger' },
-  cancelled: { label: 'Cancelado', badge: 'badge bg-dark' },
+  draft: { label: 'Rascunho', color: 'slate' },
+  submitted: { label: 'Enviado', color: 'info' },
+  under_review: { label: 'Em Análise', color: 'warning' },
+  approved: { label: 'Aprovado', color: 'success' },
+  rejected: { label: 'Rejeitado', color: 'danger' },
+  cancelled: { label: 'Cancelado', color: 'dark' },
 }
 
 export const ACCRUAL_STATUS = {
-  acquisitive: { label: 'Em aquisição', badge: 'badge bg-info' },
-  concessive: { label: 'Período concessivo', badge: 'badge bg-success' },
-  expired: { label: 'Vencido', badge: 'badge bg-danger' },
-  closed: { label: 'Regularizado', badge: 'badge bg-secondary' },
+  acquisitive: { label: 'Em aquisição', color: 'info' },
+  concessive: { label: 'Período concessivo', color: 'success' },
+  expired: { label: 'Vencido', color: 'danger' },
+  closed: { label: 'Regularizado', color: 'slate' },
 }
 
 export const GRANT_STATUS = {
-  granted: { label: 'Aprovado (reservado)', badge: 'badge bg-info' },
-  in_progress: { label: 'Em gozo', badge: 'badge bg-warning text-dark' },
-  fruited: { label: 'Fruído', badge: 'badge bg-success' },
-  cancelled: { label: 'Cancelado', badge: 'badge bg-dark' },
-  paid_double: { label: 'Pago em dobro', badge: 'badge bg-danger' },
+  granted: { label: 'Aprovado (reservado)', color: 'info' },
+  in_progress: { label: 'Em gozo', color: 'warning' },
+  fruited: { label: 'Fruído', color: 'success' },
+  cancelled: { label: 'Cancelado', color: 'dark' },
+  paid_double: { label: 'Pago em dobro', color: 'danger' },
 }
 
 export const GRANT_TYPE = {
@@ -47,21 +47,15 @@ export function useVacation() {
   const isManager = isAdminOrCoord
 
   function requestStatus(status) {
-    return (
-      REQUEST_STATUS[status] || { label: status, badge: 'badge bg-secondary' }
-    )
+    return REQUEST_STATUS[status] || { label: status, color: 'slate' }
   }
 
   function accrualStatus(status) {
-    return (
-      ACCRUAL_STATUS[status] || { label: status, badge: 'badge bg-secondary' }
-    )
+    return ACCRUAL_STATUS[status] || { label: status, color: 'slate' }
   }
 
   function grantStatus(status) {
-    return (
-      GRANT_STATUS[status] || { label: status, badge: 'badge bg-secondary' }
-    )
+    return GRANT_STATUS[status] || { label: status, color: 'slate' }
   }
 
   function grantTypeLabel(type) {

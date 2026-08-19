@@ -21,7 +21,7 @@
       >
         <div>
           <h1 class="mb-1 text-2xl font-bold">Solicitação #{{ request.id }}</h1>
-          <BaseBadge :color="requestColor(request.status)">
+          <BaseBadge :color="requestStatus(request.status).color">
             {{ requestStatus(request.status).label }}
           </BaseBadge>
         </div>
@@ -56,7 +56,7 @@
           >
             <div class="text-slate-500 dark:text-slate-400">Status</div>
             <div>
-              <BaseBadge :color="requestColor(request.status)">
+              <BaseBadge :color="requestStatus(request.status).color">
                 {{ requestStatus(request.status).label }}
               </BaseBadge>
             </div>
@@ -173,16 +173,6 @@
   const { formatDate, formatDateTime } = useDate()
 
   const { requestStatus } = useVacation()
-
-  const REQUEST_COLORS = {
-    draft: 'slate',
-    submitted: 'info',
-    under_review: 'warning',
-    approved: 'success',
-    rejected: 'danger',
-    cancelled: 'dark',
-  }
-  const requestColor = (s) => REQUEST_COLORS[s] || 'slate'
 
   const request = ref(null)
   const loading = ref(true)

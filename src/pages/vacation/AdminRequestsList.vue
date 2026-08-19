@@ -78,7 +78,7 @@
               <td class="td">{{ r.id }}</td>
               <td class="td">{{ r.user_name }}</td>
               <td class="td">
-                <BaseBadge :color="requestColor(r.status)">
+                <BaseBadge :color="requestStatus(r.status).color">
                   {{ requestStatus(r.status).label }}
                 </BaseBadge>
               </td>
@@ -132,16 +132,6 @@
 
   const { formatDate, formatDateTime } = useDate()
   const { requestStatus } = useVacation()
-
-  const REQUEST_COLORS = {
-    draft: 'slate',
-    submitted: 'info',
-    under_review: 'warning',
-    approved: 'success',
-    rejected: 'danger',
-    cancelled: 'dark',
-  }
-  const requestColor = (s) => REQUEST_COLORS[s] || 'slate'
 
   const setores = [
     { value: 'registro', label: 'Registro' },

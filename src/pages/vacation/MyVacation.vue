@@ -49,7 +49,7 @@
           :class="period.status === 'expired' ? 'bg-red-600 text-white' : ''"
         >
           <h5 class="font-semibold">Período #{{ period.period_number }}</h5>
-          <BaseBadge :color="accrualColor(period.status)">
+          <BaseBadge :color="accrualStatus(period.status).color">
             {{ accrualStatus(period.status).label }}
           </BaseBadge>
         </div>
@@ -223,7 +223,7 @@
                     </td>
                     <td class="td">{{ grant.days_count }}</td>
                     <td class="td">
-                      <BaseBadge :color="grantColor(grant.status)">
+                      <BaseBadge :color="grantStatus(grant.status).color">
                         {{ grantStatus(grant.status).label }}
                       </BaseBadge>
                     </td>
@@ -258,22 +258,6 @@
     periodCounters,
     acquisitiveProgress,
   } = useVacation()
-
-  const ACCRUAL_COLORS = {
-    acquisitive: 'info',
-    concessive: 'success',
-    expired: 'danger',
-    closed: 'slate',
-  }
-  const GRANT_COLORS = {
-    granted: 'info',
-    in_progress: 'warning',
-    fruited: 'success',
-    cancelled: 'dark',
-    paid_double: 'danger',
-  }
-  const accrualColor = (s) => ACCRUAL_COLORS[s] || 'slate'
-  const grantColor = (s) => GRANT_COLORS[s] || 'slate'
 
   const periods = ref([])
   const loading = ref(false)

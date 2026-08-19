@@ -83,7 +83,7 @@ function confirm(message, options = {}) {
       actions: [
         {
           label: cancelLabel,
-          class: 'btn-outline-secondary',
+          class: 'secondary',
           onClick: () => {
             removeToast(id)
             resolve(false)
@@ -91,7 +91,7 @@ function confirm(message, options = {}) {
         },
         {
           label: confirmLabel,
-          class: 'btn-warning',
+          class: 'warning',
           onClick: () => {
             removeToast(id)
             resolve(true)

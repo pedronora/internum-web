@@ -55,7 +55,7 @@
           @click="togglePeriod(period.id)"
         >
           Período #{{ period.period_number }}
-          <BaseBadge :color="accrualColor(period.status)">
+          <BaseBadge :color="accrualStatus(period.status).color">
             {{ accrualStatus(period.status).label }}
           </BaseBadge>
           <BaseBadge v-if="period.is_double_eligible" color="danger">
@@ -239,7 +239,7 @@
                       {{ grantTypeLabel(g.grant_type) }}
                     </td>
                     <td class="td">
-                      <BaseBadge :color="grantColor(g.status)">
+                      <BaseBadge :color="grantStatus(g.status).color">
                         {{ grantStatus(g.status).label }}
                       </BaseBadge>
                     </td>
@@ -392,22 +392,6 @@
 
   const { formatDate } = useDate()
   const { accrualStatus, grantStatus, grantTypeLabel } = useVacation()
-
-  const ACCRUAL_COLORS = {
-    acquisitive: 'info',
-    concessive: 'success',
-    expired: 'danger',
-    closed: 'slate',
-  }
-  const GRANT_COLORS = {
-    granted: 'info',
-    in_progress: 'warning',
-    fruited: 'success',
-    cancelled: 'dark',
-    paid_double: 'danger',
-  }
-  const accrualColor = (s) => ACCRUAL_COLORS[s] || 'slate'
-  const grantColor = (s) => GRANT_COLORS[s] || 'slate'
 
   const user = ref(null)
   const periods = ref([])

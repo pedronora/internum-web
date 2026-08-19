@@ -1,10 +1,4 @@
-@import 'bootstrap/dist/css/bootstrap.css';
-
-/* Tailwind CSS v4 — sem preflight durante a transição (para não conflitar
-   com o Bootstrap ainda presente). No fim da migração trocamos por
-   `@import 'tailwindcss';` completo e removemos o import do Bootstrap. */
-@import 'tailwindcss/theme.css' layer(theme);
-@import 'tailwindcss/utilities.css' layer(utilities);
+@import 'tailwindcss';
 
 /* Dark mode via classe .dark no <html> (gerida por useTheme) */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -125,21 +119,4 @@
   .td {
     @apply px-4 py-3;
   }
-}
-
-/* Submenu aninhado (ex.: RH > Férias) — enquanto o Bootstrap coexistir */
-.dropdown-submenu {
-  position: relative;
-}
-
-.dropdown-submenu > .dropdown-menu {
-  top: 0;
-  left: 100%;
-  margin-top: 0;
-  margin-left: 0.125rem;
-}
-
-.dropdown-submenu:hover > .dropdown-menu,
-.dropdown-submenu:focus-within > .dropdown-menu {
-  display: block;
 }

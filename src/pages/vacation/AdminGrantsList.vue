@@ -86,7 +86,7 @@
                 }}</BaseBadge>
               </td>
               <td class="td">
-                <BaseBadge :color="grantColor(g.status)">
+                <BaseBadge :color="grantStatus(g.status).color">
                   {{ grantStatus(g.status).label }}
                 </BaseBadge>
               </td>
@@ -190,15 +190,6 @@
 
   const { formatDate } = useDate()
   const { grantStatus, grantTypeLabel } = useVacation()
-
-  const GRANT_COLORS = {
-    granted: 'info',
-    in_progress: 'warning',
-    fruited: 'success',
-    cancelled: 'dark',
-    paid_double: 'danger',
-  }
-  const grantColor = (s) => GRANT_COLORS[s] || 'slate'
 
   const setores = [
     { value: 'registro', label: 'Registro' },

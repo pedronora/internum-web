@@ -13,7 +13,7 @@
 | **State Management** | Pinia 3 (stores in `src/stores/`)            |
 | **Routing**          | Vue Router 4 (guarded by role/permission)    |
 | **HTTP Client**      | Axios with interceptors (auto token refresh) |
-| **UI Library**       | Bootstrap 5.3 + Bootstrap Icons              |
+| **UI Library**       | Tailwind CSS 4 (utility-first, sem preflight de terceiros) |
 | **Validation**       | Vuelidate + Yup                              |
 | **Testing**          | Vitest (unit/integration)                    |
 | **Linting**          | ESLint (flat config) + Prettier              |
@@ -26,7 +26,7 @@
 ```
 src/
 ├── api.js                 # Axios instance + interceptors (single source of truth for HTTP)
-├── main.js                # App bootstrap (Pinia, Router, Bootstrap, auth init)
+├── main.js                # App bootstrap (Pinia, Router, Tailwind, auth init)
 ├── App.vue                # Root layout: Nav + main + Toasts + Footer
 ├── router/
 │   └── index.js           # Route definitions + global navigation guards
@@ -44,7 +44,12 @@ src/
 ├── components/
 │   ├── Nav.vue            # Top navbar (role-based menus, user dropdown, theme toggle)
 │   ├── Footer.vue         # Static footer
-│   └── Toasts.vue         # Renders toastStore toasts (Bootstrap toasts)
+│   ├── Toasts.vue         # Renders toastStore toasts (Tailwind toasts)
+│   ├── Icon.vue           # Ícones SVG inline (mapa em iconPaths.js)
+│   ├── BaseSpinner.vue    # Loading spinner
+│   ├── BaseBadge.vue      # Badge (color: slate|dark|light|primary|success|warning|danger|info)
+│   ├── BasePagination.vue # Paginação (variant: simple|pages; emite prev/next/go)
+│   └── BaseModal.vue      # Modal com Teleport (tone: default|success|danger; slots header/default/footer)
 ├── pages/
 │   ├── auth/              # Login, ForgotPassword, ResetPassword (public routes)
 │   ├── legalBriefs/       # List, Create, Update (admin/coord only)
@@ -58,7 +63,7 @@ src/
 │   ├── RouterLayout.vue   # Wrapper for nested routes (if needed)
 │   └── NotFound.vue       # 404
 └── assets/
-    └── main.css           # Global styles (Bootstrap overrides, utilities)
+    └── main.css           # Tailwind v4, tokens do design system, classes de componentes
 ```
 
 ### Naming Conventions
@@ -75,7 +80,7 @@ src/
 | Store getters       | camelCase, `is`/`has` prefix            | `isAuthenticated`, `isAdminOrCoord`                       |
 | Store actions       | camelCase, verb prefix                  | `login()`, `fetchProfile()`, `refreshToken()`             |
 | Service methods     | camelCase, verb + noun                  | `list()`, `getById()`, `create()`, `update()`, `remove()` |
-| CSS Classes         | Bootstrap utilities + kebab-case custom | `.table-responsive`, `.bg-body-tertiary`                  |
+| CSS Classes         | Tailwind utilities + classes do design system | `.input-base`, `.btn-primary`, `.table-wrap`             |
 
 ---
 
@@ -346,16 +351,21 @@ onMounted(load)
 
 **Location:** `src/components/*.vue`
 
-| Component    | Responsibility                                                                 |
-| ------------ | ------------------------------------------------------------------------------ |
-| `Nav.vue`    | Top navbar, role-based menus, user dropdown, theme toggle, unread notice badge |
-| `Footer.vue` | Static footer                                                                  |
-| `Toasts.vue` | Renders `toastStore.toasts` as Bootstrap toasts (auto-dismiss, actions)        |
+| Component       | Responsibility                                                                 |
+| --------------- | ------------------------------------------------------------------------------ |
+| `Nav.vue`       | Top navbar, role-based menus, user dropdown, theme toggle, unread notice badge |
+| `Footer.vue`    | Static footer                                                                  |
+| `Toasts.vue`    | Renders `toastStore.toasts` as Tailwind toasts (auto-dismiss, actions)         |
+| `Icon.vue`      | Ícones SVG inline pelo nome (`search`, `plus-lg`, `trash`, etc.)               |
+| `BaseSpinner.vue` | Loading spinner reutilizável                                                 |
+| `BaseBadge.vue` | Badge com `color` + `variant` (solid/soft)                                     |
+| `BasePagination.vue` | Paginação `simple`/`pages` a partir de `meta` (page, total_pages, has_prev, has_next) |
+| `BaseModal.vue` | Modal com Teleport, `tone` (default/success/danger), slots header/default/footer |
 
 **Pattern:**
 
-- Use Bootstrap 5 classes exclusively
-- No custom CSS in components (use `main.css` for globals)
+- Use Tailwind utilities + design-system classes (`.input-base`, `.btn-*`, `.table-wrap`) from `main.css`
+- No custom CSS in `.vue` files (use `main.css`; `@apply` em `<style scoped>` exige `@reference '../../assets/main.css';`)
 - Accessibility: `aria-*`, semantic HTML, keyboard navigation
 
 ---
@@ -449,7 +459,7 @@ When an AI agent (Gemini, etc.) operates on this codebase, it MUST adhere to:
 | **Never create new files** unless explicitly asked                                      | Edit existing files only                     |
 | **Follow existing patterns** exactly (service structure, store shape, component layout) | Match the patterns in Sections 3.1–3.7       |
 | **Use `@/` alias** for imports from `src/`                                              | `@/services/`, `@/stores/`, `@/composables/` |
-| **No inline styles** — use Bootstrap classes or `main.css`                              |                                              |
+| **No inline styles** — use Tailwind utilities ou classes do design system (`main.css`)       |                                              |
 | **No `console.log` in production code** (allowed in tests)                              | ESLint `no-console: off` but discouraged     |
 | **Async functions must handle errors** with try/catch + toast feedback                  | See `deleteBook` pattern                     |
 | **Pagination state** uses `page`, `limit`, `meta` (total, has_next, has_prev)           |                                              |
@@ -478,7 +488,7 @@ When an AI agent (Gemini, etc.) operates on this codebase, it MUST adhere to:
 
 2. **New Component:**
    - Place in `src/components/` (PascalCase)
-   - Use Bootstrap 5 only
+   - Use Tailwind utilities + design-system classes (`.input-base`, `.btn-*`, `.table-wrap`)
    - Export as default
 
 3. **New Composable:**
