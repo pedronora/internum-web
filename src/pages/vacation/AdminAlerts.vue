@@ -1,87 +1,92 @@
 <template>
-  <div class="container m-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="mb-0">Alertas de Férias</h1>
+  <div class="m-4">
+    <div
+      class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <h1 class="text-2xl font-bold">Alertas de Férias</h1>
       <router-link
         :to="{ name: 'VacationMyVacation' }"
-        class="btn btn-outline-secondary"
+        class="btn-outline-secondary"
       >
-        <i class="bi bi-arrow-left me-1"></i> Voltar
+        <Icon name="arrow-left" class="h-4 w-4" aria-hidden="true" /> Voltar
       </router-link>
     </div>
 
-    <div
-      class="alert alert-warning d-flex align-items-center gap-2 mb-2"
-      role="alert"
-    >
-      <i class="bi bi-exclamation-triangle"></i>
+    <div class="warning-alert mb-2 flex items-center gap-2" role="alert">
+      <Icon name="exclamation-triangle" class="h-5 w-5" aria-hidden="true" />
       Períodos concessivos que precisam de atenção.
     </div>
 
-    <div class="d-flex flex-column gap-2 mb-3 small text-muted">
-      <div class="d-flex align-items-center gap-2">
-        <span class="badge bg-danger">Vencido</span>
-        <span
-          >Concessivo já expirou — regularizar (gozo retroativo ou pagamento em
-          dobro).</span
-        >
+    <div
+      class="mb-3 flex flex-col gap-2 text-xs text-slate-500 dark:text-slate-400"
+    >
+      <div class="flex items-center gap-2">
+        <BaseBadge color="danger">Vencido</BaseBadge>
+        <span>
+          Concessivo já expirou — regularizar (gozo retroativo ou pagamento em
+          dobro).
+        </span>
       </div>
-      <div class="d-flex align-items-center gap-2">
-        <span class="badge bg-warning text-dark">Prestes a vencer</span>
+      <div class="flex items-center gap-2">
+        <BaseBadge color="warning">Prestes a vencer</BaseBadge>
         <span>Concessivo vence em até 30 dias — basta marcar as férias.</span>
       </div>
-      <div class="d-flex align-items-center gap-2">
-        <span class="badge bg-info">Pendente de marcação</span>
+      <div class="flex items-center gap-2">
+        <BaseBadge color="info">Pendente de marcação</BaseBadge>
         <span>Concessivo em aberto — basta marcar as férias.</span>
       </div>
     </div>
 
-    <div v-if="loading" class="alert alert-info text-center" role="alert">
-      <div class="spinner-border spinner-border-sm me-2" role="status">
-        <span class="visually-hidden">Carregando...</span>
-      </div>
+    <div v-if="loading" class="row-loading">
+      <BaseSpinner class="h-5 w-5" />
       Carregando...
     </div>
 
-    <div v-else-if="error" class="alert alert-danger" role="alert">
+    <div v-else-if="error" class="error-alert">
       <strong>Erro:</strong> {{ error }}
     </div>
 
     <div v-else>
-      <div v-if="alerts.length" class="table-responsive shadow-sm rounded">
-        <table class="table table-striped table-hover align-middle mb-0">
-          <thead class="table-dark align-middle">
+      <div v-if="alerts.length" class="table-wrap">
+        <table class="w-full text-sm">
+          <thead
+            class="bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+          >
             <tr>
-              <th scope="col">Usuário</th>
-              <th scope="col">Período</th>
-              <th scope="col">Aquisitivo</th>
-              <th scope="col">Concessivo</th>
-              <th scope="col">Situação</th>
-              <th scope="col">Saldo (dias)</th>
-              <th scope="col">Ações</th>
+              <th scope="col" class="th">Usuário</th>
+              <th scope="col" class="th">Período</th>
+              <th scope="col" class="th">Aquisitivo</th>
+              <th scope="col" class="th">Concessivo</th>
+              <th scope="col" class="th">Situação</th>
+              <th scope="col" class="th">Saldo (dias)</th>
+              <th scope="col" class="th">Ações</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="alert in alerts" :key="alert.id">
-              <td>{{ alert.user_name }}</td>
-              <td>#{{ alert.period_number }}</td>
-              <td>
+            <tr
+              v-for="alert in alerts"
+              :key="alert.id"
+              class="border-t border-slate-200 transition hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800/60"
+            >
+              <td class="td">{{ alert.user_name }}</td>
+              <td class="td">#{{ alert.period_number }}</td>
+              <td class="td whitespace-nowrap">
                 {{ formatDate(alert.acquisitive_start, true) }} –
                 {{ formatDate(alert.acquisitive_end, true) }}
               </td>
-              <td>
+              <td class="td whitespace-nowrap">
                 {{ formatDate(alert.concessive_start, true) }} –
                 {{ formatDate(alert.concessive_end, true) }}
               </td>
-              <td>
-                <span :class="alertBadge(alert).badge">
+              <td class="td">
+                <BaseBadge :color="alertColor(alert)">
                   {{ alertBadge(alert).label }}
-                </span>
+                </BaseBadge>
               </td>
-              <td class="fw-bold">{{ alert.remaining_days }}</td>
-              <td class="text-nowrap">
+              <td class="td font-bold">{{ alert.remaining_days }}</td>
+              <td class="td whitespace-nowrap">
                 <router-link
-                  class="btn btn-sm btn-outline-primary"
+                  class="btn-outline-primary btn-sm"
                   :to="{
                     name: 'VacationAdminAccrualList',
                     params: { userId: alert.user_id },
@@ -94,9 +99,7 @@
           </tbody>
         </table>
       </div>
-      <div v-else class="alert alert-success" role="alert">
-        Nenhum período requer atenção.
-      </div>
+      <div v-else class="success-alert">Nenhum período requer atenção.</div>
     </div>
   </div>
 </template>
@@ -105,25 +108,27 @@
   import { ref, onMounted } from 'vue'
   import { useDate } from '@/composables/useDate'
   import { VacationService } from '@/services/vacation.services'
+  import Icon from '@/components/Icon.vue'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
+  import BaseBadge from '@/components/BaseBadge.vue'
 
   const { formatDate } = useDate()
 
   const ALERT_TYPE = {
-    expired: { label: 'Vencido', badge: 'badge bg-danger' },
-    about_to_expire: {
-      label: 'Prestes a vencer',
-      badge: 'badge bg-warning text-dark',
-    },
-    pending: { label: 'Pendente de marcação', badge: 'badge bg-info' },
+    expired: 'Vencido',
+    about_to_expire: 'Prestes a vencer',
+    pending: 'Pendente de marcação',
   }
 
+  const ALERT_COLORS = {
+    expired: 'danger',
+    about_to_expire: 'warning',
+    pending: 'info',
+  }
+  const alertColor = (alert) => ALERT_COLORS[alert.alert_type] || 'slate'
+
   function alertBadge(alert) {
-    return (
-      ALERT_TYPE[alert.alert_type] || {
-        label: alert.alert_type,
-        badge: 'badge bg-secondary',
-      }
-    )
+    return { label: ALERT_TYPE[alert.alert_type] || alert.alert_type }
   }
 
   function actionLabel(alert) {

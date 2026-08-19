@@ -1,38 +1,47 @@
 <template>
   <div class="mt-4 py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3 class="card-title mb-0">
-        <i class="bi bi-house-door-fill me-2"></i>
+    <div
+      class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <h3 class="flex items-center gap-2 text-2xl font-bold">
+        <Icon name="house-door-fill" class="h-6 w-6" aria-hidden="true" />
         Dashboard
       </h3>
 
-      <span class="badge bg-primary fs-5 ms-2">{{ time }}</span>
+      <span
+        class="inline-flex items-center self-start rounded-full bg-primary-600 px-3 py-1 text-lg font-semibold text-white sm:self-auto"
+        >{{ time }}</span
+      >
     </div>
 
-    <div class="row g-4">
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
       <!-- Aniversariantes -->
-      <div class="col-md-6 col-lg-4">
-        <div class="card h-100 border-success">
-          <div class="card-header d-flex align-items-center text-success">
-            <i class="bi bi-gift-fill me-2"></i>
+      <div class="md:col-span-1 lg:col-span-2">
+        <div
+          class="flex h-full flex-col rounded-xl border border-green-500 bg-white shadow-sm dark:border-green-700 dark:bg-slate-800"
+        >
+          <div
+            class="flex items-center gap-2 border-b border-slate-200 px-5 py-4 font-semibold text-green-600 dark:border-slate-700 dark:text-green-400"
+          >
+            <Icon name="gift-fill" class="h-5 w-5" aria-hidden="true" />
             Aniversariantes de {{ homeSummary.current_month_pt }}
           </div>
-          <ul class="list-group list-group-flush">
+          <ul class="divide-y divide-slate-200 dark:divide-slate-700">
             <li
               v-for="b in homeSummary.birthdays"
               :key="b.id"
-              class="list-group-item d-flex justify-content-between align-items-center"
+              class="flex items-center justify-between gap-2 px-5 py-3"
             >
               {{ b.name }}
-              <span class="badge bg-light text-dark">{{
+              <BaseBadge color="light">{{
                 formatBirthdayDate(b.birthday)
-              }}</span>
+              }}</BaseBadge>
             </li>
             <li
               v-if="
                 !homeSummary.birthdays || homeSummary.birthdays.length === 0
               "
-              class="list-group-item"
+              class="px-5 py-3 text-slate-500 dark:text-slate-400"
             >
               Nenhum aniversariante este mês
             </li>
@@ -41,37 +50,53 @@
       </div>
 
       <!-- Legal Brief -->
-      <div class="col-md-6 col-lg-8">
-        <div class="card h-100 border-primary">
-          <div class="card-header text-primary d-flex align-items-center">
-            <i class="bi bi-file-earmark-text me-2"></i>
+      <div class="md:col-span-1 lg:col-span-4">
+        <div
+          class="flex h-full flex-col rounded-xl border border-primary-500 bg-white shadow-sm dark:border-primary-700 dark:bg-slate-800"
+        >
+          <div
+            class="flex items-center gap-2 border-b border-slate-200 px-5 py-4 font-semibold text-primary-600 dark:border-slate-700 dark:text-primary-400"
+          >
+            <Icon name="file-earmark-text" class="h-5 w-5" aria-hidden="true" />
             Sempre bom revisar
           </div>
-          <div v-if="homeSummary.legal_brief" class="card-body">
-            <h5 class="card-title">
+          <div v-if="homeSummary.legal_brief" class="p-5">
+            <h5 class="mb-2 text-lg font-semibold">
               {{ homeSummary.legal_brief.id }}.
               {{ homeSummary.legal_brief.title }}
             </h5>
-            <p class="card-text">{{ homeSummary.legal_brief.content }}</p>
+            <p class="text-sm text-slate-600 dark:text-slate-300">
+              {{ homeSummary.legal_brief.content }}
+            </p>
           </div>
-          <div v-else class="card-body">
-            <p class="card-text">Nenhum informativo disponível</p>
+          <div v-else class="p-5">
+            <p class="text-sm text-slate-600 dark:text-slate-300">
+              Nenhum informativo disponível
+            </p>
           </div>
         </div>
       </div>
 
       <!-- Avisos -->
-      <div class="col-md-6 col-lg-6">
-        <div class="card h-100 border-warning">
-          <div class="card-header text-warning d-flex align-items-center">
-            <i class="bi bi-exclamation-circle-fill me-2"></i>
+      <div class="md:col-span-1 lg:col-span-3">
+        <div
+          class="flex h-full flex-col rounded-xl border border-amber-500 bg-white shadow-sm dark:border-amber-700 dark:bg-slate-800"
+        >
+          <div
+            class="flex items-center gap-2 border-b border-slate-200 px-5 py-4 font-semibold text-amber-600 dark:border-slate-700 dark:text-amber-400"
+          >
+            <Icon
+              name="exclamation-circle-fill"
+              class="h-5 w-5"
+              aria-hidden="true"
+            />
             Avisos ({{ homeSummary.unread_notices?.total || 0 }})
           </div>
-          <ul class="list-group list-group-flush">
+          <ul class="divide-y divide-slate-200 dark:divide-slate-700">
             <li
               v-for="notice in homeSummary.unread_notices?.unread_notices || []"
               :key="notice.id"
-              class="list-group-item"
+              class="px-5 py-3"
             >
               <strong>{{ notice.title }}:</strong> {{ notice.content }}
             </li>
@@ -80,7 +105,7 @@
                 !homeSummary.unread_notices?.unread_notices ||
                 homeSummary.unread_notices.unread_notices.length === 0
               "
-              class="list-group-item"
+              class="px-5 py-3 text-slate-500 dark:text-slate-400"
             >
               Nenhum aviso
             </li>
@@ -89,26 +114,30 @@
       </div>
 
       <!-- Empréstimos -->
-      <div class="col-md-6 col-lg-6">
-        <div class="card h-100 border-info">
-          <div class="card-header text-info d-flex align-items-center">
-            <i class="bi bi-book-fill me-2"></i>
+      <div class="md:col-span-1 lg:col-span-3">
+        <div
+          class="flex h-full flex-col rounded-xl border border-sky-500 bg-white shadow-sm dark:border-sky-700 dark:bg-slate-800"
+        >
+          <div
+            class="flex items-center gap-2 border-b border-slate-200 px-5 py-4 font-semibold text-sky-600 dark:border-slate-700 dark:text-sky-400"
+          >
+            <Icon name="book-fill" class="h-5 w-5" aria-hidden="true" />
             Meus Empréstimos
           </div>
-          <ul class="list-group list-group-flush">
+          <ul class="divide-y divide-slate-200 dark:divide-slate-700">
             <li
               v-for="loan in homeSummary.loans"
               :key="loan.id"
-              class="list-group-item d-flex justify-content-between align-items-center"
+              class="flex items-center justify-between gap-2 px-5 py-3"
             >
               {{ loan.book?.title || 'Título não disponível' }}
-              <span class="badge bg-light text-dark"
-                >Vence em {{ formatLoanDate(loan.due_date) }}</span
+              <BaseBadge color="light"
+                >Vence em {{ formatLoanDate(loan.due_date) }}</BaseBadge
               >
             </li>
             <li
               v-if="!homeSummary.loans || homeSummary.loans.length === 0"
-              class="list-group-item"
+              class="px-5 py-3 text-slate-500 dark:text-slate-400"
             >
               Nenhum empréstimo ativo
             </li>
@@ -124,6 +153,8 @@
   import { HomeService } from '@/services/home.services.js'
   import { useDate } from '@/composables/useDate'
   import { useNoticeStore } from '@/stores/notices.js'
+  import Icon from '@/components/Icon.vue'
+  import BaseBadge from '@/components/BaseBadge.vue'
 
   const noticeStore = useNoticeStore()
   const { formatDate } = useDate()
@@ -218,9 +249,3 @@
     }
   })
 </script>
-
-<style scoped>
-  .card-header {
-    font-weight: 600;
-  }
-</style>

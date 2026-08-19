@@ -1,124 +1,163 @@
 <template>
-  <div class="container mt-4">
-    <h1 class="mb-4">Criar Usuário</h1>
+  <div class="mt-4">
+    <h1 class="mb-4 text-2xl font-bold">Criar Usuário</h1>
 
-    <div v-if="error" class="alert alert-danger">{{ error }}</div>
+    <div
+      v-if="error"
+      class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300"
+    >
+      {{ error }}
+    </div>
 
-    <form class="card shadow-sm p-3" @submit.prevent="submit">
-      <div class="row g-3">
-        <div class="col-md-4">
-          <label class="form-label">Nome</label>
-          <input v-model="form.name" required class="form-control" />
+    <form
+      class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+      @submit.prevent="submit"
+    >
+      <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Nome</label
+          >
+          <input v-model="form.name" required class="input-base" />
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Username</label>
-          <input v-model="form.username" required class="form-control" />
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Username</label
+          >
+          <input v-model="form.username" required class="input-base" />
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label" for="cpf">CPF</label>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            for="cpf"
+            >CPF</label
+          >
           <input
             id="cpf"
             v-model="cpfDisplay"
             type="text"
             required
             maxlength="14"
-            class="form-control"
+            class="input-base"
             placeholder="000.000.000-00"
             @blur="validarCampoCPF"
           />
-          <div v-if="cpfError" class="text-danger small mt-1">
+          <div
+            v-if="cpfError"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
             {{ cpfError }}
           </div>
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Email</label>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Email</label
+          >
           <input
             v-model="form.email"
             type="email"
             required
-            class="form-control"
+            class="input-base"
           />
         </div>
-        <div class="col-md-4">
-          <label class="form-label">Data de Nascimento</label>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Data de Nascimento</label
+          >
           <input
             v-model="form.birthday"
             type="date"
             required
-            class="form-control"
+            class="input-base"
           />
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Data de Admissão</label>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Data de Admissão</label
+          >
           <input
             v-model="form.hiring_date"
             type="date"
             required
-            class="form-control"
+            class="input-base"
           />
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label">Senha</label>
-          <div class="input-group">
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Senha</label
+          >
+          <div class="relative">
             <input
               v-model="form.password"
               :type="showPassword1 ? 'text' : 'password'"
               required
-              class="form-control"
+              class="input-base pr-11"
               autocomplete="new-password"
             />
             <button
               type="button"
-              class="btn btn-outline-secondary"
+              class="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg p-2 text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
               :aria-pressed="showPassword1.toString()"
               :title="showPassword1 ? 'Ocultar senha' : 'Mostrar senha'"
               @click="showPassword1 = !showPassword1"
             >
-              <i
-                :class="showPassword1 ? 'bi bi-eye-slash' : 'bi bi-eye'"
+              <Icon
+                :name="showPassword1 ? 'eye-slash' : 'eye'"
                 aria-hidden="true"
-              ></i>
+              />
             </button>
           </div>
-          <small class="text-muted">
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
             A senha requer 8–64 caracteres, com maiúscula, minúscula, número e
             caractere especial.
-          </small>
+          </p>
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label">Confirmação de senha</label>
-          <div class="input-group">
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Confirmação de senha</label
+          >
+          <div class="relative">
             <input
               v-model="form.password_confirm"
               :type="showPassword2 ? 'text' : 'password'"
               required
-              class="form-control"
+              class="input-base pr-11"
               autocomplete="new-password"
             />
             <button
               type="button"
-              class="btn btn-outline-secondary"
+              class="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg p-2 text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
               :aria-pressed="showPassword2.toString()"
               :title="showPassword2 ? 'Ocultar senha' : 'Mostrar senha'"
               @click="showPassword2 = !showPassword2"
             >
-              <i
-                :class="showPassword2 ? 'bi bi-eye-slash' : 'bi bi-eye'"
+              <Icon
+                :name="showPassword2 ? 'eye-slash' : 'eye'"
                 aria-hidden="true"
-              ></i>
+              />
             </button>
           </div>
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Setor</label>
-          <select v-model="form.setor" class="form-select" required>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Setor</label
+          >
+          <select v-model="form.setor" class="input-base" required>
             <option disabled value="">Selecione...</option>
             <option v-for="s in setorOptions" :key="s.value" :value="s.value">
               {{ s.label }}
@@ -126,9 +165,12 @@
           </select>
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Subsetor</label>
-          <select v-model="form.subsetor" class="form-select" required>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Subsetor</label
+          >
+          <select v-model="form.subsetor" class="input-base" required>
             <option disabled value="">Selecione...</option>
             <option
               v-for="option in subsetorOptions[form.setor] || []"
@@ -140,30 +182,34 @@
           </select>
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Perfil</label>
-          <select v-model="form.role" class="form-select" required>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Perfil</label
+          >
+          <select v-model="form.role" class="input-base" required>
             <option disabled value="">Selecione...</option>
             <option v-for="r in roleOptions" :key="r.value" :value="r.value">
               {{ r.label }}
             </option>
           </select>
         </div>
+      </div>
 
-        <div class="col-12 d-flex gap-2 justify-content-end">
-          <router-link to="/users" class="btn btn-outline-secondary">
-            Cancelar
-          </router-link>
-          <button class="btn btn-primary" :disabled="loading">
-            <span
-              v-if="loading"
-              class="spinner-border spinner-border-sm me-1"
-              role="status"
-              aria-hidden="true"
-            ></span>
-            Criar
-          </button>
-        </div>
+      <div class="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <router-link
+          to="/users"
+          class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+        >
+          Cancelar
+        </router-link>
+        <button
+          class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+          :disabled="loading"
+        >
+          <BaseSpinner v-if="loading" class="h-4 w-4" />
+          Criar
+        </button>
       </div>
     </form>
   </div>
@@ -178,6 +224,8 @@
     error as errorToast,
   } from '@/composables/useToast'
   import { useCPF } from '@/composables/useCPF'
+  import Icon from '@/components/Icon.vue'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
   import * as yup from 'yup'
 
   const router = useRouter()
@@ -339,10 +387,3 @@
     }
   }
 </script>
-
-<style scoped>
-  .input-group .btn-outline-secondary {
-    border: 1px solid var(--bs-border-color);
-    border-left: 0;
-  }
-</style>

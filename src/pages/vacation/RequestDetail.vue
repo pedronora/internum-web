@@ -1,131 +1,151 @@
 <template>
-  <div class="container m-4">
-    <div v-if="loading" class="alert alert-info text-center" role="alert">
-      <div class="spinner-border spinner-border-sm me-2" role="status">
-        <span class="visually-hidden">Carregando...</span>
-      </div>
+  <div class="m-4">
+    <div v-if="loading" class="row-loading">
+      <BaseSpinner class="h-5 w-5" />
       Carregando...
     </div>
 
-    <div v-else-if="error" class="alert alert-danger" role="alert">
+    <div v-else-if="error" class="error-alert">
       <strong>Erro:</strong> {{ error }}
       <router-link
         :to="{ name: 'VacationRequestsList' }"
-        class="btn btn-sm btn-outline-secondary ms-2"
+        class="btn-outline-secondary btn-sm mt-2 inline-flex"
       >
         Voltar
       </router-link>
     </div>
 
     <div v-else-if="request">
-      <div class="d-flex justify-content-between align-items-center mb-4">
+      <div
+        class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+      >
         <div>
-          <h1 class="mb-1">Solicitação #{{ request.id }}</h1>
-          <span :class="requestStatus(request.status).badge">
+          <h1 class="mb-1 text-2xl font-bold">Solicitação #{{ request.id }}</h1>
+          <BaseBadge :color="requestStatus(request.status).color">
             {{ requestStatus(request.status).label }}
-          </span>
+          </BaseBadge>
         </div>
-        <div class="d-flex gap-2">
+        <div class="flex flex-wrap gap-2">
           <button
             v-if="canCancel(request.status)"
-            class="btn btn-outline-danger"
+            class="btn-outline-danger"
             @click="cancelRequest"
           >
-            <i class="bi bi-x-circle me-1"></i> Cancelar
+            <Icon name="x-circle" class="h-4 w-4" aria-hidden="true" /> Cancelar
           </button>
           <router-link
             :to="{ name: 'VacationRequestsList' }"
-            class="btn btn-outline-secondary"
+            class="btn-outline-secondary"
           >
-            <i class="bi bi-arrow-left me-1"></i> Voltar
+            <Icon name="arrow-left" class="h-4 w-4" aria-hidden="true" /> Voltar
           </router-link>
         </div>
       </div>
 
-      <div class="row mb-4">
-        <div class="col-md-6">
-          <div class="card shadow-sm">
-            <div class="card-header">Informações</div>
-            <div class="card-body">
-              <dl class="row mb-0">
-                <dt class="col-sm-5 text-muted">Status</dt>
-                <dd class="col-sm-7">
-                  <span :class="requestStatus(request.status).badge">
-                    {{ requestStatus(request.status).label }}
-                  </span>
-                </dd>
-                <dt class="col-sm-5 text-muted">Período de referência</dt>
-                <dd class="col-sm-7">
-                  {{ periodReference(request.target_accrual_period_id) }}
-                </dd>
-                <dt class="col-sm-5 text-muted">Solicitado em</dt>
-                <dd class="col-sm-7">
-                  {{
-                    request.requested_at
-                      ? formatDateTime(request.requested_at)
-                      : '—'
-                  }}
-                </dd>
-                <dt class="col-sm-5 text-muted">Analisado em</dt>
-                <dd class="col-sm-7">
-                  {{
-                    request.reviewed_at
-                      ? formatDateTime(request.reviewed_at)
-                      : '—'
-                  }}
-                </dd>
-                <dt class="col-sm-5 text-muted">Analisado por</dt>
-                <dd class="col-sm-7">{{ request.reviewer_name || '—' }}</dd>
-              </dl>
+      <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div
+          class="rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
+        >
+          <div
+            class="rounded-t-lg border-b border-slate-200 px-4 py-3 font-semibold dark:border-slate-700"
+          >
+            Informações
+          </div>
+          <div
+            class="grid grid-cols-1 gap-x-4 gap-y-2 p-4 text-sm sm:grid-cols-[8rem_1fr]"
+          >
+            <div class="text-slate-500 dark:text-slate-400">Status</div>
+            <div>
+              <BaseBadge :color="requestStatus(request.status).color">
+                {{ requestStatus(request.status).label }}
+              </BaseBadge>
             </div>
+            <div class="text-slate-500 dark:text-slate-400">
+              Período de referência
+            </div>
+            <div>{{ periodReference(request.target_accrual_period_id) }}</div>
+            <div class="text-slate-500 dark:text-slate-400">Solicitado em</div>
+            <div>
+              {{
+                request.requested_at
+                  ? formatDateTime(request.requested_at)
+                  : '—'
+              }}
+            </div>
+            <div class="text-slate-500 dark:text-slate-400">Analisado em</div>
+            <div>
+              {{
+                request.reviewed_at ? formatDateTime(request.reviewed_at) : '—'
+              }}
+            </div>
+            <div class="text-slate-500 dark:text-slate-400">Analisado por</div>
+            <div>{{ request.reviewer_name || '—' }}</div>
           </div>
         </div>
 
-        <div class="col-md-6">
-          <div class="card shadow-sm">
-            <div class="card-header">Observações do analisador</div>
-            <div class="card-body">
-              <p v-if="request.reviewer_notes" class="mb-0">
-                {{ request.reviewer_notes }}
-              </p>
-              <p v-else class="text-muted mb-0">—</p>
-            </div>
+        <div
+          class="rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
+        >
+          <div
+            class="rounded-t-lg border-b border-slate-200 px-4 py-3 font-semibold dark:border-slate-700"
+          >
+            Observações do analisador
+          </div>
+          <div class="p-4 text-sm">
+            <p v-if="request.reviewer_notes" class="mb-0">
+              {{ request.reviewer_notes }}
+            </p>
+            <p v-else class="mb-0 text-slate-500 dark:text-slate-400">—</p>
           </div>
         </div>
       </div>
 
       <!-- Períodos -->
-      <div class="card shadow-sm">
-        <div class="card-header">Períodos de gozo</div>
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-striped table-hover mb-0">
-              <thead class="table-dark">
-                <tr>
-                  <th>#</th>
-                  <th>Início</th>
-                  <th>Fim</th>
-                  <th>Tipo</th>
-                  <th>Dias</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(p, i) in request.periods" :key="p.id">
-                  <td>{{ i + 1 }}</td>
-                  <td>{{ formatDate(p.start_date, true) }}</td>
-                  <td>{{ formatDate(p.end_date, true) }}</td>
-                  <td>
-                    <span class="badge bg-primary">
-                      {{
-                        p.period_type === 'main' ? 'Principal' : 'Complementar'
-                      }}
-                    </span>
-                  </td>
-                  <td>{{ p.days_count }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      <div
+        class="rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
+      >
+        <div
+          class="rounded-t-lg border-b border-slate-200 px-4 py-3 font-semibold dark:border-slate-700"
+        >
+          Períodos de gozo
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead
+              class="bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+            >
+              <tr>
+                <th class="th">#</th>
+                <th class="th">Início</th>
+                <th class="th">Fim</th>
+                <th class="th">Tipo</th>
+                <th class="th">Dias</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(p, i) in request.periods"
+                :key="p.id"
+                class="border-t border-slate-200 dark:border-slate-700"
+              >
+                <td class="td">{{ i + 1 }}</td>
+                <td class="td whitespace-nowrap">
+                  {{ formatDate(p.start_date, true) }}
+                </td>
+                <td class="td whitespace-nowrap">
+                  {{ formatDate(p.end_date, true) }}
+                </td>
+                <td class="td">
+                  <BaseBadge color="primary">
+                    {{
+                      p.period_type === 'main' ? 'Principal' : 'Complementar'
+                    }}
+                  </BaseBadge>
+                </td>
+                <td class="td">{{ p.days_count }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -142,6 +162,9 @@
   } from '@/composables/useToast'
   import { useVacation } from '@/composables/useVacation'
   import { VacationService } from '@/services/vacation.services'
+  import Icon from '@/components/Icon.vue'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
+  import BaseBadge from '@/components/BaseBadge.vue'
 
   const props = defineProps({
     id: { type: [String, Number], required: true },

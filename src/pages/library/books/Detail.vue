@@ -1,125 +1,112 @@
 <template>
-  <div class="container mt-4">
-    <h1 class="mb-4">Detalhes do Livro</h1>
+  <div class="m-4">
+    <h1 class="mb-4 text-2xl font-bold">Detalhes do Livro</h1>
 
-    <div v-if="error" class="alert alert-danger">{{ error }}</div>
-    <div v-if="loading" class="text-center py-5">
-      <div class="spinner-border" role="status"></div>
+    <div v-if="error" class="error-alert mb-4">{{ error }}</div>
+    <div v-if="loading" class="row-loading">
+      <BaseSpinner class="h-5 w-5" />
     </div>
 
-    <div v-else-if="book" class="card shadow-sm p-3">
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label fw-bold">Título</label>
-          <input
-            v-model="book.title"
-            type="text"
-            class="form-control"
-            disabled
-          />
+    <div
+      v-else-if="book"
+      class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+    >
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
+          <label class="label-base">Título</label>
+          <input v-model="book.title" type="text" class="input-base" disabled />
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label fw-bold">Autor</label>
+        <div>
+          <label class="label-base">Autor</label>
           <input
             v-model="book.author"
             type="text"
-            class="form-control"
+            class="input-base"
             disabled
           />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">ISBN</label>
-          <input
-            v-model="book.isbn"
-            type="text"
-            class="form-control"
-            disabled
-          />
+        <div>
+          <label class="label-base">ISBN</label>
+          <input v-model="book.isbn" type="text" class="input-base" disabled />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Editora</label>
+        <div>
+          <label class="label-base">Editora</label>
           <input
             v-model="book.publisher"
             type="text"
-            class="form-control"
+            class="input-base"
             disabled
           />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Edição</label>
+        <div>
+          <label class="label-base">Edição</label>
           <input
             v-model="book.edition"
             type="text"
-            class="form-control"
+            class="input-base"
             disabled
           />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Ano de publicação</label>
-          <input
-            v-model="book.year"
-            type="text"
-            class="form-control"
-            disabled
-          />
+        <div>
+          <label class="label-base">Ano de publicação</label>
+          <input v-model="book.year" type="text" class="input-base" disabled />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Quantidade</label>
+        <div>
+          <label class="label-base">Quantidade</label>
           <input
             v-model="book.quantity"
             type="text"
-            class="form-control"
+            class="input-base"
             disabled
           />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Disponível</label>
+        <div>
+          <label class="label-base">Disponível</label>
           <input
             v-model="book.available_quantity"
             type="text"
-            class="form-control"
+            class="input-base"
             disabled
           />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Criado em</label>
+        <div>
+          <label class="label-base">Criado em</label>
           <input
             :value="formatDate(book.created_at)"
             type="text"
-            class="form-control"
+            class="input-base"
             disabled
           />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Atualizado em</label>
+        <div>
+          <label class="label-base">Atualizado em</label>
           <input
             :value="book.updated_at ? formatDate(book.updated_at) : '—'"
             type="text"
-            class="form-control"
+            class="input-base"
             disabled
           />
         </div>
 
-        <!-- Ações -->
-        <div class="col-12 d-flex gap-2 justify-content-end mt-3">
+        <div class="flex justify-end gap-2 sm:col-span-2 lg:col-span-3">
           <router-link
             :to="{ name: 'BooksList' }"
-            class="btn btn-outline-secondary"
+            class="btn-outline-secondary"
           >
             Voltar
           </router-link>
           <router-link
             :to="{ name: 'BookEdit', params: { id: book.id } }"
-            class="btn btn-primary"
+            class="btn-primary"
           >
             Editar
           </router-link>
@@ -135,6 +122,7 @@
   import { BooksService } from '@/services/books.services.js'
   import { error as errorToast } from '@/composables/useToast'
   import { useDate } from '@/composables/useDate'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
 
   const route = useRoute()
   const router = useRouter()

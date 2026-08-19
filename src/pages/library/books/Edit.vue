@@ -1,136 +1,141 @@
 <template>
-  <div class="container mt-4">
-    <h1 class="mb-4">Editar Livro</h1>
+  <div class="m-4">
+    <h1 class="mb-4 text-2xl font-bold">Editar Livro</h1>
 
-    <div v-if="error" class="alert alert-danger">{{ error }}</div>
-    <div v-if="loading" class="text-center py-5">
-      <div class="spinner-border" role="status"></div>
+    <div v-if="error" class="error-alert mb-4">{{ error }}</div>
+    <div v-if="loading" class="row-loading">
+      <BaseSpinner class="h-5 w-5" />
     </div>
 
-    <form v-else-if="book" class="card shadow-sm p-3" @submit.prevent="submit">
-      <div class="row g-3">
-        <!-- Linha 1 -->
-        <div class="col-md-6">
-          <label class="form-label fw-bold">Título</label>
+    <form
+      v-else-if="book"
+      class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+      @submit.prevent="submit"
+    >
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
+          <label class="label-base" for="title">Título</label>
           <input
+            id="title"
             v-model="book.title"
             required
             type="text"
-            class="form-control"
+            class="input-base"
           />
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label fw-bold">Autor</label>
+        <div>
+          <label class="label-base" for="author">Autor</label>
           <input
+            id="author"
             v-model="book.author"
             required
             type="text"
-            class="form-control"
+            class="input-base"
           />
         </div>
 
-        <!-- Linha 2 -->
-        <div class="col-md-3">
-          <label class="form-label fw-bold">ISBN</label>
+        <div>
+          <label class="label-base" for="isbn">ISBN</label>
           <input
+            id="isbn"
             v-model="book.isbn"
             required
             type="text"
-            class="form-control"
+            class="input-base"
           />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Editora</label>
+        <div>
+          <label class="label-base" for="publisher">Editora</label>
           <input
+            id="publisher"
             v-model="book.publisher"
             required
             type="text"
-            class="form-control"
+            class="input-base"
           />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Edição</label>
+        <div>
+          <label class="label-base" for="edition">Edição</label>
           <input
+            id="edition"
             v-model.number="book.edition"
             type="number"
             min="1"
-            class="form-control"
+            class="input-base"
           />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Ano de publicação</label>
+        <div>
+          <label class="label-base" for="year">Ano de publicação</label>
           <input
+            id="year"
             v-model.number="book.year"
             type="number"
             min="1500"
             :max="currentYear"
             required
-            class="form-control"
+            class="input-base"
           />
         </div>
 
-        <!-- Linha 3 -->
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Quantidade</label>
+        <div>
+          <label class="label-base" for="quantity">Quantidade</label>
           <input
+            id="quantity"
             v-model.number="book.quantity"
             type="number"
             min="0"
             required
-            class="form-control"
+            class="input-base"
           />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Disponível</label>
+        <div>
+          <label class="label-base" for="available_quantity">Disponível</label>
           <input
+            id="available_quantity"
             v-model.number="book.available_quantity"
             type="number"
             min="0"
             required
-            class="form-control"
+            class="input-base"
           />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Criado em</label>
+        <div>
+          <label class="label-base" for="created_at">Criado em</label>
           <input
+            id="created_at"
             :value="formatDate(book.created_at)"
             type="text"
-            class="form-control"
+            class="input-base"
             disabled
           />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Atualizado em</label>
+        <div>
+          <label class="label-base" for="updated_at">Atualizado em</label>
           <input
+            id="updated_at"
             :value="book.updated_at ? formatDate(book.updated_at) : '—'"
             type="text"
-            class="form-control"
+            class="input-base"
             disabled
           />
         </div>
 
-        <!-- Ações -->
-        <div class="col-12 d-flex gap-2 justify-content-end mt-3">
+        <div class="flex justify-end gap-2 sm:col-span-2 lg:col-span-3">
           <router-link
             :to="{ name: 'BooksList' }"
-            class="btn btn-outline-secondary"
+            class="btn-outline-secondary"
           >
             Cancelar
           </router-link>
-          <button class="btn btn-primary" :disabled="loading">
-            <span
-              v-if="loading"
-              class="spinner-border spinner-border-sm me-1"
-              role="status"
-              aria-hidden="true"
-            ></span>
+          <button class="btn-primary" :disabled="loading">
+            <BaseSpinner v-if="loading" class="h-4 w-4" />
             Salvar alterações
           </button>
         </div>
@@ -149,6 +154,7 @@
   } from '@/composables/useToast'
   import { useDate } from '@/composables/useDate'
   import * as yup from 'yup'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
 
   const route = useRoute()
   const router = useRouter()

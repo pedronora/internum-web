@@ -1,25 +1,27 @@
 <template>
-  <div class="container m-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="mb-0">Minhas Solicitações de Férias</h1>
-      <router-link
-        :to="{ name: 'VacationRequestsCreate' }"
-        class="btn btn-success"
-      >
-        <i class="bi bi-plus-lg me-1"></i> Nova Solicitação
+  <div class="m-4">
+    <div
+      class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <h1 class="text-2xl font-bold">Minhas Solicitações de Férias</h1>
+      <router-link :to="{ name: 'VacationRequestsCreate' }" class="btn-success">
+        <Icon name="plus-lg" class="h-4 w-4" aria-hidden="true" /> Nova
+        Solicitação
       </router-link>
     </div>
 
     <!-- Filtros -->
     <div
-      class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 p-3 border rounded bg-body border-secondary border-opacity-25"
+      class="mb-4 flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 md:flex-row md:items-center md:justify-between dark:border-slate-700 dark:bg-slate-800"
     >
-      <div class="mb-3 mb-md-0">
-        <label class="d-flex align-items-center gap-2 text-nowrap text-body">
+      <div>
+        <label
+          class="flex items-center gap-2 whitespace-nowrap text-sm text-slate-700 dark:text-slate-200"
+        >
           Mostrar
           <select
             v-model.number="limit"
-            class="form-select form-select-sm w-auto"
+            class="select-base w-auto rounded-md py-1 text-xs"
             @change="reload"
           >
             <option :value="5">5</option>
@@ -30,10 +32,10 @@
         </label>
       </div>
 
-      <div class="d-flex gap-2 w-md-auto">
+      <div class="md:w-auto">
         <select
           v-model="statusFilter"
-          class="form-select form-select-sm w-auto"
+          class="select-base w-auto rounded-md py-1 text-xs"
           @change="reload"
         >
           <option value="">Todos os status</option>
@@ -47,53 +49,54 @@
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="alert alert-info text-center" role="alert">
-      <div class="spinner-border spinner-border-sm me-2" role="status">
-        <span class="visually-hidden">Carregando...</span>
-      </div>
+    <div v-if="loading" class="row-loading">
+      <BaseSpinner class="h-5 w-5" />
       Carregando...
     </div>
 
     <!-- Tabela -->
     <div v-else>
-      <div v-if="!error" class="table-responsive shadow-sm rounded mb-4">
-        <table
-          v-if="pagedRequests.length"
-          class="table table-striped table-hover align-middle mb-0"
-        >
-          <thead class="table-dark align-middle">
+      <div v-if="!error" class="table-wrap mb-4">
+        <table v-if="pagedRequests.length" class="w-full text-sm">
+          <thead
+            class="bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+          >
             <tr>
-              <th scope="col">#</th>
-              <th scope="col">Status</th>
-              <th scope="col">Períodos</th>
-              <th scope="col">Total Dias</th>
-              <th scope="col">Solicitado em</th>
-              <th scope="col">Ações</th>
+              <th scope="col" class="th">#</th>
+              <th scope="col" class="th">Status</th>
+              <th scope="col" class="th">Períodos</th>
+              <th scope="col" class="th">Total Dias</th>
+              <th scope="col" class="th">Solicitado em</th>
+              <th scope="col" class="th">Ações</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="r in pagedRequests" :key="r.id">
-              <td>{{ r.id }}</td>
-              <td>
-                <span :class="requestStatus(r.status).badge">
+            <tr
+              v-for="r in pagedRequests"
+              :key="r.id"
+              class="border-t border-slate-200 transition hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800/60"
+            >
+              <td class="td">{{ r.id }}</td>
+              <td class="td">
+                <BaseBadge :color="requestStatus(r.status).color">
                   {{ requestStatus(r.status).label }}
-                </span>
+                </BaseBadge>
               </td>
-              <td>{{ r.periods_count }}</td>
-              <td>{{ r.total_days }}</td>
-              <td>
+              <td class="td">{{ r.periods_count }}</td>
+              <td class="td">{{ r.total_days }}</td>
+              <td class="td whitespace-nowrap">
                 {{ r.requested_at ? formatDate(r.requested_at, true) : '—' }}
               </td>
-              <td class="text-nowrap">
+              <td class="td whitespace-nowrap">
                 <router-link
                   :to="{ name: 'VacationRequestDetail', params: { id: r.id } }"
-                  class="btn btn-sm btn-outline-primary me-1"
+                  class="btn-outline-primary btn-sm mr-1"
                 >
                   Ver
                 </router-link>
                 <button
                   v-if="canCancel(r.status)"
-                  class="btn btn-sm btn-outline-danger"
+                  class="btn-outline-danger btn-sm"
                   @click="cancelRequest(r.id)"
                 >
                   Cancelar
@@ -103,40 +106,17 @@
           </tbody>
         </table>
 
-        <div v-else class="alert alert-warning text-center m-2" role="alert">
+        <div v-else class="warning-alert m-2">
           Nenhuma solicitação encontrada.
         </div>
       </div>
 
       <!-- Paginação -->
-      <div
-        v-if="totalPages > 1"
-        class="d-flex justify-content-between align-items-center"
-      >
-        <span class="text-muted">Página {{ page }} de {{ totalPages }}</span>
-        <div class="btn-group" role="group">
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            :disabled="!hasPrev"
-            @click="prev"
-          >
-            &laquo; Anterior
-          </button>
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            :disabled="!hasNext"
-            @click="next"
-          >
-            Próxima &raquo;
-          </button>
-        </div>
-      </div>
+      <BasePagination :meta="paginationMeta" @prev="prev" @next="next" />
     </div>
 
     <!-- Erro -->
-    <div v-if="error" class="alert alert-danger mt-4" role="alert">
+    <div v-if="error" class="error-alert mt-4">
       <strong>Erro:</strong> {{ error }}
     </div>
   </div>
@@ -152,6 +132,10 @@
   } from '@/composables/useToast'
   import { useVacation } from '@/composables/useVacation'
   import { VacationService } from '@/services/vacation.services'
+  import Icon from '@/components/Icon.vue'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
+  import BaseBadge from '@/components/BaseBadge.vue'
+  import BasePagination from '@/components/BasePagination.vue'
 
   const { formatDate } = useDate()
 
@@ -170,6 +154,13 @@
   )
   const hasNext = computed(() => page.value < totalPages.value)
   const hasPrev = computed(() => page.value > 1)
+
+  const paginationMeta = computed(() => ({
+    page: page.value,
+    total_pages: totalPages.value,
+    has_prev: hasPrev.value,
+    has_next: hasNext.value,
+  }))
 
   const pagedRequests = computed(() => {
     const start = (page.value - 1) * limit.value

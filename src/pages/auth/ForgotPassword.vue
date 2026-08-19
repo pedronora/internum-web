@@ -1,37 +1,52 @@
 <template>
-  <div class="container mt-4" style="max-width: 500px">
-    <h1 class="mb-4">Recuperar senha</h1>
+  <div class="mx-auto mt-4 w-full max-w-md">
+    <h1 class="mb-4 text-2xl font-bold">Recuperar senha</h1>
 
-    <p class="text-muted mb-4">
+    <p class="mb-4 text-sm text-slate-500 dark:text-slate-400">
       Informe seu e-mail e enviaremos um link para redefinir sua senha.
     </p>
 
-    <form class="card shadow-sm p-3" @submit.prevent="handleSubmit">
-      <div class="mb-3">
-        <label class="form-label">E-mail</label>
+    <form
+      class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+      @submit.prevent="handleSubmit"
+    >
+      <div class="mb-4">
+        <label class="mb-1 block text-sm font-medium">E-mail</label>
         <input
           v-model="email"
           type="email"
-          class="form-control"
-          :class="{ 'is-invalid': errors.email }"
+          class="input-base"
+          :class="{
+            'border-red-500 focus:border-red-500 focus:ring-red-500/40':
+              errors.email,
+          }"
           required
         />
-        <div v-if="errors.email" class="invalid-feedback">
+        <div
+          v-if="errors.email"
+          class="mt-1 text-sm text-red-600 dark:text-red-400"
+        >
           {{ errors.email }}
         </div>
       </div>
 
-      <button class="btn btn-primary w-100" :disabled="loading">
-        <span
-          v-if="loading"
-          class="spinner-border spinner-border-sm me-1"
-        ></span>
+      <button
+        type="submit"
+        class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+        :disabled="loading"
+      >
+        <BaseSpinner v-if="loading" class="h-4 w-4" />
         Enviar link de recuperação
       </button>
     </form>
 
     <div class="mt-3">
-      <router-link :to="{ name: 'Login' }">Voltar ao login</router-link>
+      <router-link
+        :to="{ name: 'Login' }"
+        class="text-sm text-primary-600 hover:underline dark:text-primary-400"
+      >
+        Voltar ao login
+      </router-link>
     </div>
   </div>
 </template>
@@ -40,6 +55,7 @@
   import { ref } from 'vue'
   import { AuthService } from '@/services/auth.services'
   import { success, error as errorToast } from '@/composables/useToast'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
   import * as yup from 'yup'
 
   const email = ref('')

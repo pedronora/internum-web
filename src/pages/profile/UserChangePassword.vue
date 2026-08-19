@@ -1,132 +1,162 @@
 <template>
-  <div class="container mt-4">
-    <h1 class="mb-4">Alterar senha</h1>
+  <div class="mt-4">
+    <h1 class="mb-4 text-2xl font-bold">Alterar senha</h1>
 
-    <div v-if="error" class="alert alert-danger">{{ error }}</div>
+    <div
+      v-if="error"
+      class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300"
+    >
+      {{ error }}
+    </div>
 
-    <div v-if="loading && !loadedOnce" class="text-center my-4">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Carregando...</span>
-      </div>
+    <div
+      v-if="loading && !loadedOnce"
+      class="flex items-center justify-center gap-2 py-8 text-sm text-slate-500 dark:text-slate-400"
+    >
+      <BaseSpinner class="h-5 w-5" />
+      Carregando...
     </div>
 
     <form
       v-if="loadedOnce"
-      class="card shadow-sm p-3"
+      class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800"
       @submit.prevent="submitForm"
     >
-      <div class="row g-3">
+      <div class="grid gap-4 md:grid-cols-3">
         <!-- Senha atual -->
-        <div class="col-md-4 position-relative">
-          <label class="form-label">Senha atual</label>
-          <div class="input-group">
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Senha atual</label
+          >
+          <div class="relative">
             <input
               v-model="form.oldPassword"
               :type="showOldPassword ? 'text' : 'password'"
               required
-              class="form-control"
-              :class="{ 'is-invalid': errors.oldPassword }"
+              class="input-base pr-11"
+              :class="{
+                'border-red-500 focus:border-red-500 focus:ring-red-500/40':
+                  errors.oldPassword,
+              }"
             />
             <button
               type="button"
-              class="btn btn-outline-secondary"
+              class="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg p-2 text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
               :aria-pressed="showOldPassword.toString()"
               :disabled="loading"
               :title="showOldPassword ? 'Ocultar senha' : 'Mostrar senha'"
               @click="showOldPassword = !showOldPassword"
             >
-              <i
-                :class="showOldPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"
+              <Icon
+                :name="showOldPassword ? 'eye-slash' : 'eye'"
                 aria-hidden="true"
-              ></i>
+              />
             </button>
           </div>
-          <div v-if="errors.oldPassword" class="invalid-feedback">
+          <div
+            v-if="errors.oldPassword"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
             {{ errors.oldPassword }}
           </div>
         </div>
 
         <!-- Nova senha -->
-        <div class="col-md-4 position-relative">
-          <label class="form-label">Nova senha</label>
-          <div class="input-group">
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Nova senha</label
+          >
+          <div class="relative">
             <input
               v-model="form.newPassword"
               :type="showNewPassword ? 'text' : 'password'"
               required
-              class="form-control"
-              :class="{ 'is-invalid': errors.newPassword }"
+              class="input-base pr-11"
+              :class="{
+                'border-red-500 focus:border-red-500 focus:ring-red-500/40':
+                  errors.newPassword,
+              }"
             />
             <button
               type="button"
-              class="btn btn-outline-secondary"
+              class="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg p-2 text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
               :aria-pressed="showNewPassword.toString()"
               :disabled="loading"
               :title="showNewPassword ? 'Ocultar senha' : 'Mostrar senha'"
               @click="showNewPassword = !showNewPassword"
             >
-              <i
-                :class="showNewPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"
+              <Icon
+                :name="showNewPassword ? 'eye-slash' : 'eye'"
                 aria-hidden="true"
-              ></i>
+              />
             </button>
           </div>
-          <div v-if="errors.newPassword" class="invalid-feedback">
+          <div
+            v-if="errors.newPassword"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
             {{ errors.newPassword }}
           </div>
         </div>
 
         <!-- Confirmar senha -->
-        <div class="col-md-4 position-relative">
-          <label class="form-label">Confirmar nova senha</label>
-          <div class="input-group">
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Confirmar nova senha</label
+          >
+          <div class="relative">
             <input
               v-model="form.confirmPassword"
               :type="showConfirmPassword ? 'text' : 'password'"
               required
-              class="form-control"
-              :class="{ 'is-invalid': errors.confirmPassword }"
+              class="input-base pr-11"
+              :class="{
+                'border-red-500 focus:border-red-500 focus:ring-red-500/40':
+                  errors.confirmPassword,
+              }"
             />
             <button
               type="button"
-              class="btn btn-outline-secondary"
+              class="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg p-2 text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
               :aria-pressed="showConfirmPassword.toString()"
               :disabled="loading"
               :title="showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'"
               @click="showConfirmPassword = !showConfirmPassword"
             >
-              <i
-                :class="showConfirmPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"
+              <Icon
+                :name="showConfirmPassword ? 'eye-slash' : 'eye'"
                 aria-hidden="true"
-              ></i>
+              />
             </button>
           </div>
-          <div v-if="errors.confirmPassword" class="invalid-feedback">
+          <div
+            v-if="errors.confirmPassword"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
             {{ errors.confirmPassword }}
           </div>
         </div>
+      </div>
 
-        <!-- Botões -->
-        <div class="col-12 d-flex align-items-center gap-3">
-          <div class="ms-auto d-flex gap-2">
-            <button class="btn btn-primary" :disabled="loading">
-              <span
-                v-if="loading"
-                class="spinner-border spinner-border-sm me-1"
-                role="status"
-                aria-hidden="true"
-              ></span>
-              Alterar senha
-            </button>
-            <button
-              class="btn btn-outline-secondary"
-              type="button"
-              @click="goBack"
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
+      <!-- Botões -->
+      <div class="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <button
+          class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+          type="button"
+          @click="goBack"
+        >
+          Cancelar
+        </button>
+        <button
+          class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+          :disabled="loading"
+        >
+          <BaseSpinner v-if="loading" class="h-4 w-4" />
+          Alterar senha
+        </button>
       </div>
     </form>
   </div>
@@ -141,6 +171,8 @@
     success as successToast,
     error as errorToast,
   } from '@/composables/useToast'
+  import Icon from '@/components/Icon.vue'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
   import * as yup from 'yup'
 
   const auth = useAuthStore()
@@ -222,10 +254,3 @@
     loadedOnce.value = true
   })
 </script>
-
-<style scoped>
-  .btn-outline-secondary {
-    border: 1px solid var(--bs-border-color);
-    border-left: 0;
-  }
-</style>

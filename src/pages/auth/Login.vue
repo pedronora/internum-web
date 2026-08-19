@@ -1,100 +1,115 @@
 <template>
-  <section
-    class="d-flex align-items-center justify-content-center my-login-section"
-  >
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-md-9 col-lg-6 col-xl-5 d-none d-md-block">
-        <img
-          src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
-          class="img-fluid"
-          alt="Ilustração"
-        />
-      </div>
+  <section class="flex min-h-[70vh] items-center justify-center">
+    <div class="w-full max-w-md">
+      <form
+        novalidate
+        class="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg sm:p-8 dark:border-slate-700 dark:bg-slate-800"
+        @submit.prevent="onSubmit"
+      >
+        <div class="mb-6 flex flex-col items-center gap-2 text-center">
+          <img
+            src="/favicon-96x96.png"
+            alt="Logo Internum"
+            width="56"
+            height="56"
+            class="rounded-2xl"
+          />
+          <h1 class="mt-1 text-2xl font-bold">Internum</h1>
+          <p class="text-sm text-slate-500 dark:text-slate-400">
+            1º RI de Cascavel/PR
+          </p>
+        </div>
 
-      <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-        <form novalidate @submit.prevent="onSubmit">
-          <h1 class="text-center">Internum</h1>
-          <h2 class="text-center small text-muted">1º RI de Cascavel/PR</h2>
+        <div class="divider mb-6 flex items-center gap-3">
+          <span class="h-px flex-1 bg-slate-200 dark:bg-slate-700"></span>
+          <p
+            class="mb-0 text-sm font-semibold text-slate-500 dark:text-slate-400"
+          >
+            Entrar
+          </p>
+          <span class="h-px flex-1 bg-slate-200 dark:bg-slate-700"></span>
+        </div>
 
-          <div class="divider d-flex align-items-center my-4">
-            <p class="text-center fw-bold mx-3 mb-0">Entrar</p>
-          </div>
+        <div class="mb-4">
+          <label class="mb-1 block text-sm font-medium" for="userInput">
+            Usuário
+          </label>
+          <input
+            id="userInput"
+            v-model.trim="username"
+            type="text"
+            class="input-base"
+            placeholder="Insira o seu usuário"
+            :disabled="loading"
+            required
+            autocomplete="username"
+          />
+        </div>
 
-          <div class="form-outline mb-4">
+        <div class="mb-6">
+          <label class="mb-1 block text-sm font-medium" for="pwdInput">
+            Senha
+          </label>
+          <div class="relative">
             <input
-              id="userInput"
-              v-model.trim="username"
-              type="text"
-              class="form-control form-control-lg"
-              placeholder="Insira o seu usuário"
+              id="pwdInput"
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              class="input-base w-full pr-11"
+              placeholder="Insira sua senha"
               :disabled="loading"
               required
-              autocomplete="username"
+              autocomplete="current-password"
             />
-            <label class="form-label" for="userInput">Usuário</label>
-          </div>
-
-          <div class="form-outline mb-3">
-            <div class="input-group">
-              <input
-                id="pwdInput"
-                v-model="password"
-                :type="showPassword ? 'text' : 'password'"
-                class="form-control form-control-lg"
-                placeholder="Insira sua senha"
-                :disabled="loading"
-                required
-                autocomplete="current-password"
-              />
-              <button
-                type="button"
-                class="btn btn-outline-secondary"
-                :aria-pressed="showPassword.toString()"
-                :disabled="loading"
-                :title="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
-                @click="showPassword = !showPassword"
-              >
-                <i
-                  :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"
-                  aria-hidden="true"
-                ></i>
-              </button>
-            </div>
-            <label class="form-label mt-2" for="pwdInput">Senha</label>
-          </div>
-
-          <div class="d-flex justify-content-between align-items-center mt-3">
             <button
-              type="submit"
-              class="btn btn-primary btn-lg px-5"
+              type="button"
+              class="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg p-2 text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              :aria-pressed="showPassword.toString()"
               :disabled="loading"
+              :title="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+              @click="showPassword = !showPassword"
             >
-              <span v-if="!loading">Entrar</span>
-              <span v-else>
-                <span
-                  class="spinner-border spinner-border-sm"
-                  role="status"
-                ></span>
-                &nbsp;Entrando...
-              </span>
+              <Icon
+                :name="showPassword ? 'eye-slash' : 'eye'"
+                aria-hidden="true"
+              />
             </button>
-
-            <router-link
-              :to="{ name: 'forgot-password' }"
-              class="text-decoration-none small text-muted ms-3"
-            >
-              <i class="bi bi-key me-1"></i>
-              Esqueci minha senha
-            </router-link>
           </div>
+        </div>
 
-          <div v-if="error" class="mt-3">
-            <p class="alert alert-danger text-center" role="alert">
-              {{ error }}
-            </p>
-          </div>
-        </form>
-      </div>
+        <div
+          class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <button
+            type="submit"
+            class="rounded-lg bg-primary-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+            :disabled="loading"
+          >
+            <span v-if="!loading">Entrar</span>
+            <span v-else class="inline-flex items-center gap-2">
+              <BaseSpinner class="h-4 w-4" />
+              Entrando...
+            </span>
+          </button>
+
+          <router-link
+            :to="{ name: 'forgot-password' }"
+            class="inline-flex items-center gap-1.5 text-sm text-slate-500 transition hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400"
+          >
+            <Icon name="key" class="h-3.5 w-3.5" aria-hidden="true" />
+            Esqueci minha senha
+          </router-link>
+        </div>
+
+        <div v-if="error" class="mt-4">
+          <p
+            class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300"
+            role="alert"
+          >
+            {{ error }}
+          </p>
+        </div>
+      </form>
     </div>
   </section>
 </template>
@@ -103,6 +118,8 @@
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useAuthStore } from '@/stores/auth'
+  import Icon from '@/components/Icon.vue'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
 
   const username = ref('')
   const password = ref('')
@@ -148,22 +165,3 @@
     }
   }
 </script>
-
-<style scoped>
-  .divider:after,
-  .divider:before {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: #eee;
-  }
-
-  .btn-outline-secondary {
-    border: 1px solid var(--bs-border-color);
-    border-left: 0;
-  }
-
-  .my-login-section {
-    min-height: 70vh;
-  }
-</style>

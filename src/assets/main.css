@@ -1,18 +1,122 @@
-@import 'bootstrap/dist/css/bootstrap.css';
+@import 'tailwindcss';
 
-/* Submenu aninhado (ex.: RH > Férias) */
-.dropdown-submenu {
-  position: relative;
+/* Dark mode via classe .dark no <html> (gerida por useTheme) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Design system — tokens do Internum */
+@theme {
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  --color-surface: #ffffff;
+  --color-surface-alt: #f8f9fa;
+  --color-content: #212529;
+  --color-content-muted: #6c757d;
 }
 
-.dropdown-submenu > .dropdown-menu {
-  top: 0;
-  left: 100%;
-  margin-top: 0;
-  margin-left: 0.125rem;
-}
+/* Design system — classes de componentes reutilizáveis */
+@layer components {
+  .input-base {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 transition focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500 dark:disabled:bg-slate-800 dark:disabled:text-slate-500 dark:disabled:border-slate-700;
+  }
 
-.dropdown-submenu:hover > .dropdown-menu,
-.dropdown-submenu:focus-within > .dropdown-menu {
-  display: block;
+  .select-base {
+    @apply rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 transition focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:disabled:bg-slate-800 dark:disabled:text-slate-500 dark:disabled:border-slate-700;
+  }
+
+  .label-base {
+    @apply mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200;
+  }
+
+  .field-error {
+    @apply mt-1 text-sm text-red-600 dark:text-red-400;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-success {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-outline-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-primary-600 px-4 py-2 text-sm font-medium text-primary-600 transition hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-primary-500 dark:text-primary-400 dark:hover:bg-primary-900/30;
+  }
+
+  .btn-outline-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-warning {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-outline-success {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-green-600 px-4 py-2 text-sm font-medium text-green-600 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-green-500 dark:text-green-400 dark:hover:bg-green-900/30;
+  }
+
+  .btn-outline-warning {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-amber-500 px-4 py-2 text-sm font-medium text-amber-600 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-amber-500 dark:text-amber-400 dark:hover:bg-amber-900/30;
+  }
+
+  .btn-outline-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/30;
+  }
+
+  .btn-sm {
+    @apply px-2.5 py-1 text-xs;
+  }
+
+  .error-alert {
+    @apply rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300;
+  }
+
+  .info-alert {
+    @apply rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-700 dark:border-sky-800 dark:bg-sky-900/30 dark:text-sky-300;
+  }
+
+  .warning-alert {
+    @apply rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-300;
+  }
+
+  .success-alert {
+    @apply rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-900/30 dark:text-green-300;
+  }
+
+  .row-loading {
+    @apply flex items-center justify-center gap-2 py-8 text-sm text-slate-500 dark:text-slate-400;
+  }
+
+  .row-empty {
+    @apply py-8 text-center text-sm text-slate-500 dark:text-slate-400;
+  }
+
+  .table-wrap {
+    @apply overflow-x-auto rounded-lg border border-slate-200 shadow-sm dark:border-slate-700;
+  }
+
+  .th {
+    @apply px-4 py-3 whitespace-nowrap font-semibold;
+  }
+
+  .td {
+    @apply px-4 py-3;
+  }
 }

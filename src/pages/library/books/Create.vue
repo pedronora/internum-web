@@ -1,71 +1,78 @@
 <template>
-  <div class="container mt-4">
-    <h1 class="mb-4">Cadastrar Livro</h1>
+  <div class="m-4">
+    <h1 class="mb-4 text-2xl font-bold">Cadastrar Livro</h1>
 
-    <div v-if="error" class="alert alert-danger">{{ error }}</div>
+    <div v-if="error" class="error-alert mb-4">{{ error }}</div>
 
-    <form class="card shadow-sm p-3" @submit.prevent="submit">
-      <div class="row g-3">
-        <!-- Linha 1 -->
-        <div class="col-md-6">
-          <label class="form-label">Título</label>
-          <input v-model="form.title" required class="form-control" />
+    <form
+      class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+      @submit.prevent="submit"
+    >
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
+          <label class="label-base" for="title">Título</label>
+          <input id="title" v-model="form.title" required class="input-base" />
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label">Autor</label>
-          <input v-model="form.author" required class="form-control" />
-        </div>
-
-        <!-- Linha 2 -->
-        <div class="col-md-3">
-          <label class="form-label">ISBN</label>
-          <input v-model="form.isbn" required class="form-control" />
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">Editora</label>
-          <input v-model="form.publisher" required class="form-control" />
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">Edição</label>
+        <div>
+          <label class="label-base" for="author">Autor</label>
           <input
+            id="author"
+            v-model="form.author"
+            required
+            class="input-base"
+          />
+        </div>
+
+        <div>
+          <label class="label-base" for="isbn">ISBN</label>
+          <input id="isbn" v-model="form.isbn" required class="input-base" />
+        </div>
+
+        <div>
+          <label class="label-base" for="publisher">Editora</label>
+          <input
+            id="publisher"
+            v-model="form.publisher"
+            required
+            class="input-base"
+          />
+        </div>
+
+        <div>
+          <label class="label-base" for="edition">Edição</label>
+          <input
+            id="edition"
             v-model.number="form.edition"
             type="number"
             min="1"
-            class="form-control"
+            class="input-base"
             placeholder="1"
           />
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label">Ano de publicação</label>
+        <div>
+          <label class="label-base" for="year">Ano de publicação</label>
           <input
+            id="year"
             v-model.number="form.year"
             type="number"
             min="1500"
             :max="currentYear"
             required
-            class="form-control"
+            class="input-base"
           />
         </div>
 
-        <!-- Linha 3 - Ações -->
-        <div class="col-12 d-flex gap-2 justify-content-end">
+        <div class="flex justify-end gap-2 sm:col-span-2 lg:col-span-3">
           <router-link
             :to="{ name: 'BooksList' }"
-            class="btn btn-outline-secondary"
+            class="btn-outline-secondary"
           >
             Cancelar
           </router-link>
-          <button class="btn btn-primary" :disabled="loading">
-            <span
-              v-if="loading"
-              class="spinner-border spinner-border-sm me-1"
-              role="status"
-              aria-hidden="true"
-            ></span>
+          <button class="btn-primary" :disabled="loading">
+            <BaseSpinner v-if="loading" class="h-4 w-4" />
             Cadastrar
           </button>
         </div>
@@ -83,6 +90,7 @@
     error as errorToast,
   } from '@/composables/useToast'
   import * as yup from 'yup'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
 
   const router = useRouter()
   const loading = ref(false)
