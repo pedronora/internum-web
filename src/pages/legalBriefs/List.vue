@@ -1,65 +1,68 @@
 <template>
-  <div class="container m-4">
-    <!-- Cabeçalho -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="mb-0">Ementas</h1>
+  <div>
+    <div
+      class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <h1 class="text-2xl font-bold">Ementas</h1>
       <router-link
         v-if="authStore.isAdminOrCoord"
         :to="{ name: 'LegalBriefsCreate' }"
-        class="btn btn-success"
+        class="inline-flex items-center justify-center gap-2 self-start rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        <i class="bi bi-plus-lg me-1"></i> Criar Novo
+        <Icon name="plus-lg" class="h-4 w-4" aria-hidden="true" /> Criar Novo
       </router-link>
     </div>
 
-    <!-- Filtros -->
     <div
-      class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 p-3 border rounded bg-body border-secondary border-opacity-25"
+      class="mb-4 flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-3 md:flex-row md:items-center md:justify-between dark:border-slate-700 dark:bg-slate-800"
     >
-      <div class="mb-3 mb-md-0">
-        <label class="d-flex align-items-center gap-2 text-nowrap text-body">
-          Mostrar
-          <select
-            v-model.number="limit"
-            class="form-select form-select-sm w-auto"
-            @change="reload"
-          >
-            <option :value="5">5</option>
-            <option :value="10">10</option>
-            <option :value="25">25</option>
-          </select>
-          por página
-        </label>
+      <div
+        class="flex items-center gap-2 whitespace-nowrap text-sm text-slate-700 dark:text-slate-200"
+      >
+        Mostrar
+        <select
+          v-model.number="limit"
+          class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+          @change="reload"
+        >
+          <option :value="5">5</option>
+          <option :value="10">10</option>
+          <option :value="25">25</option>
+        </select>
+        por página
       </div>
 
-      <div class="d-flex gap-2 w-md-auto">
+      <div class="flex w-full flex-col gap-2 md:w-auto md:flex-row">
         <input
           id="search"
           v-model="search"
-          class="form-control"
+          class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 md:w-64 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
           placeholder="Buscar..."
           @keyup.enter="reload"
         />
-        <button class="btn btn-outline-primary text-nowrap" @click="reload">
-          <i class="bi bi-search me-1"></i> Buscar
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+          @click="reload"
+        >
+          <Icon name="search" class="h-4 w-4" aria-hidden="true" /> Buscar
         </button>
       </div>
     </div>
 
-    <!-- Lista -->
-    <div v-if="briefs.length > 0" class="d-flex flex-column gap-3">
+    <div v-if="briefs.length > 0" class="flex flex-col gap-4">
       <div
         v-for="brief in briefs"
         :key="brief.id"
-        class="card p-3 border-0 border-bottom position-relative"
+        class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800"
         :class="{
-          'text-body-secondary text-decoration-line-through': brief.canceled,
+          'text-slate-500 line-through dark:text-slate-400': brief.canceled,
         }"
       >
-        <!-- Cabeçalho -->
-        <div class="d-flex justify-content-between align-items-start mb-2">
-          <h5 class="mb-1">{{ brief.id }}. {{ brief.title }}</h5>
-          <small class="text-body-secondary text-decoration-none">
+        <div class="mb-2 flex items-start justify-between gap-2">
+          <h5 class="mb-1 text-base font-semibold">
+            {{ brief.id }}. {{ brief.title }}
+          </h5>
+          <small class="text-slate-500 dark:text-slate-400">
             {{
               formatDate(
                 brief.revisions?.length > 0
@@ -70,125 +73,94 @@
           </small>
         </div>
 
-        <!-- Conteúdo -->
-        <p class="mb-2">{{ brief.content }}</p>
+        <p class="mb-2 text-sm">{{ brief.content }}</p>
 
-        <!-- Autor -->
         <div
           v-if="brief.updated_by"
-          class="text-secondary"
-          style="font-size: 0.75rem"
+          class="text-xs text-slate-500 dark:text-slate-400"
         >
           Editado por {{ brief.updated_by.name || 'Usuário desconhecido' }}
         </div>
-        <div v-else class="text-secondary" style="font-size: 0.75rem">
+        <div v-else class="text-xs text-slate-500 dark:text-slate-400">
           Criado por {{ brief.created_by.name || 'Usuário desconhecido' }}
         </div>
 
-        <!-- Revisões -->
         <div v-if="brief.revisions?.length > 0" class="mt-3">
-          <small class="text-body-secondary d-block mb-2"
+          <small class="mb-2 block text-slate-500 dark:text-slate-400"
             >Versões anteriores:</small
           >
 
           <div
             v-for="rev in brief.revisions"
             :key="rev.id"
-            class="border-start ps-3 mb-3"
+            class="mb-3 border-l border-slate-200 pl-3 dark:border-slate-700"
           >
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <h6 class="mb-0 text-body-secondary fw-semibold">
+            <div class="mb-1 flex items-center justify-between gap-2">
+              <h6
+                class="mb-0 text-sm font-semibold text-slate-500 dark:text-slate-400"
+              >
                 {{ rev.title }}
               </h6>
-              <small class="text-secondary">
+              <small class="text-slate-500 dark:text-slate-400">
                 {{ formatDate(rev.created_at) }}
               </small>
             </div>
-            <p class="small text-body-secondary fst-italic mb-1">
+            <p class="mb-1 text-xs italic text-slate-500 dark:text-slate-400">
               {{ rev.content }}
             </p>
             <div
               v-if="rev.updated_by"
-              class="text-secondary"
-              style="font-size: 0.75rem"
+              class="text-xs text-slate-500 dark:text-slate-400"
             >
               Editado por {{ rev.updated_by.name || 'Usuário desconhecido' }}
             </div>
           </div>
         </div>
 
-        <!-- Botões Admin -->
         <div
           v-if="authStore.isAdminOrCoord && !brief.canceled"
-          class="d-flex justify-content-end gap-2 mt-3"
+          class="mt-3 flex justify-end gap-2"
         >
           <router-link
             :to="`/legal-briefs/${brief.id}/edit`"
-            class="btn btn-sm btn-outline-primary"
+            class="inline-flex items-center justify-center gap-2 rounded-lg border border-primary-300 bg-white px-2.5 py-1 text-xs font-medium text-primary-700 transition hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-primary-700 dark:bg-slate-800 dark:text-primary-400 dark:hover:bg-primary-950/30"
           >
-            <i class="bi bi-pencil"></i> Editar
+            <Icon name="pencil" class="h-3.5 w-3.5" aria-hidden="true" />
+            Editar
           </router-link>
 
           <button
-            class="btn btn-sm btn-outline-danger"
+            class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-2.5 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-700 dark:bg-slate-800 dark:text-red-400 dark:hover:bg-red-950/30"
             @click="cancelBrief(brief.id)"
           >
-            <i class="bi bi-x-circle"></i> Cancelar
+            <Icon name="x-circle" class="h-3.5 w-3.5" aria-hidden="true" />
+            Cancelar
           </button>
         </div>
 
-        <!-- Status -->
         <div v-if="brief.canceled_at" class="mb-2">
-          <span class="badge bg-danger">
+          <BaseBadge color="danger">
             Cancelada em {{ formatDate(brief.canceled_at) }}
-          </span>
+          </BaseBadge>
         </div>
       </div>
     </div>
 
-    <div v-else class="text-center py-5 text-body-secondary">
+    <div
+      v-else
+      class="py-8 text-center text-sm text-slate-500 dark:text-slate-400"
+    >
       Nenhum registro encontrado.
     </div>
 
-    <!-- Paginação -->
-    <nav
+    <BasePagination
       v-if="meta && meta.total_pages > 1"
-      aria-label="Paginação"
-      class="mt-4 d-flex justify-content-center"
-    >
-      <ul class="pagination pagination-sm mb-0">
-        <li class="page-item" :class="{ disabled: !meta.has_prev }">
-          <button
-            class="page-link"
-            :disabled="!meta.has_prev"
-            @click="previousPage"
-          >
-            Anterior
-          </button>
-        </li>
-
-        <li
-          v-for="pageNum in meta.total_pages"
-          :key="pageNum"
-          class="page-item"
-          :class="{ active: pageNum === meta.page }"
-        >
-          <button class="page-link" @click="goToPage(pageNum)">
-            {{ pageNum }}
-          </button>
-        </li>
-
-        <li class="page-item" :class="{ disabled: !meta.has_next }">
-          <button
-            class="page-link"
-            :disabled="!meta.has_next"
-            @click="nextPage"
-          >
-            Próximo
-          </button>
-        </li>
-      </ul>
-    </nav>
+      variant="pages"
+      :meta="meta"
+      @prev="previousPage"
+      @next="nextPage"
+      @go="goToPage"
+    />
   </div>
 </template>
 
@@ -202,6 +174,9 @@
     error as errorToast,
   } from '@/composables/useToast'
   import { useDate } from '@/composables/useDate'
+  import Icon from '@/components/Icon.vue'
+  import BaseBadge from '@/components/BaseBadge.vue'
+  import BasePagination from '@/components/BasePagination.vue'
 
   const { formatDate } = useDate()
   const authStore = useAuthStore()
@@ -271,10 +246,3 @@
 
   onMounted(loadData)
 </script>
-
-<style scoped>
-  .btn-outline-secondary {
-    border: 1px solid var(--bs-border-color);
-    border-left: 0;
-  }
-</style>

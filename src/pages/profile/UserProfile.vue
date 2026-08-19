@@ -1,84 +1,132 @@
 <template>
-  <div class="container mt-4">
-    <h1 class="mb-4">Meu Perfil</h1>
+  <div class="mt-4">
+    <h1 class="mb-4 text-2xl font-bold">Meu Perfil</h1>
 
-    <div v-if="error" class="alert alert-danger">{{ error }}</div>
-
-    <div v-if="loading && !loadedOnce" class="text-center my-4">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Carregando...</span>
-      </div>
+    <div
+      v-if="error"
+      class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300"
+    >
+      {{ error }}
     </div>
 
-    <form v-if="loadedOnce" class="card shadow-sm p-3" @submit.prevent="submit">
-      <div class="row g-3">
-        <div class="col-md-4">
-          <label class="form-label">Nome</label>
+    <div
+      v-if="loading && !loadedOnce"
+      class="flex items-center justify-center gap-2 py-8 text-sm text-slate-500 dark:text-slate-400"
+    >
+      <BaseSpinner class="h-5 w-5" />
+      Carregando...
+    </div>
+
+    <form
+      v-if="loadedOnce"
+      class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+      @submit.prevent="submit"
+    >
+      <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Nome</label
+          >
           <input
             v-model="form.name"
             required
-            class="form-control"
-            :class="{ 'is-invalid': errors.name }"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500/40':
+                errors.name,
+            }"
           />
-          <div v-if="errors.name" class="invalid-feedback">
+          <div
+            v-if="errors.name"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
             {{ errors.name }}
           </div>
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Username</label>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Username</label
+          >
           <input
             v-model="form.username"
             required
-            class="form-control"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
             disabled
           />
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">CPF</label>
-          <input :value="formatarCPF(form.cpf)" class="form-control" disabled />
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >CPF</label
+          >
+          <input
+            :value="formatarCPF(form.cpf)"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            disabled
+          />
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Email</label>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Email</label
+          >
           <input
             v-model="form.email"
             type="email"
             required
-            class="form-control"
-            :class="{ 'is-invalid': errors.email }"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500/40':
+                errors.email,
+            }"
           />
-          <div v-if="errors.email" class="invalid-feedback">
+          <div
+            v-if="errors.email"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
             {{ errors.email }}
           </div>
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Data de Nascimento</label>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Data de Nascimento</label
+          >
           <input
             v-model="form.birthday"
             type="date"
             required
-            class="form-control"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
           />
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Data de Admissão</label>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Data de Admissão</label
+          >
           <input
             v-model="form.hiring_date"
             type="date"
-            class="form-control"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
             disabled
           />
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Setor</label>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Setor</label
+          >
           <select
             v-model="form.setor"
-            class="form-select"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
             :disabled="!canEditRestrictedFields"
           >
             <option v-for="s in setorOptions" :key="s.value" :value="s.value">
@@ -87,11 +135,14 @@
           </select>
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Subsetor</label>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Subsetor</label
+          >
           <select
             v-model="form.subsetor"
-            class="form-select"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
             :disabled="!canEditRestrictedFields"
           >
             <option
@@ -104,11 +155,14 @@
           </select>
         </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Perfil</label>
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Perfil</label
+          >
           <select
             v-model="form.role"
-            class="form-select"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
             :disabled="!canEditRestrictedFields"
           >
             <option v-for="r in roleOptions" :key="r.value" :value="r.value">
@@ -116,20 +170,16 @@
             </option>
           </select>
         </div>
+      </div>
 
-        <div class="col-12 d-flex align-items-center gap-3">
-          <div class="ms-auto d-flex gap-2">
-            <button class="btn btn-primary" :disabled="loading">
-              <span
-                v-if="loading"
-                class="spinner-border spinner-border-sm me-1"
-                role="status"
-                aria-hidden="true"
-              ></span>
-              Atualizar
-            </button>
-          </div>
-        </div>
+      <div class="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <button
+          class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+          :disabled="loading"
+        >
+          <BaseSpinner v-if="loading" class="h-4 w-4" />
+          Atualizar
+        </button>
       </div>
     </form>
   </div>
@@ -144,6 +194,7 @@
     error as errorToast,
   } from '@/composables/useToast'
   import { useCPF } from '@/composables/useCPF'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
   import * as yup from 'yup'
 
   function formatDateForInput(dateString) {

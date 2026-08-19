@@ -1,126 +1,138 @@
 <template>
-  <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="mb-0">Meus Avisos</h1>
-      <div class="d-flex gap-2">
+  <div>
+    <div
+      class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <h1 class="text-2xl font-bold">Meus Avisos</h1>
+      <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
         <input
           v-model="searchQuery"
           type="text"
-          class="form-control"
+          class="w-full max-w-[250px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
           placeholder="Pesquisar..."
-          style="max-width: 250px"
           @keyup.enter="fetchAll"
         />
-        <button class="btn btn-outline-primary" @click="fetchAll">
+        <button
+          class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+          @click="fetchAll"
+        >
           Buscar
         </button>
-        <button class="btn btn-outline-success" @click="fetchAll">
-          <i class="bi bi-repeat"></i>
+        <button
+          class="inline-flex items-center justify-center gap-2 rounded-lg border border-green-300 bg-white px-4 py-2 text-sm font-medium text-green-700 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-green-700 dark:bg-slate-800 dark:text-green-400 dark:hover:bg-green-950/30"
+          title="Atualizar"
+          @click="fetchAll"
+        >
+          <Icon name="repeat" class="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
     </div>
 
     <section>
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">Avisos não lidos ({{ unreadsMeta.total }})</h3>
-        <div>
+      <div
+        class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <h3 class="text-lg font-semibold">
+          Avisos não lidos ({{ unreadsMeta.total }})
+        </h3>
+        <BasePagination
+          :meta="unreadsMeta"
+          @prev="changePage('unreads', unreadsMeta.page - 1)"
+          @next="changePage('unreads', unreadsMeta.page + 1)"
+        />
+      </div>
+
+      <div
+        v-if="unreads.length"
+        class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        <div
+          v-for="notice in unreads"
+          :key="notice.id"
+          class="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+        >
+          <h5 class="mb-2 text-base font-semibold">{{ notice.title }}</h5>
+          <p class="mb-4 text-sm">{{ notice.content }}</p>
+          <p class="mt-auto mb-4 text-xs text-slate-500 dark:text-slate-400">
+            <strong>Autor:</strong> {{ notice.author?.name }} <br />
+            <strong>Criado em:</strong> {{ formatDate(notice.created_at) }}
+          </p>
           <button
-            class="btn btn-sm btn-outline-secondary me-2"
-            :disabled="!unreadsMeta.has_prev"
-            @click="changePage('unreads', unreadsMeta.page - 1)"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
+            :disabled="loadingIds.has(notice.id)"
+            @click="markRead(notice.id)"
           >
-            ← Anterior
-          </button>
-          <button
-            class="btn btn-sm btn-outline-secondary"
-            :disabled="!unreadsMeta.has_next"
-            @click="changePage('unreads', unreadsMeta.page + 1)"
-          >
-            Próxima →
+            <span v-if="!loadingIds.has(notice.id)">Marcar como lido</span>
+            <span v-else class="inline-flex items-center gap-2">
+              <BaseSpinner class="h-4 w-4" />
+              Marcando...
+            </span>
           </button>
         </div>
       </div>
 
-      <div v-if="unreads.length" class="row">
-        <div v-for="notice in unreads" :key="notice.id" class="col-md-4 mb-3">
-          <div class="card shadow-sm h-100">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{ notice.title }}</h5>
-              <p class="card-text">
-                {{ notice.content }}
-              </p>
-              <p class="text-muted small mt-auto mb-2">
-                <strong>Autor:</strong> {{ notice.author?.name }} <br />
-                <strong>Criado em:</strong> {{ formatDate(notice.created_at) }}
-              </p>
-              <button
-                class="btn btn-sm btn-success w-100"
-                :disabled="loadingIds.has(notice.id)"
-                @click="markRead(notice.id)"
-              >
-                <span v-if="!loadingIds.has(notice.id)">Marcar como lido</span>
-                <span v-else>
-                  <span
-                    class="spinner-border spinner-border-sm me-2"
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
-                  Marcando...
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <p v-else class="text-center text-muted my-4">Nenhum aviso não lido 🎉</p>
+      <p
+        v-else
+        class="py-8 text-center text-sm text-slate-500 dark:text-slate-400"
+      >
+        Nenhum aviso não lido 🎉
+      </p>
     </section>
 
-    <hr />
+    <hr class="my-6 border-slate-200 dark:border-slate-700" />
 
     <section>
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">Avisos lidos</h3>
-        <div>
-          <button
-            class="btn btn-sm btn-outline-secondary me-2"
-            :disabled="!readsMeta.has_prev"
-            @click="changePage('reads', readsMeta.page - 1)"
-          >
-            ← Anterior
-          </button>
-          <button
-            class="btn btn-sm btn-outline-secondary"
-            :disabled="!readsMeta.has_next"
-            @click="changePage('reads', readsMeta.page + 1)"
-          >
-            Próxima →
-          </button>
-        </div>
+      <div
+        class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <h3 class="text-lg font-semibold">Avisos lidos</h3>
+        <BasePagination
+          :meta="readsMeta"
+          @prev="changePage('reads', readsMeta.page - 1)"
+          @next="changePage('reads', readsMeta.page + 1)"
+        />
       </div>
 
-      <div class="table-responsive">
-        <table class="table table-striped table-hover align-middle">
-          <thead>
+      <div
+        class="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
+      >
+        <table class="w-full text-sm">
+          <thead
+            class="bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+          >
             <tr>
-              <th>Título</th>
-              <th>Autor</th>
-              <th>Conteúdo</th>
-              <th>Criado em</th>
-              <th></th>
+              <th class="px-4 py-3 whitespace-nowrap text-left font-semibold">
+                Título
+              </th>
+              <th class="px-4 py-3 whitespace-nowrap text-left font-semibold">
+                Autor
+              </th>
+              <th class="px-4 py-3 whitespace-nowrap text-left font-semibold">
+                Conteúdo
+              </th>
+              <th class="px-4 py-3 whitespace-nowrap text-left font-semibold">
+                Criado em
+              </th>
+              <th
+                class="px-4 py-3 whitespace-nowrap text-left font-semibold"
+              ></th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="notice in reads" :key="notice.id">
-              <td>{{ notice.title }}</td>
-              <td>{{ notice.author?.name }}</td>
-              <td class="text-truncate" style="max-width: 250px">
+            <tr
+              v-for="notice in reads"
+              :key="notice.id"
+              class="border-t border-slate-200 transition hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800/60"
+            >
+              <td class="px-4 py-3">{{ notice.title }}</td>
+              <td class="px-4 py-3">{{ notice.author?.name }}</td>
+              <td class="max-w-[250px] truncate px-4 py-3">
                 {{ notice.content }}
               </td>
-              <td>{{ formatDate(notice.created_at) }}</td>
-              <td>
+              <td class="px-4 py-3">{{ formatDate(notice.created_at) }}</td>
+              <td class="px-4 py-3">
                 <router-link
-                  class="btn btn-outline-info btn-sm"
+                  class="inline-flex items-center justify-center gap-2 rounded-lg border border-sky-300 bg-white px-2.5 py-1 text-xs font-medium text-sky-600 transition hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-sky-700 dark:bg-slate-800 dark:text-sky-400 dark:hover:bg-sky-950/30"
                   :to="{ name: 'NoticesDetail', params: { id: notice.id } }"
                 >
                   ver
@@ -128,7 +140,10 @@
               </td>
             </tr>
             <tr v-if="!reads.length">
-              <td colspan="5" class="text-center text-muted">
+              <td
+                colspan="5"
+                class="px-4 py-3 text-center text-sm text-slate-500 dark:text-slate-400"
+              >
                 Nenhum aviso lido ainda.
               </td>
             </tr>
@@ -148,6 +163,9 @@
   } from '@/composables/useToast'
   import { useDate } from '@/composables/useDate'
   import { useNoticeStore } from '@/stores/notices.js'
+  import Icon from '@/components/Icon.vue'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
+  import BasePagination from '@/components/BasePagination.vue'
 
   const { formatDate } = useDate()
 

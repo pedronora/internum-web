@@ -1,61 +1,80 @@
 <template>
-  <div class="container py-4">
-    <div class="card shadow-sm border-0">
-      <div class="card-body">
-        <h4 class="card-title mb-4">
-          <i class="bi bi-pencil-square me-2"></i>
+  <div>
+    <div
+      class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
+    >
+      <div class="p-5">
+        <h4 class="mb-4 flex items-center gap-2 text-lg font-semibold">
+          <Icon name="pencil-square" class="h-5 w-5" aria-hidden="true" />
           Editar Ementa
         </h4>
 
-        <!-- Formulário -->
         <form @submit.prevent="submitForm">
-          <!-- Título -->
-          <div class="mb-3">
-            <label for="title" class="form-label fw-semibold">Título</label>
+          <div class="mb-4">
+            <label
+              for="title"
+              class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+              >Título</label
+            >
             <input
               id="title"
               v-model.trim="form.title"
               type="text"
-              class="form-control"
-              :class="{ 'is-invalid': errors.title }"
+              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+              :class="{
+                'border-red-500 focus:border-red-500 focus:ring-red-500/40':
+                  errors.title,
+              }"
               placeholder="Digite o título da ementa"
               required
             />
-            <div v-if="errors.title" class="invalid-feedback">
+            <div
+              v-if="errors.title"
+              class="mt-1 text-sm text-red-600 dark:text-red-400"
+            >
               {{ errors.title }}
             </div>
           </div>
 
-          <!-- Conteúdo -->
-          <div class="mb-3">
-            <label for="content" class="form-label fw-semibold">Conteúdo</label>
+          <div class="mb-4">
+            <label
+              for="content"
+              class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+              >Conteúdo</label
+            >
             <textarea
               id="content"
               v-model.trim="form.content"
-              class="form-control"
+              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 disabled:bg-slate-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
               rows="6"
-              :class="{ 'is-invalid': errors.content }"
+              :class="{
+                'border-red-500 focus:border-red-500 focus:ring-red-500/40':
+                  errors.content,
+              }"
               placeholder="Escreva aqui o conteúdo da ementa"
               required
             ></textarea>
-            <div v-if="errors.content" class="invalid-feedback">
+            <div
+              v-if="errors.content"
+              class="mt-1 text-sm text-red-600 dark:text-red-400"
+            >
               {{ errors.content }}
             </div>
           </div>
 
-          <!-- Ações -->
-          <div class="d-flex justify-content-end">
+          <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <router-link
               to="/legal-briefs"
-              class="btn btn-outline-secondary me-2"
+              class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             >
               Cancelar
             </router-link>
-            <button type="submit" class="btn btn-primary" :disabled="loading">
-              <span
-                v-if="loading"
-                class="spinner-border spinner-border-sm me-1"
-              ></span>
+            <button
+              type="submit"
+              class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+              :disabled="loading"
+            >
+              <BaseSpinner v-if="loading" class="h-4 w-4" />
               Atualizar Ementa
             </button>
           </div>
@@ -74,6 +93,8 @@
     success as successToast,
     error as errorToast,
   } from '@/composables/useToast'
+  import Icon from '@/components/Icon.vue'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
 
   const router = useRouter()
   const route = useRoute()
