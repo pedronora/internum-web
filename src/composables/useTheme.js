@@ -7,6 +7,9 @@ export function useTheme() {
 
   const applyTheme = (theme) => {
     if (typeof document !== 'undefined' && document.documentElement) {
+      // Marca o tema para o Tailwind (classe .dark) e, durante a transição,
+      // mantém o data-bs-theme para as páginas Bootstrap ainda não migradas.
+      document.documentElement.classList.toggle('dark', theme === 'dark')
       document.documentElement.setAttribute('data-bs-theme', theme)
     }
   }
@@ -27,7 +30,7 @@ export function useTheme() {
     try {
       localStorage.setItem(THEME_KEY, theme)
     } catch (err) {
-      console.err(`Erro ao salvar o theme definido pelo usuário: ${err}`)
+      console.error(`Erro ao salvar o theme definido pelo usuário: ${err}`)
     }
     applyTheme(theme)
   }
@@ -35,12 +38,26 @@ export function useTheme() {
   const loadInitialTheme = () => {
     try {
       const stored = localStorage.getItem(THEME_KEY)
-      const initial = resolveStoredOrSystem(stored)
-      setTheme(initial)
+      if (!stored) {
+        // Sem preferência salva: segue o sistema sem persistir valor.
+        applyTheme(resolveStoredOrSystem(null))
+        isDark.value = document.documentElement.classList.contains('dark')
+        return
+      }
+      if (stored === 'auto') {
+        // Segue o sistema, mas mantém 'auto' salvo (não sobrescreve).
+        const theme = resolveStoredOrSystem('auto')
+        isDark.value = theme === 'dark'
+        applyTheme(theme)
+        return
+      }
+      isDark.value = stored === 'dark'
+      applyTheme(stored)
     } catch (err) {
       console.error('Erro ao carregar tema inicial:', err)
       const system = resolveStoredOrSystem(null)
-      setTheme(system)
+      isDark.value = system === 'dark'
+      applyTheme(system)
     }
   }
 
@@ -83,16 +100,14 @@ export function useTheme() {
     }
   })
 
-  const iconClass = computed(() =>
-    isDark.value ? 'bi bi-moon-fill' : 'bi bi-sun-fill',
-  )
+  const icon = computed(() => (isDark.value ? 'moon' : 'sun'))
   const buttonTitle = computed(() =>
     isDark.value ? 'Ativar modo claro' : 'Ativar modo escuro',
   )
 
   return {
     isDark,
-    iconClass,
+    icon,
     buttonTitle,
     footerBgClass,
     toggle,
