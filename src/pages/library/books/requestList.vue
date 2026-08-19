@@ -1,19 +1,23 @@
 <template>
-  <div class="container m-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="mb-0">Acervo</h1>
+  <div class="m-4">
+    <div
+      class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <h1 class="text-2xl font-bold">Acervo</h1>
     </div>
 
     <!-- Filtros -->
     <div
-      class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 p-3 border rounded bg-body border-secondary border-opacity-25"
+      class="mb-4 flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 md:flex-row md:items-center md:justify-between dark:border-slate-700 dark:bg-slate-800"
     >
-      <div class="mb-3 mb-md-0">
-        <label class="d-flex align-items-center gap-2 text-nowrap text-body">
+      <div>
+        <label
+          class="flex items-center gap-2 whitespace-nowrap text-sm text-slate-700 dark:text-slate-200"
+        >
           Mostrar
           <select
             v-model.number="limit"
-            class="form-select form-select-sm w-auto"
+            class="select-base w-auto rounded-md py-1 text-xs"
             @change="reload"
           >
             <option :value="5">5</option>
@@ -24,119 +28,97 @@
         </label>
       </div>
 
-      <div class="d-flex gap-2 w-md-auto">
+      <div class="flex gap-2 md:w-auto">
         <input
           v-model="q"
-          class="form-control"
+          class="input-base"
           placeholder="Pesquisar por título, autor ou ISBN..."
           @keyup.enter="reload"
         />
-        <button class="btn btn-outline-primary text-nowrap" @click="reload">
-          <i class="bi bi-search me-1"></i> Buscar
+        <button class="btn-outline-primary whitespace-nowrap" @click="reload">
+          <Icon name="search" class="h-4 w-4" aria-hidden="true" /> Buscar
         </button>
       </div>
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="alert alert-info text-center" role="alert">
-      <div class="spinner-border spinner-border-sm me-2" role="status">
-        <span class="visually-hidden">Carregando...</span>
-      </div>
+    <div v-if="loading" class="info-alert mb-4 flex items-center gap-2">
+      <BaseSpinner class="h-4 w-4" />
       Carregando...
     </div>
 
     <!-- Tabela -->
     <div v-else>
-      <div v-if="!error" class="table-responsive shadow-sm rounded mb-4">
-        <table
-          v-if="books.length"
-          class="table table-striped table-hover align-middle mb-0"
-        >
-          <thead class="table-dark align-middle">
+      <div v-if="!error" class="table-wrap mb-4">
+        <table v-if="books.length" class="w-full text-sm">
+          <thead
+            class="bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+          >
             <tr>
-              <th scope="col">Título</th>
-              <th scope="col">Editora</th>
-              <th scope="col">Ano</th>
-              <th scope="col">ISBN</th>
-              <th scope="col">Disponíveis</th>
-              <th scope="col" class="text-center">Ação</th>
+              <th scope="col" class="th">Título</th>
+              <th scope="col" class="th">Editora</th>
+              <th scope="col" class="th">Ano</th>
+              <th scope="col" class="th">ISBN</th>
+              <th scope="col" class="th">Disponíveis</th>
+              <th scope="col" class="th text-center">Ação</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="b in books" :key="b.id">
-              <td>
+            <tr
+              v-for="b in books"
+              :key="b.id"
+              class="border-t border-slate-200 transition hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800/60"
+            >
+              <td class="td">
                 <strong>{{ b.title }}</strong>
                 <br />
-                <span class="small text-muted">{{ b.author }}</span>
+                <span class="text-xs text-slate-500 dark:text-slate-400">{{
+                  b.author
+                }}</span>
               </td>
-              <td>{{ b.publisher || '-' }}</td>
-              <td>{{ b.year }}</td>
-              <td>{{ b.isbn }}</td>
-              <td>
-                <span
-                  :class="[
-                    'badge',
-                    b.available_quantity > 0 ? 'bg-success' : 'bg-danger',
-                  ]"
+              <td class="td">{{ b.publisher || '-' }}</td>
+              <td class="td">{{ b.year }}</td>
+              <td class="td">{{ b.isbn }}</td>
+              <td class="td">
+                <BaseBadge
+                  :color="b.available_quantity > 0 ? 'success' : 'danger'"
                 >
                   {{ b.available_quantity }}
-                </span>
+                </BaseBadge>
               </td>
-              <td class="text-center">
+              <td class="td text-center">
                 <button
-                  class="btn btn-sm"
-                  :class="
-                    b.available_quantity > 0
-                      ? 'btn-outline-primary'
-                      : 'btn-outline-secondary disabled'
-                  "
+                  class="btn-outline-primary btn-sm"
+                  :class="{ 'opacity-50': b.available_quantity === 0 }"
                   :disabled="b.available_quantity === 0 || loadingLoan"
                   @click="requestLoan(b.id)"
                 >
-                  <i class="bi bi-journal-arrow-down me-1"></i> Emprestar
+                  <Icon
+                    name="journal-arrow-down"
+                    class="h-4 w-4"
+                    aria-hidden="true"
+                  />
+                  Emprestar
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
 
-        <div v-else class="alert alert-warning text-center m-2" role="alert">
-          Nenhum livro encontrado.
-        </div>
+        <div v-else class="warning-alert m-2">Nenhum livro encontrado.</div>
       </div>
 
       <!-- Paginação -->
-      <div
+      <BasePagination
         v-if="meta.total && totalPages > 1"
-        class="d-flex justify-content-between align-items-center"
-      >
-        <span class="text-muted"
-          >Página {{ meta.page }} de {{ totalPages }}</span
-        >
-
-        <div class="btn-group" role="group">
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            :disabled="!meta.has_prev"
-            @click="prev"
-          >
-            &laquo; Anterior
-          </button>
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            :disabled="!meta.has_next"
-            @click="next"
-          >
-            Próxima &raquo;
-          </button>
-        </div>
-      </div>
+        :meta="meta"
+        @prev="prev"
+        @next="next"
+      />
     </div>
 
     <!-- Erro -->
-    <div v-if="error" class="alert alert-danger mt-4" role="alert">
+    <div v-if="error" class="error-alert mt-4" role="alert">
       <strong>Erro:</strong> {{ error }}
     </div>
   </div>
@@ -151,6 +133,10 @@
     error as errorToast,
     confirm as confirmToast,
   } from '@/composables/useToast'
+  import Icon from '@/components/Icon.vue'
+  import BaseSpinner from '@/components/BaseSpinner.vue'
+  import BaseBadge from '@/components/BaseBadge.vue'
+  import BasePagination from '@/components/BasePagination.vue'
 
   const books = ref([])
   const loading = ref(false)
