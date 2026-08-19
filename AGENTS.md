@@ -6,18 +6,18 @@
 
 ## 1. Project Overview
 
-| Aspect               | Detail                                       |
-| -------------------- | -------------------------------------------- |
-| **Framework**        | Vue 3 (Composition API, `<script setup>`)    |
-| **Build Tool**       | Vite 7                                       |
-| **State Management** | Pinia 3 (stores in `src/stores/`)            |
-| **Routing**          | Vue Router 4 (guarded by role/permission)    |
-| **HTTP Client**      | Axios with interceptors (auto token refresh) |
+| Aspect               | Detail                                                     |
+| -------------------- | ---------------------------------------------------------- |
+| **Framework**        | Vue 3 (Composition API, `<script setup>`)                  |
+| **Build Tool**       | Vite 7                                                     |
+| **State Management** | Pinia 3 (stores in `src/stores/`)                          |
+| **Routing**          | Vue Router 4 (guarded by role/permission)                  |
+| **HTTP Client**      | Axios with interceptors (auto token refresh)               |
 | **UI Library**       | Tailwind CSS 4 (utility-first, sem preflight de terceiros) |
-| **Validation**       | Vuelidate + Yup                              |
-| **Testing**          | Vitest (unit/integration)                    |
-| **Linting**          | ESLint (flat config) + Prettier              |
-| **Package Manager**  | npm (lockfile committed)                     |
+| **Validation**       | Vuelidate + Yup                                            |
+| **Testing**          | Vitest (unit/integration)                                  |
+| **Linting**          | ESLint (flat config) + Prettier                            |
+| **Package Manager**  | npm (lockfile committed)                                   |
 
 ---
 
@@ -68,19 +68,19 @@ src/
 
 ### Naming Conventions
 
-| Type                | Convention                              | Example                                                   |
-| ------------------- | --------------------------------------- | --------------------------------------------------------- |
-| Files (components)  | PascalCase                              | `Nav.vue`, `BookDetail.vue`                               |
-| Files (composables) | camelCase, `use` prefix                 | `useToast.js`, `useTheme.js`                              |
-| Files (services)    | PascalCase + `.services.js`             | `BooksService` in `books.services.js`                     |
-| Files (stores)      | camelCase                               | `auth.js`, `notices.js`                                   |
-| Files (pages)       | PascalCase                              | `List.vue`, `Create.vue`                                  |
-| Vue Components      | PascalCase                              | `<Nav />`, `<BookDetail />`                               |
-| Composables         | camelCase, `use` prefix                 | `useToast()`, `useTheme()`                                |
-| Store getters       | camelCase, `is`/`has` prefix            | `isAuthenticated`, `isAdminOrCoord`                       |
-| Store actions       | camelCase, verb prefix                  | `login()`, `fetchProfile()`, `refreshToken()`             |
-| Service methods     | camelCase, verb + noun                  | `list()`, `getById()`, `create()`, `update()`, `remove()` |
-| CSS Classes         | Tailwind utilities + classes do design system | `.input-base`, `.btn-primary`, `.table-wrap`             |
+| Type                | Convention                                    | Example                                                   |
+| ------------------- | --------------------------------------------- | --------------------------------------------------------- |
+| Files (components)  | PascalCase                                    | `Nav.vue`, `BookDetail.vue`                               |
+| Files (composables) | camelCase, `use` prefix                       | `useToast.js`, `useTheme.js`                              |
+| Files (services)    | PascalCase + `.services.js`                   | `BooksService` in `books.services.js`                     |
+| Files (stores)      | camelCase                                     | `auth.js`, `notices.js`                                   |
+| Files (pages)       | PascalCase                                    | `List.vue`, `Create.vue`                                  |
+| Vue Components      | PascalCase                                    | `<Nav />`, `<BookDetail />`                               |
+| Composables         | camelCase, `use` prefix                       | `useToast()`, `useTheme()`                                |
+| Store getters       | camelCase, `is`/`has` prefix                  | `isAuthenticated`, `isAdminOrCoord`                       |
+| Store actions       | camelCase, verb prefix                        | `login()`, `fetchProfile()`, `refreshToken()`             |
+| Service methods     | camelCase, verb + noun                        | `list()`, `getById()`, `create()`, `update()`, `remove()` |
+| CSS Classes         | Tailwind utilities + classes do design system | `.input-base`, `.btn-primary`, `.table-wrap`              |
 
 ---
 
@@ -351,16 +351,16 @@ onMounted(load)
 
 **Location:** `src/components/*.vue`
 
-| Component       | Responsibility                                                                 |
-| --------------- | ------------------------------------------------------------------------------ |
-| `Nav.vue`       | Top navbar, role-based menus, user dropdown, theme toggle, unread notice badge |
-| `Footer.vue`    | Static footer                                                                  |
-| `Toasts.vue`    | Renders `toastStore.toasts` as Tailwind toasts (auto-dismiss, actions)         |
-| `Icon.vue`      | Ícones SVG inline pelo nome (`search`, `plus-lg`, `trash`, etc.)               |
-| `BaseSpinner.vue` | Loading spinner reutilizável                                                 |
-| `BaseBadge.vue` | Badge com `color` + `variant` (solid/soft)                                     |
+| Component            | Responsibility                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------- |
+| `Nav.vue`            | Top navbar, role-based menus, user dropdown, theme toggle, unread notice badge        |
+| `Footer.vue`         | Static footer                                                                         |
+| `Toasts.vue`         | Renders `toastStore.toasts` as Tailwind toasts (auto-dismiss, actions)                |
+| `Icon.vue`           | Ícones SVG inline pelo nome (`search`, `plus-lg`, `trash`, etc.)                      |
+| `BaseSpinner.vue`    | Loading spinner reutilizável                                                          |
+| `BaseBadge.vue`      | Badge com `color` + `variant` (solid/soft)                                            |
 | `BasePagination.vue` | Paginação `simple`/`pages` a partir de `meta` (page, total_pages, has_prev, has_next) |
-| `BaseModal.vue` | Modal com Teleport, `tone` (default/success/danger), slots header/default/footer |
+| `BaseModal.vue`      | Modal com Teleport, `tone` (default/success/danger), slots header/default/footer      |
 
 **Pattern:**
 
@@ -459,7 +459,7 @@ When an AI agent (Gemini, etc.) operates on this codebase, it MUST adhere to:
 | **Never create new files** unless explicitly asked                                      | Edit existing files only                     |
 | **Follow existing patterns** exactly (service structure, store shape, component layout) | Match the patterns in Sections 3.1–3.7       |
 | **Use `@/` alias** for imports from `src/`                                              | `@/services/`, `@/stores/`, `@/composables/` |
-| **No inline styles** — use Tailwind utilities ou classes do design system (`main.css`)       |                                              |
+| **No inline styles** — use Tailwind utilities ou classes do design system (`main.css`)  |                                              |
 | **No `console.log` in production code** (allowed in tests)                              | ESLint `no-console: off` but discouraged     |
 | **Async functions must handle errors** with try/catch + toast feedback                  | See `deleteBook` pattern                     |
 | **Pagination state** uses `page`, `limit`, `meta` (total, has_next, has_prev)           |                                              |

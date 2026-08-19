@@ -4,6 +4,10 @@ import eslintPluginVue from 'eslint-plugin-vue'
 import eslintConfigPrettier from 'eslint-config-prettier'
 
 export default [
+  {
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**'],
+  },
+
   // Configurações básicas recomendadas do ESLint
   eslint.configs.recommended,
 
