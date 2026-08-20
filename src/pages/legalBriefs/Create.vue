@@ -57,7 +57,7 @@
 
           <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <router-link
-              to="/legal-briefs"
+              :to="{ name: 'LegalBriefsList' }"
               class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             >
               Cancelar
@@ -115,7 +115,7 @@
       await LegalBriefsService.create(form.value)
       successToast('Ementa criada com sucesso!')
       // redireciona após pequeno delay
-      setTimeout(() => router.push('/legal-briefs'), 800)
+      setTimeout(() => router.push({ name: 'LegalBriefsList' }), 800)
     } catch (err) {
       if (err.response?.status === 422 || err.response?.status === 400) {
         errors.value = err.response.data.errors || {}

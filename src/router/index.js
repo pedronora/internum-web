@@ -9,14 +9,14 @@ const routes = [
     meta: { title: 'Login - ', isPublicRoute: true },
   },
   {
-    path: '/auth/forgot-password',
+    path: '/auth/esqueci-senha',
     name: 'forgot-password',
     component: () => import('@/pages/auth/ForgotPassword.vue'),
     meta: { title: 'Esqueci a senha - ', isPublicRoute: true },
   },
 
   {
-    path: '/auth/reset-password',
+    path: '/auth/redefinir-senha',
     name: 'reset-password',
     component: () => import('@/pages/auth/ResetPassword.vue'),
     meta: { title: 'Resetar a senha - ', isPublicRoute: true },
@@ -28,7 +28,7 @@ const routes = [
     meta: { requiresAuth: true, title: 'Home - ' },
   },
   {
-    path: '/legal-briefs',
+    path: '/ementas',
     component: () => import('@/pages/RouterLayout.vue'),
     meta: { requiresAuth: true, title: 'Ementas - ' },
     children: [
@@ -39,13 +39,13 @@ const routes = [
         meta: { requiresAuth: true, title: 'Ementas - ' },
       },
       {
-        path: 'create',
+        path: 'admin/criar',
         name: 'LegalBriefsCreate',
         component: () => import('@/pages/legalBriefs/Create.vue'),
         meta: { requiresAuth: true, title: 'Criar Ementa - ' },
       },
       {
-        path: ':id/edit',
+        path: 'admin/:id/editar',
         name: 'LegalBriefEdit',
         component: () => import('@/pages/legalBriefs/Update.vue'),
         meta: {
@@ -57,12 +57,12 @@ const routes = [
     ],
   },
   {
-    path: '/library',
+    path: '/biblioteca',
     component: () => import('@/pages/RouterLayout.vue'),
     meta: { requiresAuth: true },
     children: [
       {
-        path: 'books',
+        path: 'admin/livros',
         name: 'BooksList',
         component: () => import('@/pages/library/books/List.vue'),
         meta: {
@@ -72,7 +72,7 @@ const routes = [
         },
       },
       {
-        path: 'books/create',
+        path: 'livros/criar',
         name: 'BooksCreate',
         component: () => import('@/pages/library/books/Create.vue'),
         meta: {
@@ -82,7 +82,7 @@ const routes = [
         },
       },
       {
-        path: '/books/:id/detail',
+        path: 'livros/:id/detalhes',
         name: 'BookDetail',
         component: () => import('@/pages/library/books/Detail.vue'),
         meta: {
@@ -92,7 +92,7 @@ const routes = [
         },
       },
       {
-        path: '/books/:id/edit',
+        path: 'livros/:id/editar',
         name: 'BookEdit',
         component: () => import('@/pages/library/books/Edit.vue'),
         meta: {
@@ -102,19 +102,19 @@ const routes = [
         },
       },
       {
-        path: 'books/list',
+        path: 'livros',
         name: 'BooksReqList',
         component: () => import('@/pages/library/books/requestList.vue'),
         meta: { requiresAuth: true, title: 'Acervo - ' },
       },
       {
-        path: 'loans/list/my',
+        path: 'emprestimos',
         name: 'MyLoansList',
         component: () => import('@/pages/library/loans/MyLoansList.vue'),
         meta: { requiresAuth: true, title: 'Meus Empréstimos - ' },
       },
       {
-        path: 'loans/list/admin',
+        path: 'admin/emprestimos',
         name: 'AdminLoansList',
         component: () => import('@/pages/library/loans/AdminLoansList.vue'),
         meta: {
@@ -126,7 +126,7 @@ const routes = [
     ],
   },
   {
-    path: '/notices',
+    path: '/avisos',
     component: () => import('@/pages/RouterLayout.vue'),
     meta: { requiresAuth: true },
     children: [
@@ -137,7 +137,7 @@ const routes = [
         meta: { requiresAuth: true, title: 'Meus Avisos - ' },
       },
       {
-        path: 'list',
+        path: 'admin/lista',
         name: 'NoticesList',
         component: () => import('@/pages/notices/List.vue'),
         meta: {
@@ -147,7 +147,7 @@ const routes = [
         },
       },
       {
-        path: 'create',
+        path: 'admin/criar',
         name: 'NoticesCreate',
         component: () => import('@/pages/notices/Create.vue'),
         meta: {
@@ -165,7 +165,7 @@ const routes = [
     ],
   },
   {
-    path: '/profile',
+    path: '/perfil',
     component: () => import('@/pages/RouterLayout.vue'),
     meta: { requiresAuth: true, title: 'Meu Perfil - ' },
     children: [
@@ -176,7 +176,7 @@ const routes = [
         meta: { requiresAuth: true, title: 'Meu Perfil - ' },
       },
       {
-        path: 'change-password',
+        path: 'alterar-senha',
         name: 'UserChangePassword',
         component: () => import('@/pages/profile/UserChangePassword.vue'),
         meta: { requiresAuth: true, title: 'Alterar Senha - ' },
@@ -184,7 +184,7 @@ const routes = [
     ],
   },
   {
-    path: '/users',
+    path: '/usuarios',
     component: () => import('@/pages/RouterLayout.vue'),
     meta: { requiresAuth: true, requiresPermission: true },
     children: [
@@ -199,7 +199,7 @@ const routes = [
         },
       },
       {
-        path: 'create',
+        path: 'admin/criar',
         name: 'UsersCreate',
         component: () => import('@/pages/users/Create.vue'),
         meta: {
@@ -220,7 +220,7 @@ const routes = [
         },
       },
       {
-        path: ':id/edit',
+        path: 'admin/:id/editar',
         name: 'UsersEdit',
         component: () => import('@/pages/users/Update.vue'),
         props: true,
@@ -233,7 +233,7 @@ const routes = [
     ],
   },
   {
-    path: '/vacation',
+    path: '/ferias',
     component: () => import('@/pages/RouterLayout.vue'),
     meta: { requiresAuth: true },
     children: [
@@ -244,26 +244,26 @@ const routes = [
         meta: { requiresAuth: true, title: 'Minhas Férias - ' },
       },
       {
-        path: 'requests',
+        path: 'requerimentos',
         name: 'VacationRequestsList',
         component: () => import('@/pages/vacation/MyRequestsList.vue'),
         meta: { requiresAuth: true, title: 'Minhas Solicitações - ' },
       },
       {
-        path: 'requests/create',
+        path: 'requerimentos/criar',
         name: 'VacationRequestsCreate',
         component: () => import('@/pages/vacation/RequestForm.vue'),
         meta: { requiresAuth: true, title: 'Nova Solicitação - ' },
       },
       {
-        path: 'requests/:id',
+        path: 'requerimentos/:id',
         name: 'VacationRequestDetail',
         component: () => import('@/pages/vacation/RequestDetail.vue'),
         props: true,
         meta: { requiresAuth: true, title: 'Solicitação - ' },
       },
       {
-        path: 'admin/requests',
+        path: 'admin/requerimentos',
         name: 'VacationAdminRequestsList',
         component: () => import('@/pages/vacation/AdminRequestsList.vue'),
         meta: {
@@ -273,7 +273,7 @@ const routes = [
         },
       },
       {
-        path: 'admin/requests/:id',
+        path: 'admin/requerimentos/:id',
         name: 'VacationAdminRequestDetail',
         component: () => import('@/pages/vacation/AdminRequestDetail.vue'),
         props: true,
@@ -284,7 +284,7 @@ const routes = [
         },
       },
       {
-        path: 'admin/grants',
+        path: 'admin/concessoes',
         name: 'VacationAdminGrantsList',
         component: () => import('@/pages/vacation/AdminGrantsList.vue'),
         meta: {
@@ -294,7 +294,7 @@ const routes = [
         },
       },
       {
-        path: 'admin/users/:userId/accrual',
+        path: 'admin/usuarios/:userId/adquiridas',
         name: 'VacationAdminAccrualList',
         component: () => import('@/pages/vacation/AdminAccrualList.vue'),
         props: true,
@@ -305,7 +305,7 @@ const routes = [
         },
       },
       {
-        path: 'admin/alerts',
+        path: 'admin/alertas',
         name: 'VacationAdminAlerts',
         component: () => import('@/pages/vacation/AdminAlerts.vue'),
         meta: {
