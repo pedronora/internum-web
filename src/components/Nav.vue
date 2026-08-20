@@ -59,8 +59,6 @@
             :key="item.key || item.label"
             class="relative"
             :data-dropdown="item.type === 'dropdown' ? '' : undefined"
-            @mouseenter="hoverMenu(item.key)"
-            @mouseleave="leaveMenu(item.key)"
           >
             <router-link
               v-if="item.type === 'link'"
@@ -118,8 +116,6 @@
                       v-else-if="sub.type === 'submenu'"
                       class="relative"
                       role="none"
-                      @mouseenter="hoverSub(sub.key)"
-                      @mouseleave="leaveSub(sub.key)"
                     >
                       <button
                         :id="'sub-trigger-' + sub.key"
@@ -223,12 +219,7 @@
               <span class="sr-only">{{ buttonTitle }}</span>
             </button>
 
-            <div
-              class="relative"
-              data-dropdown
-              @mouseenter="hoverMenu('user-desktop')"
-              @mouseleave="leaveMenu('user-desktop')"
-            >
+            <div class="relative" data-dropdown>
               <button
                 :id="'dd-trigger-user-desktop'"
                 type="button"
@@ -569,21 +560,7 @@
   const mobileOpen = ref(false)
   const openMenu = ref(null)
   const openSub = ref(null)
-  const pinned = ref(false)
-  const pinnedSub = ref(false)
   const subFlip = ref(false)
-
-  const hoverCapable =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(hover: hover) and (pointer: fine)').matches
-
-  const HOVER_DELAY = 180
-  const CLOSE_DELAY = 200
-
-  let openTimer = null
-  let closeTimer = null
-  let subOpenTimer = null
-  let subCloseTimer = null
 
   const focusRing =
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500'
@@ -636,23 +613,17 @@
     if (openMenu.value === name) {
       openMenu.value = null
       openSub.value = null
-      pinned.value = false
-      pinnedSub.value = false
     } else {
       openMenu.value = name
       openSub.value = null
-      pinnedSub.value = false
-      pinned.value = true
     }
   }
 
   function toggleSub(name) {
     if (openSub.value === name) {
       openSub.value = null
-      pinnedSub.value = false
     } else {
       openSub.value = name
-      pinnedSub.value = true
       nextTick(() => positionFlyout(name))
     }
   }
@@ -660,56 +631,7 @@
   function closeMenus() {
     openMenu.value = null
     openSub.value = null
-    pinned.value = false
-    pinnedSub.value = false
     mobileOpen.value = false
-  }
-
-  function hoverMenu(key) {
-    if (!hoverCapable) return
-    window.clearTimeout(closeTimer)
-    window.clearTimeout(openTimer)
-    openTimer = window.setTimeout(() => {
-      if (!pinned.value) {
-        openMenu.value = key
-        openSub.value = null
-      }
-    }, HOVER_DELAY)
-  }
-
-  function leaveMenu(key) {
-    if (!hoverCapable) return
-    window.clearTimeout(openTimer)
-    window.clearTimeout(closeTimer)
-    closeTimer = window.setTimeout(() => {
-      if (!pinned.value && openMenu.value === key) {
-        openMenu.value = null
-        openSub.value = null
-      }
-    }, CLOSE_DELAY)
-  }
-
-  function hoverSub(key) {
-    if (!hoverCapable) return
-    window.clearTimeout(subCloseTimer)
-    window.clearTimeout(subOpenTimer)
-    subOpenTimer = window.setTimeout(() => {
-      if (!pinnedSub.value) {
-        openSub.value = key
-        nextTick(() => positionFlyout(key))
-      }
-    }, HOVER_DELAY)
-  }
-
-  function leaveSub(key) {
-    if (!hoverCapable) return
-    window.clearTimeout(subOpenTimer)
-    window.clearTimeout(subCloseTimer)
-    subCloseTimer = window.setTimeout(() => {
-      if (!pinnedSub.value && openSub.value === key) {
-        openSub.value = null
-      }
-    }, CLOSE_DELAY)
   }
 
   function positionFlyout(key) {
@@ -746,7 +668,6 @@
         e.preventDefault()
         openMenu.value = controls.replace(/^dd-/, '')
         openSub.value = null
-        pinned.value = true
         nextTick(() => focusFirst(controls))
       }
     }
@@ -778,13 +699,11 @@
       e.preventDefault()
       if (openSub.value !== key) {
         openSub.value = key
-        pinnedSub.value = true
         nextTick(() => focusFirst('sub-' + key))
       }
     } else if (e.key === 'ArrowLeft' && openSub.value === key) {
       e.preventDefault()
       openSub.value = null
-      pinnedSub.value = false
       e.currentTarget.focus()
     }
   }
@@ -795,8 +714,6 @@
     if (openMenu.value && !e.target.closest('[data-dropdown]')) {
       openMenu.value = null
       openSub.value = null
-      pinned.value = false
-      pinnedSub.value = false
     }
 
     if (
@@ -814,7 +731,6 @@
     if (openSub.value) {
       const subKey = openSub.value
       openSub.value = null
-      pinnedSub.value = false
       navRef.value
         ?.querySelector('[aria-controls="sub-' + subKey + '"]')
         ?.focus()
@@ -822,7 +738,6 @@
     } else if (openMenu.value) {
       const menuKey = openMenu.value
       openMenu.value = null
-      pinned.value = false
       navRef.value
         ?.querySelector('[aria-controls="dd-' + menuKey + '"]')
         ?.focus()
@@ -848,11 +763,7 @@
     document.removeEventListener('click', onDocClick)
     document.removeEventListener('keydown', onDocKeydown)
     window.removeEventListener('resize', onWinResize)
-    window.removeEventListener('scroll', onWinResize)
-    window.clearTimeout(openTimer)
-    window.clearTimeout(closeTimer)
-    window.clearTimeout(subOpenTimer)
-    window.clearTimeout(subCloseTimer)
+    window.removeEventListener('scroll', onWinResize, { passive: true })
     document.body.style.overflow = ''
   })
 
