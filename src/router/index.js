@@ -42,7 +42,11 @@ const routes = [
         path: 'admin/criar',
         name: 'LegalBriefsCreate',
         component: () => import('@/pages/legalBriefs/Create.vue'),
-        meta: { requiresAuth: true, title: 'Criar Ementa - ' },
+        meta: {
+          requiresAuth: true,
+          requiresPermission: true,
+          title: 'Criar Ementa - ',
+        },
       },
       {
         path: 'admin/:id/editar',
@@ -59,7 +63,7 @@ const routes = [
   {
     path: '/biblioteca',
     component: () => import('@/pages/RouterLayout.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, title: 'Biblioteca - ' },
     children: [
       {
         path: 'admin/livros',
@@ -128,7 +132,7 @@ const routes = [
   {
     path: '/avisos',
     component: () => import('@/pages/RouterLayout.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, title: 'Avisos - ' },
     children: [
       {
         path: '',
@@ -186,7 +190,11 @@ const routes = [
   {
     path: '/usuarios',
     component: () => import('@/pages/RouterLayout.vue'),
-    meta: { requiresAuth: true, requiresPermission: true },
+    meta: {
+      requiresAuth: true,
+      requiresPermission: true,
+      title: 'Usuários - ',
+    },
     children: [
       {
         path: '',
@@ -235,7 +243,7 @@ const routes = [
   {
     path: '/ferias',
     component: () => import('@/pages/RouterLayout.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, title: 'Férias - ' },
     children: [
       {
         path: '',
