@@ -93,8 +93,8 @@
             >
               <td class="px-4 py-3">{{ n.id }}</td>
               <td class="px-4 py-3">{{ n.title }}</td>
-              <td class="max-w-[250px] truncate px-4 py-3">
-                {{ n.content }}
+              <td class="max-w-[250px] px-4 py-3">
+                <RichText :html="n.content" class="line-clamp-2" />
               </td>
               <td class="px-4 py-3">
                 <BaseBadge color="info" variant="soft">
@@ -158,6 +158,7 @@
   import BaseSpinner from '@/components/BaseSpinner.vue'
   import BaseBadge from '@/components/BaseBadge.vue'
   import BasePagination from '@/components/BasePagination.vue'
+  import RichText from '@/components/RichText.vue'
 
   const { formatDate } = useDate()
 
