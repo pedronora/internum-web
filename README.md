@@ -17,7 +17,9 @@ Aplicação frontend construída com **Vue 3** e **Vite** para o projeto Internu
 - Vue Router
 - Pinia
 - Axios
-- Bootstrap + Bootstrap Icons
+- Tailwind CSS (v4)
+- TipTap (editor de conteúdo rico)
+- DOMPurify (sanitização do HTML renderizado)
 - Vuelidate
 - Yup
 - ESLint + Prettier
@@ -54,22 +56,22 @@ npm run docker:build
 
 A imagem de produção fica em **GHCR**: `ghcr.io/pedronora/internum-web`.
 
-- Tag de release: `:1.0.0` (imutável, usa-se em produção)
+- Tag de release: `:1.3.0` (imutável, usa-se em produção)
 - Tag de desenvolvimento: `:latest` e `:sha-<commit>`
 - O CI (`docker-publish.yaml`) publica `latest` nos merges para `main` e `X.Y.Z` quando uma tag `vX.Y.Z` é criada.
 
 Pull e execução local:
 
 ```bash
-docker pull ghcr.io/pedronora/internum-web:1.0.0
+docker pull ghcr.io/pedronora/internum-web:1.3.0
 docker run --rm -p 8080:80 \
   -e VITE_API_BASE_URL="https://api.seu-dominio.com" \
-  ghcr.io/pedronora/internum-web:1.0.0
+  ghcr.io/pedronora/internum-web:1.3.0
 ```
 
 No TrueNAS (Apps):
 
-1. Use a imagem `ghcr.io/pedronora/internum-web:1.0.0` (pull direto, sem `docker save/load`).
+1. Use a imagem `ghcr.io/pedronora/internum-web:1.3.0` (pull direto, sem `docker save/load`).
 2. Crie o app usando essa imagem e exponha a porta `80` do container.
 3. Configure as variáveis de ambiente:
    - `VITE_API_BASE_URL`: URL da API backend.
@@ -78,8 +80,8 @@ No TrueNAS (Apps):
 ## 🏷️ Criar uma release
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.3.0
+git push origin v1.3.0
 ```
 
 O CI publica a imagem com o rótulo da versão no GHCR.
@@ -107,8 +109,16 @@ O CI publica a imagem com o rótulo da versão no GHCR.
 │   │   ├── main.css
 │   │   └── vue.svg
 │   ├── components
+│   │   ├── BaseBadge.vue
+│   │   ├── BaseModal.vue
+│   │   ├── BasePagination.vue
+│   │   ├── BaseSpinner.vue
 │   │   ├── Footer.vue
+│   │   ├── Icon.vue
+│   │   ├── iconPaths.js
 │   │   ├── Nav.vue
+│   │   ├── RichText.vue
+│   │   ├── TiptapEditor.vue
 │   │   └── Toasts.vue
 │   ├── composables
 │   │   ├── useCPF.js
@@ -175,6 +185,13 @@ O CI publica a imagem com o rótulo da versão no GHCR.
 │   │   ├── users.services.js
 │   │   ├── vacation.services.js
 │   │   └── __tests__
+│   │       ├── auth.services.test.js
+│   │       ├── books.services.test.js
+│   │       ├── home.services.test.js
+│   │       ├── legalBriefs.services.test.js
+│   │       ├── loans.services.test.js
+│   │       ├── notices.services.test.js
+│   │       ├── users.services.test.js
 │   │       └── vacation.services.test.js
 │   └── stores
 │       ├── auth.js

@@ -49,7 +49,9 @@ src/
 │   ├── BaseSpinner.vue    # Loading spinner
 │   ├── BaseBadge.vue      # Badge (color: slate|dark|light|primary|success|warning|danger|info)
 │   ├── BasePagination.vue # Paginação (variant: simple|pages; emite prev/next/go)
-│   └── BaseModal.vue      # Modal com Teleport (tone: default|success|danger; slots header/default/footer)
+│   ├── BaseModal.vue      # Modal com Teleport (tone: default|success|danger; slots header/default/footer)
+│   ├── TiptapEditor.vue   # Editor de conteúdo rico (TipTap; emite HTML sanitizado)
+│   └── RichText.vue       # Renderização de HTML sanitizado (DOMPurify) — único local permitido de v-html
 ├── pages/
 │   ├── auth/              # Login, ForgotPassword, ResetPassword (public routes)
 │   ├── legalBriefs/       # List, Create, Update (admin/coord only)
@@ -351,16 +353,18 @@ onMounted(load)
 
 **Location:** `src/components/*.vue`
 
-| Component            | Responsibility                                                                        |
-| -------------------- | ------------------------------------------------------------------------------------- |
-| `Nav.vue`            | Top navbar, role-based menus, user dropdown, theme toggle, unread notice badge        |
-| `Footer.vue`         | Static footer                                                                         |
-| `Toasts.vue`         | Renders `toastStore.toasts` as Tailwind toasts (auto-dismiss, actions)                |
-| `Icon.vue`           | Ícones SVG inline pelo nome (`search`, `plus-lg`, `trash`, etc.)                      |
-| `BaseSpinner.vue`    | Loading spinner reutilizável                                                          |
-| `BaseBadge.vue`      | Badge com `color` + `variant` (solid/soft)                                            |
-| `BasePagination.vue` | Paginação `simple`/`pages` a partir de `meta` (page, total_pages, has_prev, has_next) |
-| `BaseModal.vue`      | Modal com Teleport, `tone` (default/success/danger), slots header/default/footer      |
+| Component            | Responsibility                                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------------ |
+| `Nav.vue`            | Top navbar, role-based menus, user dropdown, theme toggle, unread notice badge                   |
+| `Footer.vue`         | Static footer                                                                                    |
+| `Toasts.vue`         | Renders `toastStore.toasts` as Tailwind toasts (auto-dismiss, actions)                           |
+| `Icon.vue`           | Ícones SVG inline pelo nome (`search`, `plus-lg`, `trash`, etc.)                                 |
+| `BaseSpinner.vue`    | Loading spinner reutilizável                                                                     |
+| `BaseBadge.vue`      | Badge com `color` + `variant` (solid/soft)                                                       |
+| `BasePagination.vue` | Paginação `simple`/`pages` a partir de `meta` (page, total_pages, has_prev, has_next)            |
+| `BaseModal.vue`      | Modal com Teleport, `tone` (default/success/danger), slots header/default/footer                 |
+| `TiptapEditor.vue`   | Editor de conteúdo rico (TipTap) — `v-model` emite HTML (a renderização é sempre via `RichText`) |
+| `RichText.vue`       | Renderiza HTML sanitizado com DOMPurify — **único componente autorizado a usar `v-html`**        |
 
 **Pattern:**
 
@@ -472,7 +476,7 @@ When an AI agent (Gemini, etc.) operates on this codebase, it MUST adhere to:
 - ❌ Importing stores/composables in `services/*.js`
 - ❌ Direct `axios` imports in components (use service layer)
 - ❌ Mutating props in child components
-- ❌ `v-html` without sanitization (ESLint warns)
+- ❌ `v-html` without sanitization (ESLint warns). Renderização de conteúdo rico **somente** via `<RichText>` (DOMPurify) e edição **somente** via `<TiptapEditor>`
 - ❌ Creating new state management solutions (use Pinia)
 - ❌ Custom CSS in `.vue` files (use `main.css`)
 
@@ -558,8 +562,8 @@ When an AI agent uses tools to modify this codebase, the following interface app
 
 ## 10. Version & Maintenance
 
-- **Document Version:** 1.0
-- **Last Updated:** 2026-08-04
+- **Document Version:** 1.1
+- **Last Updated:** 2026-08-20
 - **Maintained By:** Human + AI contributors
 - **Review Cycle:** Update when architecture patterns change (new libraries, structural refactors)
 
