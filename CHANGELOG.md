@@ -5,6 +5,27 @@ Todas as mudanças relevantes desta imagem serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o versionamento segue o padrão [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.3.0] - 2026-08-20
+
+### Added
+
+- **Editor de conteúdo rico (TipTap)** nas ementas (`Create`/`Update`) e nos
+  avisos (`Create`): toolbar com B/I/U/S, títulos H1-H3, listas, blockquote,
+  code, alinhamento, link e undo/redo. Conteúdo armazenado como HTML e
+  renderizado de forma sanitizada (`RichText` com DOMPurify no frontend e
+  `bleach` no backend).
+- Exibição de conteúdo rico em `Home`, listas de ementas/avisos e detalhe de
+  aviso.
+
+### Changed
+
+- **Rotas renomeadas para slugs em português** (ex.: `/legal-briefs` →
+  `/ementas`, `/library` → `/biblioteca`, `/vacation` → `/ferias`,
+  `/users` → `/usuarios`), com subpaths `admin/` nas rotas restritas; links e
+  redirecionamentos passam a usar rotas nomeadas.
+- **Dropdowns do menu** (desktop) agora abrem **apenas por clique** — removida
+  a abertura por hover, mantendo teclado, `Esc`, clique fora e o menu mobile.
+
 ## [1.2.1] - 2026-08-19
 
 ### Fixed
