@@ -42,18 +42,11 @@
               class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
               >Conteúdo</label
             >
-            <textarea
-              id="content"
-              v-model.trim="form.content"
-              class="input-base"
-              rows="6"
-              :class="{
-                'border-red-500 focus:border-red-500 focus:ring-red-500/40':
-                  errors.content,
-              }"
+            <TiptapEditor
+              v-model="form.content"
               placeholder="Escreva aqui o conteúdo da ementa"
-              required
-            ></textarea>
+              :error="!!errors.content"
+            />
             <div
               v-if="errors.content"
               class="mt-1 text-sm text-red-600 dark:text-red-400"
@@ -95,6 +88,7 @@
   } from '@/composables/useToast'
   import Icon from '@/components/Icon.vue'
   import BaseSpinner from '@/components/BaseSpinner.vue'
+  import TiptapEditor from '@/components/TiptapEditor.vue'
 
   const router = useRouter()
   const route = useRoute()
@@ -109,6 +103,8 @@
 
   const id = route.params.id
 
+  const stripHtml = (html) => html.replace(/<[^>]*>/g, '').trim()
+
   // Esquema de validação Yup
   const schema = yup.object({
     title: yup
@@ -117,8 +113,16 @@
       .min(3, 'O título deve ter pelo menos 3 caracteres'),
     content: yup
       .string()
-      .required('O conteúdo é obrigatório')
-      .min(10, 'O conteúdo deve ter pelo menos 10 caracteres'),
+      .test(
+        'not-empty-html',
+        'O conteúdo é obrigatório',
+        (value) => stripHtml(value || '').length > 0,
+      )
+      .test(
+        'min-html',
+        'O conteúdo deve ter pelo menos 10 caracteres',
+        (value) => stripHtml(value || '').length >= 10,
+      ),
   })
 
   // Carrega a ementa existente

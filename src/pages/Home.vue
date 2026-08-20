@@ -65,9 +65,9 @@
               {{ homeSummary.legal_brief.id }}.
               {{ homeSummary.legal_brief.title }}
             </h5>
-            <p class="text-sm text-slate-600 dark:text-slate-300">
-              {{ homeSummary.legal_brief.content }}
-            </p>
+            <div class="text-sm text-slate-600 dark:text-slate-300">
+              <RichText :html="homeSummary.legal_brief.content" />
+            </div>
           </div>
           <div v-else class="p-5">
             <p class="text-sm text-slate-600 dark:text-slate-300">
@@ -98,7 +98,8 @@
               :key="notice.id"
               class="px-5 py-3"
             >
-              <strong>{{ notice.title }}:</strong> {{ notice.content }}
+              <strong>{{ notice.title }}:</strong>
+              <RichText :html="notice.content" class="inline" />
             </li>
             <li
               v-if="
@@ -155,6 +156,7 @@
   import { useNoticeStore } from '@/stores/notices.js'
   import Icon from '@/components/Icon.vue'
   import BaseBadge from '@/components/BaseBadge.vue'
+  import RichText from '@/components/RichText.vue'
 
   const noticeStore = useNoticeStore()
   const { formatDate } = useDate()

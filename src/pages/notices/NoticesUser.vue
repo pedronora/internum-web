@@ -52,7 +52,7 @@
           class="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800"
         >
           <h5 class="mb-2 text-base font-semibold">{{ notice.title }}</h5>
-          <p class="mb-4 text-sm">{{ notice.content }}</p>
+          <RichText :html="notice.content" class="mb-4" />
           <p class="mt-auto mb-4 text-xs text-slate-500 dark:text-slate-400">
             <strong>Autor:</strong> {{ notice.author?.name }} <br />
             <strong>Criado em:</strong> {{ formatDate(notice.created_at) }}
@@ -126,8 +126,8 @@
             >
               <td class="px-4 py-3">{{ notice.title }}</td>
               <td class="px-4 py-3">{{ notice.author?.name }}</td>
-              <td class="max-w-[250px] truncate px-4 py-3">
-                {{ notice.content }}
+              <td class="max-w-[250px] px-4 py-3">
+                <RichText :html="notice.content" class="line-clamp-2" />
               </td>
               <td class="px-4 py-3">{{ formatDate(notice.created_at) }}</td>
               <td class="px-4 py-3">
@@ -166,6 +166,7 @@
   import Icon from '@/components/Icon.vue'
   import BaseSpinner from '@/components/BaseSpinner.vue'
   import BasePagination from '@/components/BasePagination.vue'
+  import RichText from '@/components/RichText.vue'
 
   const { formatDate } = useDate()
 

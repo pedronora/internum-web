@@ -42,18 +42,11 @@
               class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
               >Conteúdo</label
             >
-            <textarea
-              id="content"
-              v-model.trim="form.content"
-              class="input-base"
-              rows="6"
-              :class="{
-                'border-red-500 focus:border-red-500 focus:ring-red-500/40':
-                  errors.content,
-              }"
+            <TiptapEditor
+              v-model="form.content"
               placeholder="Escreva aqui o conteúdo da ementa"
-              required
-            ></textarea>
+              :error="!!errors.content"
+            />
             <div
               v-if="errors.content"
               class="mt-1 text-sm text-red-600 dark:text-red-400"
@@ -94,6 +87,7 @@
   } from '@/composables/useToast'
   import Icon from '@/components/Icon.vue'
   import BaseSpinner from '@/components/BaseSpinner.vue'
+  import TiptapEditor from '@/components/TiptapEditor.vue'
 
   const router = useRouter()
 
@@ -105,9 +99,17 @@
   const loading = ref(false)
   const errors = ref({})
 
+  const stripHtml = (html) => html.replace(/<[^>]*>/g, '').trim()
+
   const submitForm = async () => {
     loading.value = true
     errors.value = {}
+
+    if (!stripHtml(form.value.content)) {
+      errors.value.content = 'O conteúdo é obrigatório'
+      loading.value = false
+      return
+    }
 
     try {
       await LegalBriefsService.create(form.value)

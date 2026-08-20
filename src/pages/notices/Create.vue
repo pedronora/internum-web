@@ -39,14 +39,10 @@
               class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
               >Conteúdo</label
             >
-            <textarea
-              id="content"
-              v-model.trim="form.content"
-              class="input-base resize-y"
-              rows="5"
+            <TiptapEditor
+              v-model="form.content"
               placeholder="Digite o conteúdo do aviso"
-              required
-            ></textarea>
+            />
           </div>
 
           <div class="mt-6 flex justify-end gap-2">
@@ -95,6 +91,7 @@
   import { useRouter } from 'vue-router'
   import Icon from '@/components/Icon.vue'
   import BaseSpinner from '@/components/BaseSpinner.vue'
+  import TiptapEditor from '@/components/TiptapEditor.vue'
 
   const router = useRouter()
   const loading = ref(false)
@@ -105,8 +102,10 @@
     content: '',
   })
 
+  const stripHtml = (html) => html.replace(/<[^>]*>/g, '').trim()
+
   async function saveNotice() {
-    if (!form.value.title || !form.value.content) {
+    if (!form.value.title || !stripHtml(form.value.content)) {
       errorToast('Por favor, preencha todos os campos obrigatórios.')
       return
     }

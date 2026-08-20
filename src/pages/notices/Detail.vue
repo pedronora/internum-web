@@ -34,9 +34,7 @@
     >
       <div class="p-5">
         <h4 class="mb-3 text-xl font-bold">{{ notice.title }}</h4>
-        <p class="text-sm text-slate-600 dark:text-slate-300">
-          {{ notice.content }}
-        </p>
+        <RichText :html="notice.content" />
 
         <ul class="my-4 divide-y divide-slate-200 dark:divide-slate-700">
           <li class="py-3">
@@ -105,6 +103,7 @@
   import { useDate } from '@/composables/useDate'
   import BaseSpinner from '@/components/BaseSpinner.vue'
   import BaseBadge from '@/components/BaseBadge.vue'
+  import RichText from '@/components/RichText.vue'
 
   const route = useRoute()
   const router = useRouter()
