@@ -136,7 +136,7 @@
       }
     } catch (err) {
       errorToast('Erro ao carregar a ementa.' + err)
-      router.push('/legal-briefs')
+      router.push({ name: 'LegalBriefsList' })
     } finally {
       loading.value = false
     }
