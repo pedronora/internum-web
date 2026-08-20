@@ -73,7 +73,7 @@
           </small>
         </div>
 
-        <p class="mb-2 text-sm">{{ brief.content }}</p>
+        <RichText :html="brief.content" class="mb-2" />
 
         <div
           v-if="brief.updated_by"
@@ -105,9 +105,9 @@
                 {{ formatDate(rev.created_at) }}
               </small>
             </div>
-            <p class="mb-1 text-xs italic text-slate-500 dark:text-slate-400">
-              {{ rev.content }}
-            </p>
+            <div class="mb-1 text-xs italic text-slate-500 dark:text-slate-400">
+              <RichText :html="rev.content" />
+            </div>
             <div
               v-if="rev.updated_by"
               class="text-xs text-slate-500 dark:text-slate-400"
@@ -122,7 +122,7 @@
           class="mt-3 flex justify-end gap-2"
         >
           <router-link
-            :to="`/legal-briefs/${brief.id}/edit`"
+            :to="{ name: 'LegalBriefEdit', params: { id: brief.id } }"
             class="inline-flex items-center justify-center gap-2 rounded-lg border border-primary-300 bg-white px-2.5 py-1 text-xs font-medium text-primary-700 transition hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-primary-700 dark:bg-slate-800 dark:text-primary-400 dark:hover:bg-primary-950/30"
           >
             <Icon name="pencil" class="h-3.5 w-3.5" aria-hidden="true" />
@@ -177,6 +177,7 @@
   import Icon from '@/components/Icon.vue'
   import BaseBadge from '@/components/BaseBadge.vue'
   import BasePagination from '@/components/BasePagination.vue'
+  import RichText from '@/components/RichText.vue'
 
   const { formatDate } = useDate()
   const authStore = useAuthStore()
