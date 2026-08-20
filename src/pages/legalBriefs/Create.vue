@@ -115,7 +115,7 @@
       await LegalBriefsService.create(form.value)
       successToast('Ementa criada com sucesso!')
       // redireciona após pequeno delay
-      setTimeout(() => router.push('/legal-briefs'), 800)
+      setTimeout(() => router.push({ name: 'LegalBriefsList' }), 800)
     } catch (err) {
       if (err.response?.status === 422 || err.response?.status === 400) {
         errors.value = err.response.data.errors || {}
