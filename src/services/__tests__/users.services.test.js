@@ -59,7 +59,12 @@ describe('UsersService', () => {
   })
 
   it('create posts payload and returns data', async () => {
-    const payload = { username: 'new.user', cpf: '12345678901' }
+    const payload = {
+      username: 'new.user',
+      cpf: '12345678901',
+      phone: '45999999999',
+      gross_salary: 5200.5,
+    }
     const responseData = { id: 10 }
     mockApi.post.mockResolvedValueOnce({ data: responseData })
 
@@ -70,7 +75,12 @@ describe('UsersService', () => {
   })
 
   it('update sends id and payload and returns data', async () => {
-    const payload = { active: false, termination_date: '2026-02-27' }
+    const payload = {
+      active: false,
+      termination_date: '2026-02-27',
+      phone: '45999999999',
+      gross_salary: 5200.5,
+    }
     const responseData = { id: 10, active: false }
     mockApi.put.mockResolvedValueOnce({ data: responseData })
 

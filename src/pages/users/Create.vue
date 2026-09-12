@@ -95,6 +95,51 @@
         <div>
           <label
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            for="phone"
+            >Telefone</label
+          >
+          <input
+            id="phone"
+            v-model="phoneDisplay"
+            type="text"
+            inputmode="numeric"
+            maxlength="19"
+            class="input-base"
+            placeholder="(45) 99999-9999"
+          />
+          <div
+            v-if="phoneError"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
+            {{ phoneError }}
+          </div>
+        </div>
+
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            for="gross_salary"
+            >Salário Bruto</label
+          >
+          <input
+            id="gross_salary"
+            v-model="salaryDisplay"
+            type="text"
+            inputmode="decimal"
+            class="input-base"
+            placeholder="R$ 0,00"
+          />
+          <div
+            v-if="salaryError"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
+            {{ salaryError }}
+          </div>
+        </div>
+
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             >Senha</label
           >
           <div class="relative">
@@ -224,6 +269,8 @@
     error as errorToast,
   } from '@/composables/useToast'
   import { useCPF } from '@/composables/useCPF'
+  import { usePhone } from '@/composables/usePhone'
+  import { useCurrency } from '@/composables/useCurrency'
   import Icon from '@/components/Icon.vue'
   import BaseSpinner from '@/components/BaseSpinner.vue'
   import * as yup from 'yup'
@@ -235,6 +282,15 @@
   const showPassword1 = ref(false)
   const showPassword2 = ref(false)
   const { cpf, cpfError, cpfDisplay, validarCampoCPF, setCPF } = useCPF()
+  const { phone, phoneError, phoneDisplay, validarCampoPhone, setPhone } =
+    usePhone()
+  const {
+    grossSalary,
+    salaryError,
+    salaryDisplay,
+    validarCampoSalary,
+    resetSalary,
+  } = useCurrency()
 
   const setorOptions = [
     { value: 'registro', label: 'Registro' },
@@ -355,6 +411,16 @@
       return
     }
 
+    if (!validarCampoPhone()) {
+      errorToast(phoneError.value)
+      return
+    }
+
+    if (!validarCampoSalary()) {
+      errorToast(salaryError.value)
+      return
+    }
+
     loading.value = true
     try {
       const payload = {
@@ -369,10 +435,14 @@
         role: form.value.role,
         active: form.value.active,
         password: form.value.password,
+        phone: phone.value,
+        gross_salary: grossSalary.value,
       }
       await UsersService.create(payload)
       successToast('Usuário criado com sucesso.')
       setCPF('')
+      resetSalary()
+      setPhone('')
       router.push({ name: 'UsersList' })
     } catch (err) {
       console.error(err)

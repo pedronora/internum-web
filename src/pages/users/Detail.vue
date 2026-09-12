@@ -99,6 +99,28 @@
           {{ formatDate(user.hiring_date, true) }}
         </dd>
 
+        <template v-if="user.phone">
+          <dt
+            class="text-sm font-medium text-slate-500 dark:text-slate-400 sm:col-span-3"
+          >
+            Telefone
+          </dt>
+          <dd class="text-sm sm:col-span-9 sm:text-base">
+            {{ formatarTelefone(user.phone) }}
+          </dd>
+        </template>
+
+        <template v-if="user.gross_salary != null && user.gross_salary !== ''">
+          <dt
+            class="text-sm font-medium text-slate-500 dark:text-slate-400 sm:col-span-3"
+          >
+            Salário Bruto
+          </dt>
+          <dd class="text-sm sm:col-span-9 sm:text-base">
+            {{ formatarMoedaBR(user.gross_salary) }}
+          </dd>
+        </template>
+
         <template v-if="!user.active && user.termination_date">
           <dt
             class="text-sm font-medium text-slate-500 dark:text-slate-400 sm:col-span-3"
@@ -179,6 +201,8 @@
   } from '@/composables/useToast'
   import { useDate } from '@/composables/useDate'
   import { useCPF } from '@/composables/useCPF'
+  import { formatarTelefone } from '@/composables/usePhone'
+  import { formatarMoedaBR } from '@/composables/useCurrency'
   import BaseSpinner from '@/components/BaseSpinner.vue'
   import BaseBadge from '@/components/BaseBadge.vue'
 
