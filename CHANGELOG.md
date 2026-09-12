@@ -5,6 +5,16 @@ Todas as mudanças relevantes desta imagem serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o versionamento segue o padrão [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.4.0] - 2026-09-12
+
+### Added
+
+- Campos **Telefone** e **Salário Bruto** no CRUD de usuários e no perfil:
+  inputs com validação em `Create`/`Update`, exibição em `Detail`, coluna
+  Salário em `List` e telefone editável no perfil (`UserProfile`), via novos
+  composables `usePhone` (máscara/normalização BR) e `useCurrency`
+  (formatação/parsing pt-BR e JSON).
+
 ## [1.3.0] - 2026-08-20
 
 ### Added
