@@ -113,6 +113,33 @@
         <div>
           <label
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            for="phone"
+            >Telefone</label
+          >
+          <input
+            id="phone"
+            v-model="phoneDisplay"
+            type="text"
+            inputmode="numeric"
+            maxlength="19"
+            class="input-base"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500/40':
+                errors.phone,
+            }"
+            placeholder="(45) 99999-9999"
+          />
+          <div
+            v-if="errors.phone"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
+            {{ errors.phone }}
+          </div>
+        </div>
+
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             >Setor</label
           >
           <select
@@ -185,6 +212,7 @@
     error as errorToast,
   } from '@/composables/useToast'
   import { useCPF } from '@/composables/useCPF'
+  import { usePhone } from '@/composables/usePhone'
   import BaseSpinner from '@/components/BaseSpinner.vue'
   import * as yup from 'yup'
 
@@ -199,6 +227,7 @@
   const error = ref(null)
   const errors = ref({})
   const { formatarCPF } = useCPF()
+  const { phone, phoneDisplay, setPhone, validarCampoPhone } = usePhone()
 
   const canEditRestrictedFields = computed(() =>
     ['admin', 'coord'].includes(auth.user?.role),
@@ -275,6 +304,7 @@
         role: data.role ?? 'user',
         active: data.active ?? true,
       }
+      setPhone(data.phone)
       loadedOnce.value = true
     } catch (err) {
       console.error(err)
@@ -294,10 +324,17 @@
     try {
       await schema.validate(form.value, { abortEarly: false })
 
+      if (!validarCampoPhone()) {
+        errors.value.phone = 'Telefone deve conter entre 10 e 13 dígitos'
+        loading.value = false
+        return
+      }
+
       let payload = {
         name: form.value.name.trim(),
         email: form.value.email.trim(),
         birthday: form.value.birthday,
+        phone: phone.value,
       }
 
       if (canEditRestrictedFields.value) {

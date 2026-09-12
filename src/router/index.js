@@ -63,7 +63,7 @@ const routes = [
   {
     path: '/biblioteca',
     component: () => import('@/pages/RouterLayout.vue'),
-    meta: { requiresAuth: true, title: 'Biblioteca - ' },
+    meta: { requiresAuth: true },
     children: [
       {
         path: 'admin/livros',
@@ -132,7 +132,7 @@ const routes = [
   {
     path: '/avisos',
     component: () => import('@/pages/RouterLayout.vue'),
-    meta: { requiresAuth: true, title: 'Avisos - ' },
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
@@ -190,11 +190,7 @@ const routes = [
   {
     path: '/usuarios',
     component: () => import('@/pages/RouterLayout.vue'),
-    meta: {
-      requiresAuth: true,
-      requiresPermission: true,
-      title: 'Usuários - ',
-    },
+    meta: { requiresAuth: true, requiresPermission: true },
     children: [
       {
         path: '',
@@ -207,7 +203,7 @@ const routes = [
         },
       },
       {
-        path: 'admin/criar',
+        path: 'criar',
         name: 'UsersCreate',
         component: () => import('@/pages/users/Create.vue'),
         meta: {
@@ -243,7 +239,7 @@ const routes = [
   {
     path: '/ferias',
     component: () => import('@/pages/RouterLayout.vue'),
-    meta: { requiresAuth: true, title: 'Férias - ' },
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',

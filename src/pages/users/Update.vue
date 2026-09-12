@@ -104,6 +104,51 @@
         <div>
           <label
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            for="phone"
+            >Telefone</label
+          >
+          <input
+            id="phone"
+            v-model="phoneDisplay"
+            type="text"
+            inputmode="numeric"
+            maxlength="19"
+            class="input-base"
+            placeholder="(45) 99999-9999"
+          />
+          <div
+            v-if="phoneError"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
+            {{ phoneError }}
+          </div>
+        </div>
+
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            for="gross_salary"
+            >Salário Bruto</label
+          >
+          <input
+            id="gross_salary"
+            v-model="salaryDisplay"
+            type="text"
+            inputmode="decimal"
+            class="input-base"
+            placeholder="R$ 0,00"
+          />
+          <div
+            v-if="salaryError"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
+            {{ salaryError }}
+          </div>
+        </div>
+
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             >Setor</label
           >
           <select v-model="form.setor" class="input-base" required>
@@ -218,6 +263,8 @@
   } from '@/composables/useToast'
   import { useCPF } from '@/composables/useCPF'
   import { useDate } from '@/composables/useDate'
+  import { usePhone } from '@/composables/usePhone'
+  import { useCurrency } from '@/composables/useCurrency'
   import BaseSpinner from '@/components/BaseSpinner.vue'
   import * as yup from 'yup'
 
@@ -231,6 +278,15 @@
   const error = ref(null)
   const { cpf, cpfError, cpfDisplay, validarCampoCPF, setCPF } = useCPF()
   const { toInputDate } = useDate()
+  const { phone, phoneError, phoneDisplay, validarCampoPhone, setPhone } =
+    usePhone()
+  const {
+    grossSalary,
+    salaryError,
+    salaryDisplay,
+    validarCampoSalary,
+    setGrossSalary,
+  } = useCurrency()
 
   // Opções dos selects (idem ao Create.vue)
   const setorOptions = [
@@ -350,6 +406,8 @@
       form.value.role = userData.role
       form.value.active = userData.active
       setCPF(userData.cpf)
+      setPhone(userData.phone)
+      setGrossSalary(userData.gross_salary)
     } catch (err) {
       console.error(err)
       error.value = 'Erro ao carregar os dados do usuário. Tente novamente.'
@@ -386,6 +444,16 @@
       return
     }
 
+    if (!validarCampoPhone()) {
+      errorToast(phoneError.value)
+      return
+    }
+
+    if (!validarCampoSalary()) {
+      errorToast(salaryError.value)
+      return
+    }
+
     loadingSubmit.value = true
     try {
       const payload = {
@@ -399,6 +467,8 @@
         subsetor: form.value.subsetor,
         role: form.value.role,
         active: form.value.active,
+        phone: phone.value,
+        gross_salary: grossSalary.value,
       }
 
       if (form.value.active) {

@@ -88,6 +88,9 @@
                 Perfil
               </th>
               <th scope="col" class="px-4 py-3 font-semibold whitespace-nowrap">
+                Salário
+              </th>
+              <th scope="col" class="px-4 py-3 font-semibold whitespace-nowrap">
                 Criado em
               </th>
               <th scope="col" class="px-4 py-3 font-semibold whitespace-nowrap">
@@ -118,6 +121,13 @@
                         : 'Geral'
                   }}
                 </BaseBadge>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                {{
+                  u.gross_salary != null && u.gross_salary !== ''
+                    ? formatarMoedaBR(u.gross_salary)
+                    : '—'
+                }}
               </td>
               <td class="px-4 py-3">{{ formatDate(u.created_at) }}</td>
               <td class="px-4 py-3 whitespace-nowrap">
@@ -173,6 +183,7 @@
   import { ref, onMounted, computed } from 'vue'
   import { UsersService } from '@/services/users.services'
   import { useDate } from '@/composables/useDate'
+  import { formatarMoedaBR } from '@/composables/useCurrency'
   import {
     success as successToast,
     error as errorToast,
