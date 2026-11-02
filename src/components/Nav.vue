@@ -545,6 +545,7 @@
   import { useAuthStore } from '@/stores/auth'
   import { useNoticeStore } from '@/stores/notices'
   import { useTheme } from '@/composables/useTheme'
+  import { PERMISSIONS } from '@/composables/useAuthorization'
   import Icon from '@/components/Icon.vue'
 
   const router = useRouter()
@@ -786,16 +787,21 @@
     }
   }
 
-  const adminMenu = [
+  const menu = [
     {
       type: 'dropdown',
       key: 'avisos',
       label: 'Avisos',
-      activeNames: ['NoticesListByUser', 'NoticesList'],
+      activeNames: ['NoticesListByUser', 'NoticesList', 'NoticesCreate'],
       items: [
         { type: 'link', label: 'Meus Avisos', name: 'NoticesListByUser' },
         { type: 'divider' },
-        { type: 'link', label: 'Gerir Avisos', name: 'NoticesList' },
+        {
+          type: 'link',
+          label: 'Gerir Avisos',
+          name: 'NoticesList',
+          permission: PERMISSIONS.NOTICES_MANAGE,
+        },
       ],
     },
     { type: 'link', label: 'Ementas', name: 'LegalBriefsList' },
@@ -816,13 +822,25 @@
         { type: 'link', label: 'Acervo', name: 'BooksReqList' },
         { type: 'link', label: 'Meus empréstimos', name: 'MyLoansList' },
         { type: 'divider' },
-        { type: 'link', label: 'Gerenciar Livros', name: 'BooksList' },
+        {
+          type: 'link',
+          label: 'Gerenciar Livros',
+          name: 'BooksList',
+          permission: PERMISSIONS.LIBRARY_MANAGE,
+        },
         {
           type: 'link',
           label: 'Gerenciar Empréstimos',
           name: 'AdminLoansList',
+          permission: PERMISSIONS.LIBRARY_MANAGE,
         },
       ],
+    },
+    {
+      type: 'link',
+      label: 'Colaboradores',
+      name: 'UsersDirectory',
+      permission: PERMISSIONS.USERS_READ,
     },
     {
       type: 'dropdown',
@@ -849,8 +867,18 @@
           key: 'usuarios',
           label: 'Usuários',
           items: [
-            { type: 'link', label: 'Listar Usuários', name: 'UsersList' },
-            { type: 'link', label: 'Cadastrar Usuário', name: 'UsersCreate' },
+            {
+              type: 'link',
+              label: 'Listar Usuários',
+              name: 'UsersList',
+              permission: PERMISSIONS.USERS_READ_SENSITIVE,
+            },
+            {
+              type: 'link',
+              label: 'Cadastrar Usuário',
+              name: 'UsersCreate',
+              permission: PERMISSIONS.USERS_CREATE,
+            },
           ],
         },
         {
@@ -878,65 +906,21 @@
               type: 'link',
               label: 'Gerir Solicitações',
               name: 'VacationAdminRequestsList',
+              permission: PERMISSIONS.VACATION_MANAGE_ALL,
             },
             {
               type: 'link',
               label: 'Gerir Concessões',
               name: 'VacationAdminGrantsList',
+              permission: PERMISSIONS.VACATION_MANAGE_ALL,
             },
             {
               type: 'link',
               label: 'Alertas de Férias',
               name: 'VacationAdminAlerts',
+              permission: PERMISSIONS.VACATION_READ_ALL,
             },
           ],
-        },
-      ],
-    },
-  ]
-
-  const userMenu = [
-    { type: 'link', label: 'Avisos', name: 'NoticesListByUser' },
-    { type: 'link', label: 'Ementas', name: 'LegalBriefsList' },
-    {
-      type: 'dropdown',
-      key: 'biblioteca-user',
-      label: 'Biblioteca',
-      activeNames: [
-        'BooksReqList',
-        'MyLoansList',
-        'BooksList',
-        'BooksCreate',
-        'BookEdit',
-        'BookDetail',
-        'AdminLoansList',
-      ],
-      items: [
-        { type: 'link', label: 'Acervo', name: 'BooksReqList' },
-        { type: 'link', label: 'Meus empréstimos', name: 'MyLoansList' },
-      ],
-    },
-    {
-      type: 'dropdown',
-      key: 'ferias-user',
-      label: 'Férias',
-      activeNames: [
-        'VacationMyVacation',
-        'VacationRequestsCreate',
-        'VacationRequestsList',
-        'VacationRequestDetail',
-      ],
-      items: [
-        { type: 'link', label: 'Minhas Férias', name: 'VacationMyVacation' },
-        {
-          type: 'link',
-          label: 'Nova Solicitação',
-          name: 'VacationRequestsCreate',
-        },
-        {
-          type: 'link',
-          label: 'Minhas Solicitações',
-          name: 'VacationRequestsList',
         },
       ],
     },
@@ -949,9 +933,29 @@
     { type: 'action', label: 'Sair' },
   ]
 
-  const activeMenu = computed(() =>
-    authStore.isAdminOrCoord ? adminMenu : userMenu,
-  )
+  function filterMenuItems(items) {
+    const filtered = items
+      .map((item) => {
+        if (item.permission && !authStore.can(item.permission)) return null
+        if (item.type === 'submenu') {
+          const children = filterMenuItems(item.items)
+          if (!children.some((child) => child.type === 'link')) return null
+          return { ...item, items: children }
+        }
+        return item
+      })
+      .filter(Boolean)
+
+    return filtered.filter(
+      (item, index) =>
+        item.type !== 'divider' ||
+        (index > 0 &&
+          index < filtered.length - 1 &&
+          filtered[index - 1].type !== 'divider'),
+    )
+  }
+
+  const activeMenu = computed(() => filterMenuItems(menu))
 
   function isActiveMenu(item) {
     if (item.type === 'link') return route.name === item.name

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { PERMISSIONS } from '@/composables/useAuthorization'
 
 const routes = [
   {
@@ -44,7 +45,7 @@ const routes = [
         component: () => import('@/pages/legalBriefs/Create.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.LEGAL_BRIEFS_MANAGE,
           title: 'Criar Ementa - ',
         },
       },
@@ -54,7 +55,7 @@ const routes = [
         component: () => import('@/pages/legalBriefs/Update.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.LEGAL_BRIEFS_MANAGE,
           title: 'Editar Ementa - ',
         },
       },
@@ -71,7 +72,7 @@ const routes = [
         component: () => import('@/pages/library/books/List.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.LIBRARY_MANAGE,
           title: 'Gerenciar Livros - ',
         },
       },
@@ -81,7 +82,7 @@ const routes = [
         component: () => import('@/pages/library/books/Create.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.LIBRARY_MANAGE,
           title: 'Cadastrar Livro - ',
         },
       },
@@ -91,7 +92,7 @@ const routes = [
         component: () => import('@/pages/library/books/Detail.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.LIBRARY_MANAGE,
           title: 'Visualizar Livro - ',
         },
       },
@@ -101,7 +102,7 @@ const routes = [
         component: () => import('@/pages/library/books/Edit.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.LIBRARY_MANAGE,
           title: 'Editar Livro - ',
         },
       },
@@ -123,7 +124,7 @@ const routes = [
         component: () => import('@/pages/library/loans/AdminLoansList.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.LIBRARY_MANAGE,
           title: 'Gerenciar Empréstimos - ',
         },
       },
@@ -146,7 +147,7 @@ const routes = [
         component: () => import('@/pages/notices/List.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.NOTICES_MANAGE,
           title: 'Gerir Avisos - ',
         },
       },
@@ -156,7 +157,7 @@ const routes = [
         component: () => import('@/pages/notices/Create.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.NOTICES_MANAGE,
           title: 'Criar Aviso - ',
         },
       },
@@ -188,9 +189,19 @@ const routes = [
     ],
   },
   {
+    path: '/colaboradores',
+    name: 'UsersDirectory',
+    component: () => import('@/pages/users/Directory.vue'),
+    meta: {
+      requiresAuth: true,
+      permission: PERMISSIONS.USERS_READ,
+      title: 'Colaboradores - ',
+    },
+  },
+  {
     path: '/usuarios',
     component: () => import('@/pages/RouterLayout.vue'),
-    meta: { requiresAuth: true, requiresPermission: true },
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
@@ -198,7 +209,7 @@ const routes = [
         component: () => import('@/pages/users/List.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.USERS_READ_SENSITIVE,
           title: 'Usuários - ',
         },
       },
@@ -208,7 +219,7 @@ const routes = [
         component: () => import('@/pages/users/Create.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.USERS_CREATE,
           title: 'Cadastrar Usuário - ',
         },
       },
@@ -219,7 +230,7 @@ const routes = [
         props: true,
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.USERS_READ_SENSITIVE,
           title: 'Usuário - ',
         },
       },
@@ -230,7 +241,7 @@ const routes = [
         props: true,
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.USERS_EDIT_PROFILE,
           title: 'Editar Usuário - ',
         },
       },
@@ -272,7 +283,7 @@ const routes = [
         component: () => import('@/pages/vacation/AdminRequestsList.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.VACATION_MANAGE_ALL,
           title: 'Gerir Solicitações - ',
         },
       },
@@ -283,7 +294,7 @@ const routes = [
         props: true,
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.VACATION_MANAGE_ALL,
           title: 'Solicitação - ',
         },
       },
@@ -293,7 +304,7 @@ const routes = [
         component: () => import('@/pages/vacation/AdminGrantsList.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.VACATION_MANAGE_ALL,
           title: 'Gerir Concessões - ',
         },
       },
@@ -304,7 +315,7 @@ const routes = [
         props: true,
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.VACATION_MANAGE_ALL,
           title: 'Períodos do Usuário - ',
         },
       },
@@ -314,7 +325,7 @@ const routes = [
         component: () => import('@/pages/vacation/AdminAlerts.vue'),
         meta: {
           requiresAuth: true,
-          requiresPermission: true,
+          permission: PERMISSIONS.VACATION_READ_ALL,
           title: 'Alertas de Férias - ',
         },
       },
@@ -366,10 +377,7 @@ router.beforeEach(async (to, from, next) => {
     return next({ name: 'Login', query: { next: to.fullPath } })
   }
 
-  if (
-    to.meta.requiresPermission &&
-    (!auth.user || !['coord', 'admin'].includes(auth.user.role))
-  ) {
+  if (to.meta.permission && !auth.can(to.meta.permission)) {
     return next({ name: 'Home' })
   }
 

@@ -10,11 +10,10 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     isAuthenticated: (state) => !!state.accessToken,
-    isAdmin: (state) => state.user?.role === 'admin',
-    isAdminOrCoord: (state) => {
-      const allowedRoles = ['admin', 'coord']
-      return allowedRoles.includes(state.user?.role)
-    },
+    isAdmin: (state) => state.user?.roles?.includes('admin') ?? false,
+    hasRole: (state) => (role) => state.user?.roles?.includes(role) ?? false,
+    can: (state) => (permission) =>
+      state.user?.permissions?.includes(permission) ?? false,
     formattedName: (state) => {
       const fullName = state.user?.name
       if (fullName) {
@@ -69,7 +68,20 @@ export const useAuthStore = defineStore('auth', {
       this.isInitialized = true
 
       const savedUser = localStorage.getItem('user')
-      if (savedUser) this.user = JSON.parse(savedUser)
+      if (savedUser) {
+        try {
+          const user = JSON.parse(savedUser)
+          // Sessões antigas (pré-permissões) são descartadas e recarregadas
+          // via /users/me após o refresh do token.
+          if (Array.isArray(user.roles) && Array.isArray(user.permissions)) {
+            this.user = user
+          } else {
+            localStorage.removeItem('user')
+          }
+        } catch {
+          localStorage.removeItem('user')
+        }
+      }
 
       // try {
       //   const data = await this.refreshToken()

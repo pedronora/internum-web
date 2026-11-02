@@ -124,7 +124,7 @@
           </div>
         </div>
 
-        <div>
+        <div v-if="canEditSalary">
           <label
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             for="gross_salary"
@@ -146,50 +146,72 @@
           </div>
         </div>
 
-        <div>
-          <label
-            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
-            >Setor</label
-          >
-          <select v-model="form.setor" class="input-base" required>
-            <option disabled value="">Selecione...</option>
-            <option v-for="s in setorOptions" :key="s.value" :value="s.value">
-              {{ s.label }}
-            </option>
-          </select>
-        </div>
-
-        <div>
-          <label
-            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
-            >Subsetor</label
-          >
-          <select v-model="form.subsetor" class="input-base" required>
-            <option disabled value="">Selecione...</option>
-            <option
-              v-for="option in subsetorOptions[form.setor] || []"
-              :key="option.value"
-              :value="option.value"
+        <template v-if="canEditEmployment">
+          <div>
+            <label
+              class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+              >Unidade</label
             >
-              {{ option.label }}
-            </option>
-          </select>
-        </div>
+            <select v-model="form.unidade" class="input-base" required>
+              <option disabled value="">Selecione...</option>
+              <option
+                v-for="u in UNIDADE_OPTIONS"
+                :key="u.value"
+                :value="u.value"
+              >
+                {{ u.label }}
+              </option>
+            </select>
+          </div>
 
-        <div>
+          <div>
+            <label
+              class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+              >Subunidade</label
+            >
+            <input
+              v-model="form.subunidade"
+              list="subunidades-sugeridas"
+              class="input-base"
+              placeholder="Opcional (ex.: Atendimento, Pessoas)"
+            />
+            <datalist id="subunidades-sugeridas">
+              <option
+                v-for="s in SUBUNIDADES_SUGERIDAS"
+                :key="s"
+                :value="s"
+              ></option>
+            </datalist>
+          </div>
+        </template>
+
+        <div v-if="canAssignRoles" class="sm:col-span-2 md:col-span-3">
           <label
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
-            >Perfil</label
+            >Perfis</label
           >
-          <select v-model="form.role" class="input-base" required>
-            <option disabled value="">Selecione...</option>
-            <option v-for="r in roleOptions" :key="r.value" :value="r.value">
+          <p v-if="isSelf" class="text-sm text-slate-500 dark:text-slate-400">
+            Você não pode alterar os próprios perfis.
+          </p>
+          <div v-else class="flex flex-wrap gap-x-4 gap-y-2">
+            <label
+              v-for="r in roleChoices"
+              :key="r.value"
+              class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200"
+            >
+              <input
+                v-model="form.roles"
+                type="checkbox"
+                :value="r.value"
+                :disabled="r.disabled"
+                class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500 disabled:opacity-50"
+              />
               {{ r.label }}
-            </option>
-          </select>
+            </label>
+          </div>
         </div>
 
-        <div class="flex items-end">
+        <div v-if="canEditEmployment" class="flex items-end">
           <div class="flex items-center gap-3">
             <button
               type="button"
@@ -217,7 +239,7 @@
           </div>
         </div>
 
-        <div v-if="!form.active">
+        <div v-if="canEditEmployment && !form.active">
           <label
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             >Data de Rescisão</label
@@ -252,11 +274,19 @@
 
 <script setup>
   // Importações de Vue e Vue Router
-  import { ref, onMounted, watch } from 'vue'
+  import { ref, computed, onMounted, watch } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
 
   // Importações de Serviços e utilitários
   import { UsersService } from '@/services/users.services'
+  import { useAuthStore } from '@/stores/auth'
+  import {
+    PERMISSIONS,
+    ROLE_OPTIONS,
+    SUBUNIDADES_SUGERIDAS,
+    UNIDADE_OPTIONS,
+    assignableRoles,
+  } from '@/composables/useAuthorization'
   import {
     success as successToast,
     error as errorToast,
@@ -270,6 +300,7 @@
 
   const router = useRouter()
   const route = useRoute()
+  const auth = useAuthStore()
   const userId = route.params.id // Captura o ID da rota
 
   // Estados de carregamento
@@ -288,37 +319,18 @@
     setGrossSalary,
   } = useCurrency()
 
-  // Opções dos selects (idem ao Create.vue)
-  const setorOptions = [
-    { value: 'registro', label: 'Registro' },
-    { value: 'administrativo', label: 'Administrativo' },
-    { value: 'oficial', label: 'Oficial' },
-  ]
+  const canEditEmployment = computed(() =>
+    auth.can(PERMISSIONS.USERS_EDIT_EMPLOYMENT),
+  )
+  const canEditSalary = computed(() => auth.can(PERMISSIONS.USERS_EDIT_SALARY))
+  const canAssignRoles = computed(() =>
+    auth.can(PERMISSIONS.USERS_ASSIGN_ROLES),
+  )
+  const isSelf = computed(() => String(auth.user?.id) === String(userId))
 
-  const subsetorOptions = {
-    registro: [
-      { value: 'Análise', label: 'Análise' },
-      { value: 'Conferência', label: 'Conferência' },
-      { value: 'Finalização/Impressão', label: 'Finalização/Impressão' },
-      { value: 'Busca e Certidão', label: 'Busca e Certidão' },
-      { value: 'Arquivo', label: 'Arquivo' },
-    ],
-    administrativo: [
-      { value: 'Atendimento', label: 'Atendimento' },
-      { value: 'Digitalização', label: 'Digitalização' },
-      { value: 'Apoio', label: 'Apoio' },
-    ],
-    oficial: [
-      { value: 'Titular', label: 'Titular' },
-      { value: 'Substituto', label: 'Substituto' },
-    ],
-  }
-
-  const roleOptions = [
-    { value: 'admin', label: 'Administrador' },
-    { value: 'coord', label: 'Coordenador' },
-    { value: 'user', label: 'Geral' },
-  ]
+  const assignable = computed(
+    () => new Set(assignableRoles(auth.user?.roles || []).map((r) => r.value)),
+  )
 
   function getTodayForInput() {
     return toInputDate(new Date())
@@ -366,9 +378,9 @@
         otherwise: (schema) => schema.notRequired(),
       }),
 
-    setor: yup.string().required('O setor é obrigatório'),
-    subsetor: yup.string().required('O subsetor é obrigatório'),
-    role: yup.string().required('O perfil é obrigatório'),
+    unidade: yup.string().required('A unidade é obrigatória'),
+    subunidade: yup.string().nullable(),
+    roles: yup.array().of(yup.string()).min(1, 'Selecione ao menos um perfil'),
     active: yup.boolean(),
   })
 
@@ -380,11 +392,22 @@
     birthday: '',
     hiring_date: '',
     termination_date: '',
-    setor: '',
-    subsetor: '',
-    role: '',
+    unidade: '',
+    subunidade: '',
+    roles: [],
     active: true,
   })
+
+  const roleChoices = computed(() =>
+    ROLE_OPTIONS.filter(
+      (option) =>
+        assignable.value.has(option.value) ||
+        form.value.roles.includes(option.value),
+    ).map((option) => ({
+      ...option,
+      disabled: isSelf.value || !assignable.value.has(option.value),
+    })),
+  )
 
   // Carrega os dados do usuário ao montar o componente
   onMounted(async () => {
@@ -401,9 +424,9 @@
       form.value.birthday = toInputDate(userData.birthday)
       form.value.hiring_date = toInputDate(userData.hiring_date)
       form.value.termination_date = toInputDate(userData.termination_date)
-      form.value.setor = userData.setor
-      form.value.subsetor = userData.subsetor
-      form.value.role = userData.role
+      form.value.unidade = userData.unidade ?? ''
+      form.value.subunidade = userData.subunidade ?? ''
+      form.value.roles = [...(userData.roles ?? [])]
       form.value.active = userData.active
       setCPF(userData.cpf)
       setPhone(userData.phone)
@@ -449,7 +472,7 @@
       return
     }
 
-    if (!validarCampoSalary()) {
+    if (canEditSalary.value && !validarCampoSalary()) {
       errorToast(salaryError.value)
       return
     }
@@ -462,19 +485,28 @@
         cpf: cpf.value,
         email: form.value.email,
         birthday: form.value.birthday,
-        hiring_date: form.value.hiring_date,
-        setor: form.value.setor,
-        subsetor: form.value.subsetor,
-        role: form.value.role,
-        active: form.value.active,
         phone: phone.value,
-        gross_salary: grossSalary.value,
       }
 
-      if (form.value.active) {
-        payload.termination_date = null
-      } else if (form.value.termination_date) {
-        payload.termination_date = form.value.termination_date
+      if (canEditEmployment.value) {
+        payload.unidade = form.value.unidade
+        payload.subunidade = form.value.subunidade || null
+        payload.hiring_date = form.value.hiring_date
+        payload.active = form.value.active
+
+        if (form.value.active) {
+          payload.termination_date = null
+        } else if (form.value.termination_date) {
+          payload.termination_date = form.value.termination_date
+        }
+      }
+
+      if (canEditSalary.value) {
+        payload.gross_salary = grossSalary.value
+      }
+
+      if (canAssignRoles.value && !isSelf.value) {
+        payload.roles = form.value.roles
       }
 
       await UsersService.update(userId, payload)

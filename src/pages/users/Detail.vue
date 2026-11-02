@@ -11,11 +11,13 @@
           >Cancelar</router-link
         >
         <router-link
+          v-if="auth.can(PERMISSIONS.USERS_EDIT_PROFILE)"
           :to="{ name: 'UsersEdit', params: { id } }"
           class="inline-flex items-center justify-center gap-2 rounded-lg border border-primary-300 bg-primary-50 px-4 py-2 text-sm font-medium text-primary-700 transition hover:bg-primary-100 dark:border-primary-700 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/50"
           >Editar</router-link
         >
         <button
+          v-if="auth.can(PERMISSIONS.USERS_EDIT_EMPLOYMENT)"
           class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-700 dark:bg-slate-800 dark:text-red-400 dark:hover:bg-red-950/30"
           @click="confirmDelete"
         >
@@ -135,28 +137,36 @@
         <dt
           class="text-sm font-medium text-slate-500 dark:text-slate-400 sm:col-span-3"
         >
-          Setor
+          Unidade
         </dt>
         <dd class="text-sm sm:col-span-9 sm:text-base">
-          <BaseBadge color="slate">{{ user.setor }}</BaseBadge>
+          <BaseBadge color="dark">{{ unidadeLabel(user.unidade) }}</BaseBadge>
         </dd>
 
         <dt
           class="text-sm font-medium text-slate-500 dark:text-slate-400 sm:col-span-3"
         >
-          Subsetor
+          Subunidade
         </dt>
-        <dd class="text-sm sm:col-span-9 sm:text-base">{{ user.subsetor }}</dd>
+        <dd class="text-sm sm:col-span-9 sm:text-base">
+          {{ user.subunidade || '—' }}
+        </dd>
 
         <dt
           class="text-sm font-medium text-slate-500 dark:text-slate-400 sm:col-span-3"
         >
-          Perfil
+          Perfis
         </dt>
         <dd class="text-sm sm:col-span-9 sm:text-base">
-          <BaseBadge :color="roleClass(user.role)">
-            {{ roleLabel(user.role) }}
-          </BaseBadge>
+          <div class="flex flex-wrap gap-1">
+            <BaseBadge
+              v-for="role in user.roles"
+              :key="role"
+              :color="roleColor(role)"
+            >
+              {{ roleLabel(role) }}
+            </BaseBadge>
+          </div>
         </dd>
 
         <dt
@@ -194,6 +204,7 @@
   import { ref, onMounted } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { UsersService } from '@/services/users.services'
+  import { useAuthStore } from '@/stores/auth'
   import {
     confirm as confirmToast,
     error as errorToast,
@@ -201,6 +212,12 @@
   } from '@/composables/useToast'
   import { useDate } from '@/composables/useDate'
   import { useCPF } from '@/composables/useCPF'
+  import {
+    PERMISSIONS,
+    roleColor,
+    roleLabel,
+    unidadeLabel,
+  } from '@/composables/useAuthorization'
   import { formatarTelefone } from '@/composables/usePhone'
   import { formatarMoedaBR } from '@/composables/useCurrency'
   import BaseSpinner from '@/components/BaseSpinner.vue'
@@ -208,6 +225,7 @@
 
   const route = useRoute()
   const router = useRouter()
+  const auth = useAuthStore()
   const { formatDate } = useDate()
   const { formatarCPF } = useCPF()
   const id = route.params.id
@@ -215,17 +233,6 @@
   const loading = ref(false)
   const user = ref(null)
   const error = ref(null)
-
-  function roleLabel(role) {
-    return role === 'admin'
-      ? 'Admin'
-      : role === 'coord'
-        ? 'Coordenador'
-        : 'Geral'
-  }
-  function roleClass(role) {
-    return role === 'admin' ? 'primary' : role === 'coord' ? 'info' : 'success'
-  }
 
   async function load() {
     loading.value = true

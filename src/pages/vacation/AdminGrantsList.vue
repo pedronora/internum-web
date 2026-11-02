@@ -21,25 +21,31 @@
         </select>
 
         <select
-          v-model="sectorFilter"
+          v-model="unidadeFilter"
           class="select-base w-auto rounded-md py-1 text-xs"
           @change="reload"
         >
-          <option value="">Todos os setores</option>
-          <option v-for="s in setores" :key="s.value" :value="s.value">
-            {{ s.label }}
+          <option value="">Todas as unidades</option>
+          <option v-for="u in UNIDADE_OPTIONS" :key="u.value" :value="u.value">
+            {{ u.label }}
           </option>
         </select>
 
-        <select
-          v-if="sectorFilter"
-          v-model="subsetorFilter"
-          class="select-base w-auto rounded-md py-1 text-xs"
-          @change="reload"
-        >
-          <option value="">Todos os subsetores</option>
-          <option v-for="s in subsetores" :key="s" :value="s">{{ s }}</option>
-        </select>
+        <input
+          v-if="unidadeFilter"
+          v-model="subunidadeFilter"
+          list="subunidades-sugeridas"
+          class="input-base w-auto rounded-md py-1 text-xs"
+          placeholder="Subunidade (opcional)"
+          @keyup.enter="reload"
+        />
+        <datalist id="subunidades-sugeridas">
+          <option
+            v-for="s in SUBUNIDADES_SUGERIDAS"
+            :key="s"
+            :value="s"
+          ></option>
+        </datalist>
       </div>
     </div>
 
@@ -182,6 +188,10 @@
     confirm as confirmToast,
   } from '@/composables/useToast'
   import { GRANT_STATUS, useVacation } from '@/composables/useVacation'
+  import {
+    SUBUNIDADES_SUGERIDAS,
+    UNIDADE_OPTIONS,
+  } from '@/composables/useAuthorization'
   import { VacationService } from '@/services/vacation.services'
   import BaseSpinner from '@/components/BaseSpinner.vue'
   import BaseBadge from '@/components/BaseBadge.vue'
@@ -191,26 +201,6 @@
   const { formatDate } = useDate()
   const { grantStatus, grantTypeLabel } = useVacation()
 
-  const setores = [
-    { value: 'registro', label: 'Registro' },
-    { value: 'administrativo', label: 'Administrativo' },
-    { value: 'oficial', label: 'Oficial' },
-  ]
-
-  const SUBSETORES = {
-    registro: [
-      'Análise',
-      'Conferência',
-      'Finalização/Impressão',
-      'Busca e Certidão',
-      'Arquivo',
-    ],
-    administrativo: ['Atendimento', 'Digitalização', 'Apoio'],
-    oficial: ['Titular', 'Substituto'],
-  }
-
-  const subsetores = computed(() => SUBSETORES[sectorFilter.value] || [])
-
   const grants = ref([])
   const loading = ref(false)
   const error = ref(null)
@@ -218,8 +208,8 @@
   const page = ref(1)
   const limit = ref(20)
   const statusFilter = ref('')
-  const sectorFilter = ref('')
-  const subsetorFilter = ref('')
+  const unidadeFilter = ref('')
+  const subunidadeFilter = ref('')
 
   const confirmOpen = ref(false)
   const confirmTarget = ref(null)
@@ -255,10 +245,10 @@
       const params = {}
       if (statusFilter.value) params.status = statusFilter.value
 
-      if (sectorFilter.value) {
-        if (subsetorFilter.value) params.subsetor = subsetorFilter.value
-        grants.value = await VacationService.listGrantsBySector(
-          sectorFilter.value,
+      if (unidadeFilter.value) {
+        if (subunidadeFilter.value) params.subunidade = subunidadeFilter.value
+        grants.value = await VacationService.listGrantsByUnit(
+          unidadeFilter.value,
           params,
         )
       } else {

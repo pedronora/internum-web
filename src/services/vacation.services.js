@@ -26,9 +26,9 @@ export const VacationService = {
     api.post(ENDPOINT + '/requests', payload).then((r) => r.data),
   listRequests: (params = {}) =>
     api.get(ENDPOINT + '/requests', { params }).then((r) => r.data),
-  listRequestsBySector: (setor, params = {}) =>
+  listRequestsByUnit: (unidade, params = {}) =>
     api
-      .get(ENDPOINT + `/requests/by-sector/${setor}`, { params })
+      .get(ENDPOINT + `/requests/by-unit/${unidade}`, { params })
       .then((r) => r.data),
   getRequest: (id) => api.get(ENDPOINT + `/requests/${id}`).then((r) => r.data),
   approveRequest: (id, payload = {}) =>
@@ -41,9 +41,9 @@ export const VacationService = {
   // --- Concessões ---
   listGrants: (params = {}) =>
     api.get(ENDPOINT + '/grants', { params }).then((r) => r.data),
-  listGrantsBySector: (setor, params = {}) =>
+  listGrantsByUnit: (unidade, params = {}) =>
     api
-      .get(ENDPOINT + `/grants/by-sector/${setor}`, { params })
+      .get(ENDPOINT + `/grants/by-unit/${unidade}`, { params })
       .then((r) => r.data),
   getGrant: (id) => api.get(ENDPOINT + `/grants/${id}`).then((r) => r.data),
   confirmFruition: (id, payload) =>

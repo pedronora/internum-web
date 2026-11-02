@@ -5,7 +5,7 @@
     >
       <h1 class="text-2xl font-bold">Ementas</h1>
       <router-link
-        v-if="authStore.isAdminOrCoord"
+        v-if="authStore.can(PERMISSIONS.LEGAL_BRIEFS_MANAGE)"
         :to="{ name: 'LegalBriefsCreate' }"
         class="inline-flex items-center justify-center gap-2 self-start rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
       >
@@ -118,7 +118,9 @@
         </div>
 
         <div
-          v-if="authStore.isAdminOrCoord && !brief.canceled"
+          v-if="
+            authStore.can(PERMISSIONS.LEGAL_BRIEFS_MANAGE) && !brief.canceled
+          "
           class="mt-3 flex justify-end gap-2"
         >
           <router-link
@@ -174,6 +176,7 @@
     error as errorToast,
   } from '@/composables/useToast'
   import { useDate } from '@/composables/useDate'
+  import { PERMISSIONS } from '@/composables/useAuthorization'
   import Icon from '@/components/Icon.vue'
   import BaseBadge from '@/components/BaseBadge.vue'
   import BasePagination from '@/components/BasePagination.vue'
