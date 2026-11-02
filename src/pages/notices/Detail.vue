@@ -43,7 +43,7 @@
           <li class="py-3">
             <strong>Criado em:</strong> {{ formatDate(notice.created_at) }}
           </li>
-          <li v-if="isUserAdminOrCoord" class="py-3">
+          <li v-if="canManageNotices" class="py-3">
             <strong>Status: </strong>
             <BaseBadge :color="notice.active ? 'success' : 'slate'">
               {{ notice.active ? 'Active' : 'Inactive' }}
@@ -51,7 +51,7 @@
           </li>
         </ul>
 
-        <div v-if="isUserAdminOrCoord">
+        <div v-if="canManageNotices">
           <h6 class="mb-2 font-semibold">
             Leitores ({{ notice.reads_count }})
           </h6>
@@ -100,6 +100,7 @@
   import { useRoute, useRouter } from 'vue-router'
   import { NoticesService } from '@/services/notices.services'
   import { useAuthStore } from '@/stores/auth'
+  import { PERMISSIONS } from '@/composables/useAuthorization'
   import { useDate } from '@/composables/useDate'
   import BaseSpinner from '@/components/BaseSpinner.vue'
   import BaseBadge from '@/components/BaseBadge.vue'
@@ -114,10 +115,7 @@
   const error = ref(null)
   const id = route.params.id
 
-  const isUserAdminOrCoord = computed(() => {
-    const role = auth.user?.role
-    return role === 'admin' || role === 'coord'
-  })
+  const canManageNotices = computed(() => auth.can(PERMISSIONS.NOTICES_MANAGE))
 
   onMounted(() => {
     fetchNotice(id)
