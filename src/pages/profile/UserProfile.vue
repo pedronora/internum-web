@@ -140,53 +140,37 @@
         <div>
           <label
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
-            >Setor</label
+            >Unidade</label
           >
-          <select
-            v-model="form.setor"
+          <input
+            :value="unidadeLabel(form.unidade)"
             class="input-base"
-            :disabled="!canEditRestrictedFields"
-          >
-            <option v-for="s in setorOptions" :key="s.value" :value="s.value">
-              {{ s.label }}
-            </option>
-          </select>
+            disabled
+          />
         </div>
 
         <div>
           <label
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
-            >Subsetor</label
+            >Subunidade</label
           >
-          <select
-            v-model="form.subsetor"
-            class="input-base"
-            :disabled="!canEditRestrictedFields"
+          <input :value="form.subunidade || '—'" class="input-base" disabled />
+        </div>
+
+        <div>
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Perfis</label
           >
-            <option
-              v-for="option in subsetorOptions[form.setor]"
-              :key="option.value"
-              :value="option.value"
+          <div class="input-base flex flex-wrap items-center gap-1">
+            <BaseBadge
+              v-for="role in form.roles"
+              :key="role"
+              :color="roleColor(role)"
             >
-              {{ option.label }}
-            </option>
-          </select>
-        </div>
-
-        <div>
-          <label
-            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
-            >Perfil</label
-          >
-          <select
-            v-model="form.role"
-            class="input-base"
-            :disabled="!canEditRestrictedFields"
-          >
-            <option v-for="r in roleOptions" :key="r.value" :value="r.value">
-              {{ r.label }}
-            </option>
-          </select>
+              {{ roleLabel(role) }}
+            </BaseBadge>
+          </div>
         </div>
       </div>
 
@@ -204,9 +188,14 @@
 </template>
 
 <script setup>
-  import { ref, computed, onMounted } from 'vue'
+  import { ref, onMounted } from 'vue'
   import { UsersService } from '@/services/users.services.js'
   import { useAuthStore } from '@/stores/auth.js'
+  import {
+    roleColor,
+    roleLabel,
+    unidadeLabel,
+  } from '@/composables/useAuthorization'
   import {
     success as successToast,
     error as errorToast,
@@ -214,6 +203,7 @@
   import { useCPF } from '@/composables/useCPF'
   import { usePhone } from '@/composables/usePhone'
   import BaseSpinner from '@/components/BaseSpinner.vue'
+  import BaseBadge from '@/components/BaseBadge.vue'
   import * as yup from 'yup'
 
   function formatDateForInput(dateString) {
@@ -229,41 +219,6 @@
   const { formatarCPF } = useCPF()
   const { phone, phoneDisplay, setPhone, validarCampoPhone } = usePhone()
 
-  const canEditRestrictedFields = computed(() =>
-    ['admin', 'coord'].includes(auth.user?.role),
-  )
-
-  const setorOptions = [
-    { value: 'registro', label: 'Registro' },
-    { value: 'administrativo', label: 'Administrativo' },
-    { value: 'oficial', label: 'Oficial' },
-  ]
-
-  const subsetorOptions = {
-    registro: [
-      { value: 'Análise', label: 'Análise' },
-      { value: 'Conferência', label: 'Conferência' },
-      { value: 'Finalização/Impressão', label: 'Finalização/Impressão' },
-      { value: 'Busca e Certidão', label: 'Busca e Certidão' },
-      { value: 'Arquivo', label: 'Arquivo' },
-    ],
-    administrativo: [
-      { value: 'Atendimento', label: 'Atendimento' },
-      { value: 'Digitalização', label: 'Digitalização' },
-      { value: 'Apoio', label: 'Apoio' },
-    ],
-    oficial: [
-      { value: 'Titular', label: 'Titular' },
-      { value: 'Substituto', label: 'Substituto' },
-    ],
-  }
-
-  const roleOptions = [
-    { value: 'admin', label: 'Admin' },
-    { value: 'coord', label: 'Coordenador' },
-    { value: 'user', label: 'Geral' },
-  ]
-
   const form = ref({
     id: '',
     name: '',
@@ -272,10 +227,9 @@
     email: '',
     birthday: '',
     hiring_date: '',
-    setor: setorOptions[0].value,
-    subsetor: '',
-    role: 'user',
-    active: true,
+    unidade: '',
+    subunidade: '',
+    roles: [],
   })
 
   const schema = yup.object({
@@ -299,10 +253,9 @@
         email: data.email ?? '',
         birthday: formatDateForInput(data.birthday),
         hiring_date: formatDateForInput(data.hiring_date),
-        setor: data.setor ?? setorOptions[0].value,
-        subsetor: data.subsetor ?? '',
-        role: data.role ?? 'user',
-        active: data.active ?? true,
+        unidade: data.unidade ?? '',
+        subunidade: data.subunidade ?? '',
+        roles: [...(data.roles ?? [])],
       }
       setPhone(data.phone)
       loadedOnce.value = true
@@ -330,23 +283,15 @@
         return
       }
 
-      let payload = {
+      const payload = {
         name: form.value.name.trim(),
         email: form.value.email.trim(),
         birthday: form.value.birthday,
         phone: phone.value,
       }
 
-      if (canEditRestrictedFields.value) {
-        payload.setor = form.value.setor
-        payload.subsetor = form.value.subsetor
-        payload.role = form.value.role
-        payload.active = form.value.active
-      }
-
-      const updated_user = await UsersService.update(form.value.id, payload)
-
-      auth.setUser(updated_user)
+      await UsersService.update(form.value.id, payload)
+      await auth.fetchProfile()
       successToast('Perfil atualizado com sucesso!')
     } catch (err) {
       if (err.name === 'ValidationError') {

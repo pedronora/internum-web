@@ -38,6 +38,16 @@ describe('UsersService', () => {
     })
   })
 
+  it('directory sends offset and limit params', async () => {
+    mockApi.get.mockResolvedValueOnce({ data: { users: [] } })
+
+    await UsersService.directory(0, 25, 'ana')
+
+    expect(mockApi.get).toHaveBeenCalledWith('/api/v1/users/directory', {
+      params: { offset: 0, limit: 25, search: 'ana' },
+    })
+  })
+
   it('me returns response data', async () => {
     const responseData = { id: 1, username: 'user1' }
     mockApi.get.mockResolvedValueOnce({ data: responseData })

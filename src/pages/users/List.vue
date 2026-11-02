@@ -5,6 +5,7 @@
     >
       <h1 class="text-2xl font-bold">Usuários</h1>
       <router-link
+        v-if="auth.can(PERMISSIONS.USERS_CREATE)"
         :to="{ name: 'UsersCreate' }"
         class="inline-flex items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
       >
@@ -82,10 +83,13 @@
                 Email
               </th>
               <th scope="col" class="px-4 py-3 font-semibold whitespace-nowrap">
-                Setor
+                Unidade
               </th>
               <th scope="col" class="px-4 py-3 font-semibold whitespace-nowrap">
-                Perfil
+                Subunidade
+              </th>
+              <th scope="col" class="px-4 py-3 font-semibold whitespace-nowrap">
+                Perfis
               </th>
               <th scope="col" class="px-4 py-3 font-semibold whitespace-nowrap">
                 Salário
@@ -109,18 +113,21 @@
               <td class="px-4 py-3">{{ u.username }}</td>
               <td class="px-4 py-3">{{ u.email }}</td>
               <td class="px-4 py-3">
-                <BaseBadge color="dark">{{ u.setor }}</BaseBadge>
+                <BaseBadge color="dark">{{
+                  unidadeLabel(u.unidade)
+                }}</BaseBadge>
               </td>
+              <td class="px-4 py-3">{{ u.subunidade || '—' }}</td>
               <td class="px-4 py-3">
-                <BaseBadge :color="roleColor(u.role)">
-                  {{
-                    u.role === 'admin'
-                      ? 'Admin'
-                      : u.role === 'coord'
-                        ? 'Coordenador'
-                        : 'Geral'
-                  }}
-                </BaseBadge>
+                <div class="flex flex-wrap gap-1">
+                  <BaseBadge
+                    v-for="role in u.roles"
+                    :key="role"
+                    :color="roleColor(role)"
+                  >
+                    {{ roleLabel(role) }}
+                  </BaseBadge>
+                </div>
               </td>
               <td class="px-4 py-3 whitespace-nowrap">
                 {{
@@ -137,11 +144,13 @@
                   >Ver</router-link
                 >
                 <router-link
+                  v-if="auth.can(PERMISSIONS.USERS_EDIT_PROFILE)"
                   :to="{ name: 'UsersEdit', params: { id: u.id } }"
                   class="mr-1 inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                   >Editar</router-link
                 >
                 <button
+                  v-if="auth.can(PERMISSIONS.USERS_EDIT_EMPLOYMENT)"
                   class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-red-300 px-2.5 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/30"
                   @click="deleteUser(u.id)"
                 >
@@ -182,8 +191,15 @@
 <script setup>
   import { ref, onMounted, computed } from 'vue'
   import { UsersService } from '@/services/users.services'
+  import { useAuthStore } from '@/stores/auth'
   import { useDate } from '@/composables/useDate'
   import { formatarMoedaBR } from '@/composables/useCurrency'
+  import {
+    PERMISSIONS,
+    roleColor,
+    roleLabel,
+    unidadeLabel,
+  } from '@/composables/useAuthorization'
   import {
     success as successToast,
     error as errorToast,
@@ -195,9 +211,7 @@
   import BasePagination from '@/components/BasePagination.vue'
 
   const { formatDate } = useDate()
-
-  const roleColor = (role) =>
-    ({ admin: 'primary', coord: 'info', user: 'success' })[role] || 'slate'
+  const auth = useAuthStore()
 
   const users = ref([])
   const loading = ref(false)

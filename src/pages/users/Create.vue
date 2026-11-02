@@ -115,7 +115,7 @@
           </div>
         </div>
 
-        <div>
+        <div v-if="canEditSalary">
           <label
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             for="gross_salary"
@@ -200,29 +200,16 @@
         <div>
           <label
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
-            >Setor</label
+            >Unidade</label
           >
-          <select v-model="form.setor" class="input-base" required>
-            <option disabled value="">Selecione...</option>
-            <option v-for="s in setorOptions" :key="s.value" :value="s.value">
-              {{ s.label }}
-            </option>
-          </select>
-        </div>
-
-        <div>
-          <label
-            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
-            >Subsetor</label
-          >
-          <select v-model="form.subsetor" class="input-base" required>
+          <select v-model="form.unidade" class="input-base" required>
             <option disabled value="">Selecione...</option>
             <option
-              v-for="option in subsetorOptions[form.setor] || []"
-              :key="option.value"
-              :value="option.value"
+              v-for="u in UNIDADE_OPTIONS"
+              :key="u.value"
+              :value="u.value"
             >
-              {{ option.label }}
+              {{ u.label }}
             </option>
           </select>
         </div>
@@ -230,14 +217,49 @@
         <div>
           <label
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
-            >Perfil</label
+            >Subunidade</label
           >
-          <select v-model="form.role" class="input-base" required>
-            <option disabled value="">Selecione...</option>
-            <option v-for="r in roleOptions" :key="r.value" :value="r.value">
+          <input
+            v-model="form.subunidade"
+            list="subunidades-sugeridas"
+            class="input-base"
+            placeholder="Opcional (ex.: Atendimento, Pessoas)"
+          />
+          <datalist id="subunidades-sugeridas">
+            <option
+              v-for="s in SUBUNIDADES_SUGERIDAS"
+              :key="s"
+              :value="s"
+            ></option>
+          </datalist>
+        </div>
+
+        <div class="sm:col-span-2 md:col-span-3">
+          <label
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Perfis</label
+          >
+          <div
+            v-if="!assignable.length"
+            class="text-sm text-slate-500 dark:text-slate-400"
+          >
+            Você não pode atribuir perfis.
+          </div>
+          <div v-else class="flex flex-wrap gap-x-4 gap-y-2">
+            <label
+              v-for="r in assignable"
+              :key="r.value"
+              class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200"
+            >
+              <input
+                v-model="form.roles"
+                type="checkbox"
+                :value="r.value"
+                class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
+              />
               {{ r.label }}
-            </option>
-          </select>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -261,9 +283,16 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import { useRouter } from 'vue-router'
   import { UsersService } from '@/services/users.services'
+  import { useAuthStore } from '@/stores/auth'
+  import {
+    PERMISSIONS,
+    SUBUNIDADES_SUGERIDAS,
+    UNIDADE_OPTIONS,
+    assignableRoles,
+  } from '@/composables/useAuthorization'
   import {
     success as successToast,
     error as errorToast,
@@ -276,6 +305,7 @@
   import * as yup from 'yup'
 
   const router = useRouter()
+  const auth = useAuthStore()
 
   const loading = ref(false)
   const error = ref(null)
@@ -292,36 +322,8 @@
     resetSalary,
   } = useCurrency()
 
-  const setorOptions = [
-    { value: 'registro', label: 'Registro' },
-    { value: 'administrativo', label: 'Administrativo' },
-    { value: 'oficial', label: 'Oficial' },
-  ]
-
-  const subsetorOptions = {
-    registro: [
-      { value: 'Análise', label: 'Análise' },
-      { value: 'Conferência', label: 'Conferência' },
-      { value: 'Finalização/Impressão', label: 'Finalização/Impressão' },
-      { value: 'Busca e Certidão', label: 'Busca e Certidão' },
-      { value: 'Arquivo', label: 'Arquivo' },
-    ],
-    administrativo: [
-      { value: 'Atendimento', label: 'Atendimento' },
-      { value: 'Digitalização', label: 'Digitalização' },
-      { value: 'Apoio', label: 'Apoio' },
-    ],
-    oficial: [
-      { value: 'Titular', label: 'Titular' },
-      { value: 'Substituto', label: 'Substituto' },
-    ],
-  }
-
-  const roleOptions = [
-    { value: 'admin', label: 'Administrador' },
-    { value: 'coord', label: 'Coordenador' },
-    { value: 'user', label: 'Geral' },
-  ]
+  const canEditSalary = computed(() => auth.can(PERMISSIONS.USERS_EDIT_SALARY))
+  const assignable = computed(() => assignableRoles(auth.user?.roles || []))
 
   function getTodayForInput() {
     const date = new Date()
@@ -371,11 +373,15 @@
       .required('A confirmação de senha é obrigatória')
       .oneOf([yup.ref('password')], 'As senhas devem ser iguais'),
 
-    setor: yup.string().required('O setor é obrigatório'),
+    unidade: yup.string().required('A unidade é obrigatória'),
 
-    subsetor: yup.string().required('O subsetor é obrigatório'),
+    subunidade: yup.string().nullable(),
 
-    role: yup.string().required('O perfil é obrigatório'),
+    roles: yup
+      .array()
+      .of(yup.string())
+      .min(1, 'Selecione ao menos um perfil')
+      .required('O perfil é obrigatório'),
   })
 
   const form = ref({
@@ -386,9 +392,9 @@
     hiring_date: getTodayForInput(),
     password: '',
     password_confirm: '',
-    setor: '',
-    subsetor: '',
-    role: 'user',
+    unidade: '',
+    subunidade: '',
+    roles: [],
     active: true,
   })
 
@@ -416,7 +422,7 @@
       return
     }
 
-    if (!validarCampoSalary()) {
+    if (canEditSalary.value && !validarCampoSalary()) {
       errorToast(salaryError.value)
       return
     }
@@ -430,13 +436,15 @@
         email: form.value.email,
         birthday: form.value.birthday,
         hiring_date: form.value.hiring_date,
-        setor: form.value.setor,
-        subsetor: form.value.subsetor,
-        role: form.value.role,
+        unidade: form.value.unidade,
+        subunidade: form.value.subunidade || null,
+        roles: form.value.roles,
         active: form.value.active,
         password: form.value.password,
         phone: phone.value,
-        gross_salary: grossSalary.value,
+      }
+      if (canEditSalary.value) {
+        payload.gross_salary = grossSalary.value
       }
       await UsersService.create(payload)
       successToast('Usuário criado com sucesso.')
