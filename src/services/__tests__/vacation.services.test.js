@@ -96,14 +96,14 @@ describe('VacationService', () => {
     })
   })
 
-  it('listRequestsBySector hits by-sector endpoint', async () => {
+  it('listRequestsByUnit hits by-unit endpoint', async () => {
     mockApi.get.mockResolvedValueOnce({ data: [] })
-    await VacationService.listRequestsBySector('registro', {
-      subsetor: 'Análise',
+    await VacationService.listRequestsByUnit('registro', {
+      subunidade: 'Análise',
     })
     expect(mockApi.get).toHaveBeenCalledWith(
-      `${ENDPOINT}/requests/by-sector/registro`,
-      { params: { subsetor: 'Análise' } },
+      `${ENDPOINT}/requests/by-unit/registro`,
+      { params: { subunidade: 'Análise' } },
     )
   })
 
@@ -151,11 +151,11 @@ describe('VacationService', () => {
     })
   })
 
-  it('listGrantsBySector hits by-sector endpoint', async () => {
+  it('listGrantsByUnit hits by-unit endpoint', async () => {
     mockApi.get.mockResolvedValueOnce({ data: [] })
-    await VacationService.listGrantsBySector('oficial', {})
+    await VacationService.listGrantsByUnit('oficial', {})
     expect(mockApi.get).toHaveBeenCalledWith(
-      `${ENDPOINT}/grants/by-sector/oficial`,
+      `${ENDPOINT}/grants/by-unit/oficial`,
       { params: {} },
     )
   })

@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { PERMISSIONS } from '@/composables/useAuthorization'
 
 export const REQUEST_STATUS = {
   draft: { label: 'Rascunho', color: 'slate' },
@@ -41,10 +42,8 @@ export const ACCRUAL_STATUS_ORDER = [
 export function useVacation() {
   const authStore = useAuthStore()
 
-  const isAdminOrCoord = computed(() => authStore.isAdminOrCoord)
+  const isManager = computed(() => authStore.can(PERMISSIONS.VACATION_READ_ALL))
   const isAdmin = computed(() => authStore.isAdmin)
-
-  const isManager = isAdminOrCoord
 
   function requestStatus(status) {
     return REQUEST_STATUS[status] || { label: status, color: 'slate' }
@@ -119,7 +118,6 @@ export function useVacation() {
   }
 
   return {
-    isAdminOrCoord,
     isAdmin,
     isManager,
     requestStatus,
