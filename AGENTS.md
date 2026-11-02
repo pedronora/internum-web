@@ -40,7 +40,8 @@ src/
 │   ├── useToast.js        # Global toast system (reactive store + Promise-based confirm)
 │   ├── useTheme.js        # Dark/light mode (localStorage + CSS class on <html>)
 │   ├── useDate.js         # Date formatting utilities
-│   └── useCPF.js          # CPF validation/formatting
+│   ├── useCPF.js          # CPF validation/formatting
+│   └── useAuthorization.js # Permissões, perfis e unidades (fonte no frontend)
 ├── components/
 │   ├── Nav.vue            # Top navbar (role-based menus, user dropdown, theme toggle)
 │   ├── Footer.vue         # Static footer
@@ -54,8 +55,8 @@ src/
 │   └── RichText.vue       # Renderização de HTML sanitizado (DOMPurify) — único local permitido de v-html
 ├── pages/
 │   ├── auth/              # Login, ForgotPassword, ResetPassword (public routes)
-│   ├── legalBriefs/       # List, Create, Update (admin/coord only)
-│   ├── users/             # List, Create, Detail, Update (admin/coord only)
+│   ├── legalBriefs/       # List, Create, Update (legal_briefs:manage)
+│   ├── users/             # Directory, List, Create, Detail, Update (permission-gated)
 │   ├── notices/           # List, Create, Detail, NoticesUser (role-gated)
 │   ├── library/
 │   │   ├── books/         # List, Create, Edit, Detail, requestList
@@ -79,7 +80,7 @@ src/
 | Files (pages)       | PascalCase                                    | `List.vue`, `Create.vue`                                  |
 | Vue Components      | PascalCase                                    | `<Nav />`, `<BookDetail />`                               |
 | Composables         | camelCase, `use` prefix                       | `useToast()`, `useTheme()`                                |
-| Store getters       | camelCase, `is`/`has` prefix                  | `isAuthenticated`, `isAdminOrCoord`                       |
+| Store getters       | camelCase, `is`/`has` prefix                  | `isAuthenticated`, `hasRole`, `can`                       |
 | Store actions       | camelCase, verb prefix                        | `login()`, `fetchProfile()`, `refreshToken()`             |
 | Service methods     | camelCase, verb + noun                        | `list()`, `getById()`, `create()`, `update()`, `remove()` |
 | CSS Classes         | Tailwind utilities + classes do design system | `.input-base`, `.btn-primary`, `.table-wrap`              |
@@ -144,8 +145,10 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     isAuthenticated: (state) => !!state.accessToken,
-    isAdmin: (state) => state.user?.role === 'admin',
-    isAdminOrCoord: (state) => ['admin', 'coord'].includes(state.user?.role),
+    isAdmin: (state) => state.user?.roles?.includes('admin') ?? false,
+    hasRole: (state) => (role) => state.user?.roles?.includes(role) ?? false,
+    can: (state) => (permission) =>
+      state.user?.permissions?.includes(permission) ?? false,
     formattedName: (state) => {
       /* ... */
     },
@@ -218,8 +221,15 @@ login: (payload) =>
 {
   path: '/users',
   component: () => import('@/pages/RouterLayout.vue'),
-  meta: { requiresAuth: true, requiresPermission: true }, // admin/coord only
-  children: [ ... ]
+  meta: { requiresAuth: true },
+  children: [
+    {
+      path: '',
+      name: 'UsersList',
+      component: () => import('@/pages/users/List.vue'),
+      meta: { permission: PERMISSIONS.USERS_READ_SENSITIVE }, // valor de useAuthorization.js
+    },
+  ],
 }
 ```
 
@@ -228,13 +238,14 @@ login: (payload) =>
 1. Ensure `authStore.initFromStorage()` completed
 2. If no token & route not public → try `refreshToken()` → `fetchProfile()`
 3. If `requiresAuth` and no token → redirect to `/auth/login?next=...`
-4. If `requiresPermission` and user role not `admin`/`coord` → redirect to `Home`
+4. If `meta.permission` and `!auth.can(meta.permission)` → redirect to `Home`
 
 **Rules:**
 
 - Lazy-load route components: `() => import('@/pages/...')`
 - Public routes: `meta.isPublicRoute: true`
-- Role-gated routes: `meta.requiresPermission: true`
+- Permission-gated routes: `meta.permission: PERMISSIONS.X` (importar de `@/composables/useAuthorization`)
+- Nunca checar `role` diretamente em páginas/rotas; use `auth.can(permission)`
 - Always set `meta.title` for document title
 
 ### 3.5 Composables (Reusable Logic)
@@ -458,18 +469,18 @@ When an AI agent (Gemini, etc.) operates on this codebase, it MUST adhere to:
 
 ### 7.1 Code Generation Rules
 
-| Rule                                                                                    | Enforcement                                  |
-| --------------------------------------------------------------------------------------- | -------------------------------------------- |
-| **Never create new files** unless explicitly asked                                      | Edit existing files only                     |
-| **Follow existing patterns** exactly (service structure, store shape, component layout) | Match the patterns in Sections 3.1–3.7       |
-| **Use `@/` alias** for imports from `src/`                                              | `@/services/`, `@/stores/`, `@/composables/` |
-| **No inline styles** — use Tailwind utilities ou classes do design system (`main.css`)  |                                              |
-| **No `console.log` in production code** (allowed in tests)                              | ESLint `no-console: off` but discouraged     |
-| **Async functions must handle errors** with try/catch + toast feedback                  | See `deleteBook` pattern                     |
-| **Pagination state** uses `page`, `limit`, `meta` (total, has_next, has_prev)           |                                              |
-| **Search** uses `q` ref + `@keyup.enter` + button                                       |                                              |
-| **Delete** always uses `confirmToast` → service → toast → reload                        |                                              |
-| **Role checks** use `authStore.isAdminOrCoord` getter                                   |                                              |
+| Rule                                                                                         | Enforcement                                  |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| **Never create new files** unless explicitly asked                                           | Edit existing files only                     |
+| **Follow existing patterns** exactly (service structure, store shape, component layout)      | Match the patterns in Sections 3.1–3.7       |
+| **Use `@/` alias** for imports from `src/`                                                   | `@/services/`, `@/stores/`, `@/composables/` |
+| **No inline styles** — use Tailwind utilities ou classes do design system (`main.css`)       |                                              |
+| **No `console.log` in production code** (allowed in tests)                                   | ESLint `no-console: off` but discouraged     |
+| **Async functions must handle errors** with try/catch + toast feedback                       | See `deleteBook` pattern                     |
+| **Pagination state** uses `page`, `limit`, `meta` (total, has_next, has_prev)                |                                              |
+| **Search** uses `q` ref + `@keyup.enter` + button                                            |                                              |
+| **Delete** always uses `confirmToast` → service → toast → reload                             |                                              |
+| **Permission checks** use `authStore.can(PERMISSIONS.X)` (nunca comparar `role` diretamente) |                                              |
 
 ### 7.2 Forbidden Patterns
 
@@ -523,7 +534,7 @@ When an AI agent uses tools to modify this codebase, the following interface app
 | `read` | Inspect existing files before editing                       |
 | `edit` | Modify files (exact string replacement)                     |
 | `glob` | Find files by pattern (e.g., `src/services/*.js`)           |
-| `grep` | Search content (e.g., `AuthService`, `isAdminOrCoord`)      |
+| `grep` | Search content (e.g., `AuthService`, `auth.can`)            |
 | `bash` | Run commands: `npm test`, `npm run build`, `npm run lint:*` |
 
 ### 8.2 Execution Model
@@ -546,17 +557,17 @@ When an AI agent uses tools to modify this codebase, the following interface app
 
 ## 9. Quick Reference: Key Entry Points
 
-| Task                | File(s) to Modify                                   |
-| ------------------- | --------------------------------------------------- |
-| Add API endpoint    | `src/services/<domain>.services.js`                 |
-| Add global state    | `src/stores/<domain>.js`                            |
-| Add page            | `src/pages/<domain>/<Page>.vue` + `router/index.js` |
-| Add nav item        | `src/components/Nav.vue`                            |
-| Add toast type      | `src/composables/useToast.js`                       |
-| Add validation rule | Use `yup` in page/component + `vuelidate`           |
-| Fix 401 handling    | `src/services/api.js` (interceptor)                 |
-| Change theme        | `src/composables/useTheme.js` + `main.css`          |
-| Update permissions  | `router/index.js` (guard) + `auth.js` (getters)     |
+| Task                | File(s) to Modify                                                                            |
+| ------------------- | -------------------------------------------------------------------------------------------- |
+| Add API endpoint    | `src/services/<domain>.services.js`                                                          |
+| Add global state    | `src/stores/<domain>.js`                                                                     |
+| Add page            | `src/pages/<domain>/<Page>.vue` + `router/index.js`                                          |
+| Add nav item        | `src/components/Nav.vue`                                                                     |
+| Add toast type      | `src/composables/useToast.js`                                                                |
+| Add validation rule | Use `yup` in page/component + `vuelidate`                                                    |
+| Fix 401 handling    | `src/services/api.js` (interceptor)                                                          |
+| Change theme        | `src/composables/useTheme.js` + `main.css`                                                   |
+| Update permissions  | `composables/useAuthorization.js` (catálogo) + `router/index.js` (guard) + `auth.js` (`can`) |
 
 ---
 
