@@ -198,6 +198,7 @@ export const useAuthStore = defineStore('auth', {
 - Singleton axios instance with `withCredentials: true`
 - Request interceptor: injects `Authorization: Bearer <token>` from `authStore`
 - Response interceptor: automatic token refresh on 401 (with queue to avoid duplicate refreshes)
+- The refresh runs inside the `internum-refresh-token` Web Lock, both from the response interceptor and from the router guard that restores the session, so tabs sharing the same cookie rotate the token sequentially instead of replaying it; without `navigator.locks` it falls back to the per-tab queue
 - `x-skip-refresh` header to opt-out (used by auth endpoints)
 - On a self password change, `change-password` returns a new `access_token`: the form must call `auth.setToken()` with it, because the API revokes every access token issued before the change while keeping the current refresh session (when an admin changes another user's password, `access_token` is `null`)
 

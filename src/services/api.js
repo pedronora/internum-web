@@ -14,6 +14,20 @@ const api = axios.create({
   },
 })
 
+export const REFRESH_LOCK_NAME = 'internum-refresh-token'
+
+// Tabs share the refresh cookie. The lock prevents one tab from replaying a
+// token another tab already rotated, which the API would flag as reuse.
+export const refreshTokenWithLock = (auth) => {
+  const locks = globalThis.navigator?.locks
+
+  if (!locks?.request) {
+    return auth.refreshToken()
+  }
+
+  return locks.request(REFRESH_LOCK_NAME, () => auth.refreshToken())
+}
+
 let isRefreshing = false
 let failedQueue = []
 
@@ -74,7 +88,7 @@ api.interceptors.response.use(
     isRefreshing = true
 
     try {
-      const result = await auth.refreshToken()
+      const result = await refreshTokenWithLock(auth)
       const newToken = result.access_token
 
       api.defaults.headers.common.Authorization = `Bearer ${newToken}`
