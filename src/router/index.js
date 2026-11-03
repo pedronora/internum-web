@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { refreshTokenWithLock } from '@/services/api'
 import { PERMISSIONS } from '@/composables/useAuthorization'
 
 const routes = [
@@ -361,7 +362,7 @@ router.beforeEach(async (to, from, next) => {
 
   if (!auth.accessToken && !isPublicRoute) {
     try {
-      await auth.refreshToken()
+      await refreshTokenWithLock(auth)
 
       if (auth.accessToken && !auth.user) {
         await auth.fetchProfile()
