@@ -171,6 +171,7 @@
     success as successToast,
     error as errorToast,
   } from '@/composables/useToast'
+  import { passwordSchema } from '@/composables/usePasswordPolicy'
   import Icon from '@/components/Icon.vue'
   import BaseSpinner from '@/components/BaseSpinner.vue'
   import * as yup from 'yup'
@@ -194,18 +195,7 @@
 
   const schema = yup.object({
     oldPassword: yup.string().required('A senha atual é obrigatória'),
-    newPassword: yup
-      .string()
-      .required('A nova senha é obrigatória')
-      .min(8, 'A senha deve ter entre 8 e 64 caracteres')
-      .max(64, 'A senha deve ter entre 8 e 64 caracteres')
-      .matches(/\d/, 'A senha deve conter pelo menos um dígito')
-      .matches(/[a-z]/, 'A senha deve conter pelo menos uma letra minúscula')
-      .matches(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula')
-      .matches(
-        /[^a-zA-Z0-9]/,
-        'A senha deve conter pelo menos um caractere especial',
-      ),
+    newPassword: passwordSchema,
     confirmPassword: yup
       .string()
       .oneOf([yup.ref('newPassword')], 'As senhas não coincidem')
