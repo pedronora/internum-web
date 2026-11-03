@@ -214,11 +214,15 @@
     try {
       await schema.validate(form.value, { abortEarly: false })
 
-      await UsersService.changePassword(
+      const data = await UsersService.changePassword(
         auth.user.id,
         form.value.oldPassword,
         form.value.newPassword,
       )
+
+      if (data?.access_token) {
+        auth.setToken(data.access_token)
+      }
 
       successToast('Senha alterada com sucesso!')
       form.value = { oldPassword: '', newPassword: '', confirmPassword: '' }
