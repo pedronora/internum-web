@@ -199,6 +199,7 @@ export const useAuthStore = defineStore('auth', {
 - Request interceptor: injects `Authorization: Bearer <token>` from `authStore`
 - Response interceptor: automatic token refresh on 401 (with queue to avoid duplicate refreshes)
 - `x-skip-refresh` header to opt-out (used by auth endpoints)
+- On a self password change, `change-password` returns a new `access_token`: the form must call `auth.setToken()` with it, because the API revokes every access token issued before the change while keeping the current refresh session (when an admin changes another user's password, `access_token` is `null`)
 
 **Usage in Services:**
 
