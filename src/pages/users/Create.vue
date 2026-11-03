@@ -300,6 +300,7 @@
   import { useCPF } from '@/composables/useCPF'
   import { usePhone } from '@/composables/usePhone'
   import { useCurrency } from '@/composables/useCurrency'
+  import { passwordSchema } from '@/composables/usePasswordPolicy'
   import Icon from '@/components/Icon.vue'
   import BaseSpinner from '@/components/BaseSpinner.vue'
   import * as yup from 'yup'
@@ -358,15 +359,7 @@
 
     hiring_date: yup.date().required('A data de admissão é obrigatória'),
 
-    password: yup
-      .string()
-      .required('A senha é obrigatória')
-      .min(8, 'A senha deve ter no mínimo 8 caracteres')
-      .max(64, 'A senha deve ter no máximo 64 caracteres')
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/,
-        'A senha requer 8–64 caracteres, com maiúscula, minúscula, número e caractere especial',
-      ),
+    password: passwordSchema,
 
     password_confirm: yup
       .string()

@@ -106,6 +106,7 @@
   import { useRoute, useRouter } from 'vue-router'
   import { AuthService } from '@/services/auth.services'
   import { success, error as errorToast } from '@/composables/useToast'
+  import { passwordSchema } from '@/composables/usePasswordPolicy'
   import Icon from '@/components/Icon.vue'
   import BaseSpinner from '@/components/BaseSpinner.vue'
   import * as yup from 'yup'
@@ -128,10 +129,7 @@
   }
 
   const schema = yup.object({
-    password: yup
-      .string()
-      .required('A senha é obrigatória')
-      .min(8, 'A senha deve ter no mínimo 8 caracteres'),
+    password: passwordSchema,
     confirmPassword: yup
       .string()
       .oneOf([yup.ref('password')], 'As senhas não coincidem')
