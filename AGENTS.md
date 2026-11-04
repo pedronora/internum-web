@@ -462,6 +462,13 @@ import.meta.env.VITE_API_BASE_URL
 window.__ENV__?.VITE_API_BASE_URL
 ```
 
+**Security headers:** the nginx runtime includes
+`docker/nginx/security-headers.conf` in the server block and in the
+`/env.js` location (which overrides `add_header`). The web CSP allows only
+same-origin scripts/connections, `data:`/`blob:` images and inline styles.
+If `VITE_API_BASE_URL` points to another origin, update `connect-src`
+accordingly.
+
 ---
 
 ## 7. AI Agent Operational Constraints
