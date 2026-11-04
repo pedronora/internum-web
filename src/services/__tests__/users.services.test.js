@@ -123,4 +123,19 @@ describe('UsersService', () => {
       },
     )
   })
+
+  it('resetPassword posts only the new password', async () => {
+    const responseData = { message: 'Senha alterada com sucesso' }
+    mockApi.post.mockResolvedValueOnce({ data: responseData })
+
+    const result = await UsersService.resetPassword(8, 'newPwd')
+
+    expect(result).toEqual(responseData)
+    expect(mockApi.post).toHaveBeenCalledWith(
+      '/api/v1/users/8/change-password',
+      {
+        new_password: 'newPwd',
+      },
+    )
+  })
 })
