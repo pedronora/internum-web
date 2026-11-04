@@ -15,6 +15,7 @@ ENV VITE_API_BASE_URL=http://localhost:8000
 ENV APP_VERSION=$APP_VERSION
 
 COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx/security-headers.conf /etc/nginx/security-headers.conf
 COPY docker/nginx/40-env.sh /docker-entrypoint.d/40-env.sh
 COPY --from=build /app/dist /usr/share/nginx/html
 
