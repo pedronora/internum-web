@@ -145,7 +145,6 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     isAuthenticated: (state) => !!state.accessToken,
-    isAdmin: (state) => state.user?.roles?.includes('admin') ?? false,
     hasRole: (state) => (role) => state.user?.roles?.includes(role) ?? false,
     can: (state) => (permission) =>
       state.user?.permissions?.includes(permission) ?? false,
@@ -200,7 +199,7 @@ export const useAuthStore = defineStore('auth', {
 - Response interceptor: automatic token refresh on 401 (with queue to avoid duplicate refreshes)
 - The refresh runs inside the `internum-refresh-token` Web Lock, both from the response interceptor and from the router guard that restores the session, so tabs sharing the same cookie rotate the token sequentially instead of replaying it; without `navigator.locks` it falls back to the per-tab queue
 - `x-skip-refresh` header to opt-out (used by auth endpoints)
-- On a self password change, `change-password` returns a new `access_token`: the form must call `auth.setToken()` with it, because the API revokes every access token issued before the change while keeping the current refresh session (when an admin changes another user's password, `access_token` is `null`)
+- On a self password change, `change-password` returns a new `access_token`: the form must call `auth.setToken()` with it, because the API revokes every access token issued before the change while keeping the current refresh session (when the oficial changes another user's password, the target's sessions are revoked and `access_token` is `null`; the API does not require the target's old password)
 
 **Usage in Services:**
 
