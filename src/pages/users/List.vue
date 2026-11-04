@@ -121,6 +121,13 @@
               <td class="px-4 py-3">
                 <div class="flex flex-wrap gap-1">
                   <BaseBadge
+                    v-if="!u.roles.length"
+                    color="slate"
+                    variant="soft"
+                  >
+                    Sem perfil
+                  </BaseBadge>
+                  <BaseBadge
                     v-for="role in u.roles"
                     :key="role"
                     :color="roleColor(role)"
@@ -144,7 +151,10 @@
                   >Ver</router-link
                 >
                 <router-link
-                  v-if="auth.can(PERMISSIONS.USERS_EDIT_PROFILE)"
+                  v-if="
+                    auth.can(PERMISSIONS.USERS_EDIT_PROFILE) &&
+                    !isProtectedOficial(u, auth.user?.id)
+                  "
                   :to="{ name: 'UsersEdit', params: { id: u.id } }"
                   class="mr-1 inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                   >Editar</router-link
@@ -196,6 +206,7 @@
   import { formatarMoedaBR } from '@/composables/useCurrency'
   import {
     PERMISSIONS,
+    isProtectedOficial,
     roleColor,
     roleLabel,
     unidadeLabel,

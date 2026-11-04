@@ -11,13 +11,24 @@
           >Cancelar</router-link
         >
         <router-link
-          v-if="auth.can(PERMISSIONS.USERS_EDIT_PROFILE)"
+          v-if="auth.can(PERMISSIONS.USERS_EDIT_PROFILE) && !protectedOficial"
           :to="{ name: 'UsersEdit', params: { id } }"
           class="inline-flex items-center justify-center gap-2 rounded-lg border border-primary-300 bg-primary-50 px-4 py-2 text-sm font-medium text-primary-700 transition hover:bg-primary-100 dark:border-primary-700 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/50"
           >Editar</router-link
         >
         <button
-          v-if="auth.can(PERMISSIONS.USERS_EDIT_EMPLOYMENT)"
+          v-if="
+            auth.can(PERMISSIONS.USERS_CHANGE_PASSWORD) && canChangePassword
+          "
+          class="inline-flex items-center justify-center gap-2 rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-medium text-amber-700 transition hover:bg-amber-50 dark:border-amber-700 dark:bg-slate-800 dark:text-amber-300 dark:hover:bg-amber-950/30"
+          @click="passwordModalOpen = true"
+        >
+          Alterar senha
+        </button>
+        <button
+          v-if="
+            auth.can(PERMISSIONS.USERS_EDIT_EMPLOYMENT) && !protectedOficial
+          "
           class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-700 dark:bg-slate-800 dark:text-red-400 dark:hover:bg-red-950/30"
           @click="confirmDelete"
         >
@@ -159,6 +170,9 @@
         </dt>
         <dd class="text-sm sm:col-span-9 sm:text-base">
           <div class="flex flex-wrap gap-1">
+            <BaseBadge v-if="!user.roles.length" color="slate" variant="soft">
+              Sem perfil
+            </BaseBadge>
             <BaseBadge
               v-for="role in user.roles"
               :key="role"
@@ -197,11 +211,93 @@
         </dd>
       </dl>
     </div>
+
+    <BaseModal
+      :open="passwordModalOpen"
+      title="Alterar senha"
+      tone="danger"
+      @close="closePasswordModal"
+    >
+      <form
+        id="official-password-form"
+        class="space-y-4"
+        @submit.prevent="submitPassword"
+      >
+        <p class="text-sm text-slate-600 dark:text-slate-300">
+          A nova senha será aplicada a
+          <strong>{{ user?.name }}</strong
+          >. Todas as sessões desse usuário serão encerradas.
+        </p>
+
+        <div>
+          <label
+            for="official-new-password"
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Nova senha</label
+          >
+          <input
+            id="official-new-password"
+            v-model="passwordForm.password"
+            type="password"
+            autocomplete="new-password"
+            class="input-base"
+            :class="{ 'border-red-500': passwordErrors.password }"
+          />
+          <p
+            v-if="passwordErrors.password"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
+            {{ passwordErrors.password }}
+          </p>
+        </div>
+
+        <div>
+          <label
+            for="official-confirm-password"
+            class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >Confirmar nova senha</label
+          >
+          <input
+            id="official-confirm-password"
+            v-model="passwordForm.confirm"
+            type="password"
+            autocomplete="new-password"
+            class="input-base"
+            :class="{ 'border-red-500': passwordErrors.confirm }"
+          />
+          <p
+            v-if="passwordErrors.confirm"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
+            {{ passwordErrors.confirm }}
+          </p>
+        </div>
+      </form>
+
+      <template #footer>
+        <button
+          type="button"
+          class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+          @click="closePasswordModal"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          form="official-password-form"
+          :disabled="passwordSaving"
+          class="inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <BaseSpinner v-if="passwordSaving" class="h-4 w-4" />
+          Alterar senha
+        </button>
+      </template>
+    </BaseModal>
   </div>
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue'
+  import { ref, computed, onMounted } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { UsersService } from '@/services/users.services'
   import { useAuthStore } from '@/stores/auth'
@@ -214,14 +310,18 @@
   import { useCPF } from '@/composables/useCPF'
   import {
     PERMISSIONS,
+    isProtectedOficial,
     roleColor,
     roleLabel,
     unidadeLabel,
   } from '@/composables/useAuthorization'
+  import { passwordSchema } from '@/composables/usePasswordPolicy'
   import { formatarTelefone } from '@/composables/usePhone'
   import { formatarMoedaBR } from '@/composables/useCurrency'
   import BaseSpinner from '@/components/BaseSpinner.vue'
   import BaseBadge from '@/components/BaseBadge.vue'
+  import BaseModal from '@/components/BaseModal.vue'
+  import * as yup from 'yup'
 
   const route = useRoute()
   const router = useRouter()
@@ -233,6 +333,28 @@
   const loading = ref(false)
   const user = ref(null)
   const error = ref(null)
+
+  const protectedOficial = computed(
+    () => !user.value || isProtectedOficial(user.value, auth.user?.id),
+  )
+  const canChangePassword = computed(
+    () =>
+      auth.can(PERMISSIONS.USERS_CHANGE_PASSWORD) &&
+      String(user.value?.id) !== String(auth.user?.id),
+  )
+
+  const passwordModalOpen = ref(false)
+  const passwordSaving = ref(false)
+  const passwordForm = ref({ password: '', confirm: '' })
+  const passwordErrors = ref({})
+
+  const passwordValidation = yup.object({
+    password: passwordSchema,
+    confirm: yup
+      .string()
+      .required('Confirme a nova senha')
+      .oneOf([yup.ref('password')], 'As senhas devem ser iguais'),
+  })
 
   async function load() {
     loading.value = true
@@ -267,6 +389,43 @@
           err?.message ||
           'Erro ao excluir usuário',
       )
+    }
+  }
+
+  function closePasswordModal() {
+    passwordModalOpen.value = false
+    passwordForm.value = { password: '', confirm: '' }
+    passwordErrors.value = {}
+  }
+
+  async function submitPassword() {
+    passwordErrors.value = {}
+
+    try {
+      await passwordValidation.validate(passwordForm.value, {
+        abortEarly: false,
+      })
+    } catch (validationError) {
+      validationError.inner?.forEach((item) => {
+        passwordErrors.value[item.path] = item.message
+      })
+      return
+    }
+
+    passwordSaving.value = true
+    try {
+      await UsersService.resetPassword(id, passwordForm.value.password)
+      successToast('Senha alterada. As sessões do usuário foram encerradas.')
+      closePasswordModal()
+    } catch (err) {
+      console.error(err)
+      errorToast(
+        err?.response?.data?.detail ||
+          err?.message ||
+          'Erro ao alterar a senha',
+      )
+    } finally {
+      passwordSaving.value = false
     }
   }
 

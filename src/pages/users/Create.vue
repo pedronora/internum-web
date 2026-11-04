@@ -239,27 +239,17 @@
             class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200"
             >Perfis</label
           >
-          <div
-            v-if="!assignable.length"
-            class="text-sm text-slate-500 dark:text-slate-400"
-          >
-            Você não pode atribuir perfis.
-          </div>
-          <div v-else class="flex flex-wrap gap-x-4 gap-y-2">
-            <label
-              v-for="r in assignable"
-              :key="r.value"
-              class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200"
-            >
-              <input
-                v-model="form.roles"
-                type="checkbox"
-                :value="r.value"
-                class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
-              />
-              {{ r.label }}
-            </label>
-          </div>
+          <template v-if="canAssignRoles">
+            <RoleSelector v-model="form.roles" :roles="assignable" />
+            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+              Passe o mouse ou navegue com Tab para ver a descrição de cada
+              perfil.
+            </p>
+          </template>
+          <p v-else class="text-sm text-slate-500 dark:text-slate-400">
+            Você não pode atribuir perfis. O usuário será criado sem perfil e
+            poderá receber acesso depois.
+          </p>
         </div>
       </div>
 
@@ -303,6 +293,7 @@
   import { passwordSchema } from '@/composables/usePasswordPolicy'
   import Icon from '@/components/Icon.vue'
   import BaseSpinner from '@/components/BaseSpinner.vue'
+  import RoleSelector from '@/components/RoleSelector.vue'
   import * as yup from 'yup'
 
   const router = useRouter()
@@ -325,6 +316,10 @@
 
   const canEditSalary = computed(() => auth.can(PERMISSIONS.USERS_EDIT_SALARY))
   const assignable = computed(() => assignableRoles(auth.user?.roles || []))
+  const canAssignRoles = computed(
+    () =>
+      auth.can(PERMISSIONS.USERS_ASSIGN_ROLES) && assignable.value.length > 0,
+  )
 
   function getTodayForInput() {
     const date = new Date()
@@ -370,11 +365,13 @@
 
     subunidade: yup.string().nullable(),
 
-    roles: yup
-      .array()
-      .of(yup.string())
-      .min(1, 'Selecione ao menos um perfil')
-      .required('O perfil é obrigatório'),
+    roles: canAssignRoles.value
+      ? yup
+          .array()
+          .of(yup.string())
+          .min(1, 'Selecione ao menos um perfil')
+          .required('O perfil é obrigatório')
+      : yup.array().of(yup.string()),
   })
 
   const form = ref({
@@ -431,10 +428,12 @@
         hiring_date: form.value.hiring_date,
         unidade: form.value.unidade,
         subunidade: form.value.subunidade || null,
-        roles: form.value.roles,
         active: form.value.active,
         password: form.value.password,
         phone: phone.value,
+      }
+      if (canAssignRoles.value) {
+        payload.roles = form.value.roles
       }
       if (canEditSalary.value) {
         payload.gross_salary = grossSalary.value

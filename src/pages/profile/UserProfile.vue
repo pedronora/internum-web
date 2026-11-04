@@ -163,6 +163,9 @@
             >Perfis</label
           >
           <div class="input-base flex flex-wrap items-center gap-1">
+            <BaseBadge v-if="!form.roles.length" color="slate" variant="soft">
+              Sem perfil
+            </BaseBadge>
             <BaseBadge
               v-for="role in form.roles"
               :key="role"

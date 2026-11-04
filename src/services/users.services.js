@@ -32,4 +32,10 @@ export const UsersService = {
         new_password: newPassword,
       })
       .then((r) => r.data),
+  resetPassword: (id, newPassword) =>
+    api
+      .post(ENDPOINT + `${id}/change-password`, {
+        new_password: newPassword,
+      })
+      .then((r) => r.data),
 }
