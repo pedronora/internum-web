@@ -193,22 +193,13 @@
           <p v-if="isSelf" class="text-sm text-slate-500 dark:text-slate-400">
             Você não pode alterar os próprios perfis.
           </p>
-          <div v-else class="flex flex-wrap gap-x-4 gap-y-2">
-            <label
-              v-for="r in roleChoices"
-              :key="r.value"
-              class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200"
-            >
-              <input
-                v-model="form.roles"
-                type="checkbox"
-                :value="r.value"
-                :disabled="r.disabled"
-                class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500 disabled:opacity-50"
-              />
-              {{ r.label }}
-            </label>
-          </div>
+          <template v-else>
+            <RoleSelector v-model="form.roles" :roles="roleChoices" />
+            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+              Passe o mouse ou navegue com Tab para ver a descrição de cada
+              perfil.
+            </p>
+          </template>
         </div>
 
         <div v-if="canEditEmployment" class="flex items-end">
@@ -286,6 +277,7 @@
     SUBUNIDADES_SUGERIDAS,
     UNIDADE_OPTIONS,
     assignableRoles,
+    isProtectedOficial,
   } from '@/composables/useAuthorization'
   import {
     success as successToast,
@@ -296,6 +288,7 @@
   import { usePhone } from '@/composables/usePhone'
   import { useCurrency } from '@/composables/useCurrency'
   import BaseSpinner from '@/components/BaseSpinner.vue'
+  import RoleSelector from '@/components/RoleSelector.vue'
   import * as yup from 'yup'
 
   const router = useRouter()
@@ -380,7 +373,10 @@
 
     unidade: yup.string().required('A unidade é obrigatória'),
     subunidade: yup.string().nullable(),
-    roles: yup.array().of(yup.string()).min(1, 'Selecione ao menos um perfil'),
+    roles:
+      canAssignRoles.value && !isSelf.value
+        ? yup.array().of(yup.string()).min(1, 'Selecione ao menos um perfil')
+        : yup.array().of(yup.string()),
     active: yup.boolean(),
   })
 
@@ -428,6 +424,15 @@
       form.value.subunidade = userData.subunidade ?? ''
       form.value.roles = [...(userData.roles ?? [])]
       form.value.active = userData.active
+
+      if (isProtectedOficial(userData, auth.user?.id)) {
+        errorToast(
+          'A conta do oficial só pode ser alterada pelo próprio oficial.',
+        )
+        router.push({ name: 'UsersDetail', params: { id: userId } })
+        return
+      }
+
       setCPF(userData.cpf)
       setPhone(userData.phone)
       setGrossSalary(userData.gross_salary)

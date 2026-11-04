@@ -6,6 +6,7 @@ export const PERMISSIONS = {
   USERS_EDIT_EMPLOYMENT: 'users:edit_employment',
   USERS_EDIT_SALARY: 'users:edit_salary',
   USERS_ASSIGN_ROLES: 'users:assign_roles',
+  USERS_CHANGE_PASSWORD: 'users:change_password',
   LEGAL_BRIEFS_MANAGE: 'legal_briefs:manage',
   NOTICES_MANAGE: 'notices:manage',
   LIBRARY_MANAGE: 'library:manage',
@@ -31,14 +32,43 @@ export const SUBUNIDADES_SUGERIDAS = [
 ]
 
 export const ROLE_OPTIONS = [
-  { value: 'admin', label: 'Administrador' },
-  { value: 'oficial', label: 'Oficial' },
-  { value: 'suboficial', label: 'Suboficial' },
-  { value: 'coord_registro', label: 'Coordenador de Registro' },
-  { value: 'coord_gestao', label: 'Coordenador de Gestão' },
-  { value: 'gestor_pessoas', label: 'Gestor de Pessoas' },
-  { value: 'colaborador_registro', label: 'Colaborador de Registro' },
-  { value: 'colaborador_gestao', label: 'Colaborador de Gestão' },
+  {
+    value: 'oficial',
+    label: 'Oficial',
+    description:
+      'Conta única, criada pelo seed. Atribui todos os perfis, exceto oficial, e troca a senha de qualquer usuário.',
+  },
+  {
+    value: 'suboficial',
+    label: 'Suboficial',
+    description:
+      'Atribui coordenação, gestão e colaboradores. Não atribui oficial nem suboficial e não troca a senha de terceiros.',
+  },
+  {
+    value: 'coord_registro',
+    label: 'Coordenador de Registro',
+    description: 'Cria usuários sem perfil e gerencia a área de Registro.',
+  },
+  {
+    value: 'coord_gestao',
+    label: 'Coordenador de Gestão',
+    description: 'Cria usuários sem perfil e gerencia a área de Gestão.',
+  },
+  {
+    value: 'gestor_pessoas',
+    label: 'Gestor de Pessoas',
+    description: 'Cria usuários sem perfil, gerencia pessoas e edita salários.',
+  },
+  {
+    value: 'colaborador_registro',
+    label: 'Colaborador de Registro',
+    description: 'Acesso de consulta ao diretório e aos dados do Registro.',
+  },
+  {
+    value: 'colaborador_gestao',
+    label: 'Colaborador de Gestão',
+    description: 'Acesso de consulta ao diretório e aos dados da Gestão.',
+  },
 ]
 
 const ROLE_LABELS = Object.fromEntries(
@@ -46,7 +76,6 @@ const ROLE_LABELS = Object.fromEntries(
 )
 
 const ROLE_COLORS = {
-  admin: 'primary',
   oficial: 'dark',
   suboficial: 'dark',
   coord_registro: 'info',
@@ -59,12 +88,10 @@ const ROLE_COLORS = {
 const ALL_ROLES = ROLE_OPTIONS.map((option) => option.value)
 
 const ASSIGNABLE_ROLES = {
-  admin: ALL_ROLES,
-  oficial: ALL_ROLES.filter((role) => role !== 'admin'),
-  suboficial: ALL_ROLES.filter((role) => role !== 'admin'),
-  gestor_pessoas: ['colaborador_registro', 'colaborador_gestao'],
-  coord_gestao: ['colaborador_gestao'],
-  coord_registro: ['colaborador_registro'],
+  oficial: ALL_ROLES.filter((role) => role !== 'oficial'),
+  suboficial: ALL_ROLES.filter(
+    (role) => role !== 'oficial' && role !== 'suboficial',
+  ),
 }
 
 export function unidadeLabel(value) {
@@ -77,8 +104,22 @@ export function roleLabel(value) {
   return ROLE_LABELS[value] || value
 }
 
+export function roleDescription(value) {
+  return (
+    ROLE_OPTIONS.find((option) => option.value === value)?.description || ''
+  )
+}
+
 export function roleColor(value) {
   return ROLE_COLORS[value] || 'slate'
+}
+
+/** Conta do oficial só pode ser gerida pelo próprio oficial. */
+export function isProtectedOficial(target, currentUserId) {
+  return (
+    Boolean(target?.roles?.includes('oficial')) &&
+    String(target?.id) !== String(currentUserId)
+  )
 }
 
 /** Perfis que o ator pode conceder/remover, conforme a hierarquia do backend. */

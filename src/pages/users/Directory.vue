@@ -107,6 +107,13 @@
               <td class="px-4 py-3">
                 <div class="flex flex-wrap gap-1">
                   <BaseBadge
+                    v-if="!u.roles.length"
+                    color="slate"
+                    variant="soft"
+                  >
+                    Sem perfil
+                  </BaseBadge>
+                  <BaseBadge
                     v-for="role in u.roles"
                     :key="role"
                     :color="roleColor(role)"

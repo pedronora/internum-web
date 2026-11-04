@@ -43,7 +43,6 @@ export function useVacation() {
   const authStore = useAuthStore()
 
   const isManager = computed(() => authStore.can(PERMISSIONS.VACATION_READ_ALL))
-  const isAdmin = computed(() => authStore.isAdmin)
 
   function requestStatus(status) {
     return REQUEST_STATUS[status] || { label: status, color: 'slate' }
@@ -118,7 +117,6 @@ export function useVacation() {
   }
 
   return {
-    isAdmin,
     isManager,
     requestStatus,
     accrualStatus,
