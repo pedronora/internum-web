@@ -5,6 +5,49 @@ Todas as mudanças relevantes desta imagem serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o versionamento segue o padrão [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [2.0.0] - 2026-11-04
+
+### Removed
+
+- **Breaking:** o perfil `admin` foi removido do seletor, das cores e da
+  hierarquia de atribuição. A interface passa a refletir o **oficial único**:
+  `oficial` atribui todos os perfis, exceto `oficial`; `suboficial` atribui
+  todos, exceto `oficial` e `suboficial`.
+- `isAdmin` foi removido do store de autenticação e de `useVacation`.
+
+### Added
+
+- Autorização baseada em permissões: rotas com `meta.permission`, menu e ações
+  condicionados por `auth.can()`, diretório de colegas e telas de usuários
+  reconstruídas para múltiplos perfis.
+- `RoleSelector.vue`: seletor de perfis em grid, com descrição em tooltip no
+  hover e no foco por teclado (`role="tooltip"` + `aria-describedby`).
+- Badge **Sem perfil** em lista, diretório, detalhe e perfil.
+- Modal **Alterar senha** no detalhe do usuário, exclusivo do oficial, com
+  aviso de que as sessões do alvo serão encerradas.
+- Validação de senha compartilhada entre cadastro, troca e reset
+  (`usePasswordPolicy`).
+- Headers de segurança e CSP no nginx, incluindo `server_tokens off` e
+  `X-Robots-Tag`.
+
+### Changed
+
+- Criação de usuário por coordenação/gestão não envia `roles`: o formulário
+  explica que o usuário nascerá sem perfil.
+- A conta do `oficial` fica visualmente protegida: editar/excluir só aparece
+  para o próprio oficial, e a página de edição redireciona quem tentar
+  alterá-la.
+- A troca da própria senha mantém a sessão atual; o refresh entre abas é
+  serializado para evitar corrida.
+- Férias, ementas e avisos passam a ser gateados por permissão em vez de
+  perfil.
+
+### Fixed
+
+- Corrida de refresh token entre múltiplas abas.
+- Botões e buscas de telas administrativas alinhados ao novo modelo de
+  permissões.
+
 ## [1.4.0] - 2026-09-12
 
 ### Added
