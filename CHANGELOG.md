@@ -5,6 +5,14 @@ Todas as mudanças relevantes desta imagem serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o versionamento segue o padrão [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [2.0.1] - 2026-11-05
+
+### Changed
+
+- Versão alinhada com a API 2.0.1, que corrige o boot do container da API
+  (seed do oficial rodando como módulo). Sem alterações funcionais no
+  frontend; a imagem `2.0.1` é publicada junto para manter as versões pareadas.
+
 ## [2.0.0] - 2026-11-04
 
 ### Removed
