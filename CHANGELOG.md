@@ -5,6 +5,19 @@ Todas as mudanças relevantes desta imagem serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o versionamento segue o padrão [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [2.0.2] - 2026-11-05
+
+### Added
+
+- Rodapé exibe a versão do sistema em execução, lida de
+  `window.__ENV__.APP_VERSION` (injetada pelo nginx a partir de `APP_VERSION`),
+  com fallback `dev` quando o env não está disponível.
+
+### Fixed
+
+- O ano do copyright estava fixo em 2025. Agora é calculado em runtime, então
+  acompanha o ano corrente sem manutenção.
+
 ## [2.0.1] - 2026-11-05
 
 ### Changed
